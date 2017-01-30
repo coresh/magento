@@ -232,7 +232,6 @@ $tag            = $block->getFilterDataFor('tag');
                 });
 
                 $('.pagination').on('click','li',function(){
-                    alert($(this).attr('data'));
                     pageNo = $(this).attr('data'); 
                     var parameter = addPageNo(pageNo);
                     ajaxRequest(parameter,0);
@@ -286,7 +285,6 @@ $tag            = $block->getFilterDataFor('tag');
 
                 $('div').on('click','i',function(){
                     filterType = $(this).parent().parent().children('div .pos-relative').attr('filter-type');
-                    alert(filterType);
                     var id = $(this).attr('filter-id');
                     var ar = typeOfArray(filterType);
                     var i = ar.indexOf(id);
@@ -358,7 +356,6 @@ $tag            = $block->getFilterDataFor('tag');
                         //     a+'/'+x[1];    
                         // }
                         var havePageNo = a.split('pageNo/');
-                        console.log(havePageNo);
                         if(havePageNo.length<2){
                             history.replaceState({}, "", a);
                         }else{
@@ -366,7 +363,6 @@ $tag            = $block->getFilterDataFor('tag');
                             history.replaceState({}, "", a);
                         }
                         pathname = window.location.pathname;
-                        console.log(pathname);
                         var pathnameSplit = pathname.split('key/');
                         return pathnameSplit[1].split('/').slice(1).join('/');
                     }
@@ -387,7 +383,6 @@ $tag            = $block->getFilterDataFor('tag');
                         var pathnameSplit = pathname.split('key/');
                         return pathnameSplit[1].split('/').slice(1).join('/');
                     }else{
-                        console.log(splitArray);
                         var a = splitArray[0]+$filtertype+'/'+$id+','+splitArray[1];
                         var x = splitArray[1].split('/')
                         if(x.length>=2){
@@ -436,10 +431,6 @@ $tag            = $block->getFilterDataFor('tag');
                     var aa =         splitArray[1].split('/').slice(1).join('/');
                     var splitArray2 = splitArray[1].split('/');
                     var last = splitArray2[0].split($id);
-                    console.log(splitArray);                    
-                    console.log(splitArray2);
-                    console.log(last);
-                    console.log(aa); 
                     if(splitArray2[0] == '' && splitArray2[1] == '/'){
                         splitArray[0] = splitArray[0].substring(0, splitArray[0].length-1);         
                         var a = splitArray[0];
@@ -449,13 +440,10 @@ $tag            = $block->getFilterDataFor('tag');
                         return pathnameSplit[1].split('/').slice(1).join('/');
                     }                    
                     if(last[0] == '' && last[1] == ''){
-                        alert('in bklank');
                         var a = splitArray[0];
-                        alert(a.substring(0, a.length-1));
                         if(a.substring(a.length-1, a.length) == '/'){
                             a = a.substring(0, a.length-1)
                         }
-                        alert(a);
                         history.replaceState({}, "", a+aa);
                         pathname = window.location.pathname;
                         var pathnameSplit = pathname.split('key/');
@@ -578,7 +566,7 @@ $tag            = $block->getFilterDataFor('tag');
        </td> 
 
        <td class="text-center">
-           <a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="blank" class="btn btn-info">View</a>
+           <a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" class="btn btn-info">View</a>
        </td>
    </tr>
 </script>
