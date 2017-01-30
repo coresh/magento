@@ -32,11 +32,13 @@ class Index extends Action
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
+        \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper
     ) 
     {
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManager = $ticketManager;
+        $this->_ticketHelper = $ticketHelper;
         parent::__construct($context);
     }
 
@@ -54,9 +56,15 @@ class Index extends Action
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
+        $actAsType = 'customer';    
         if (isset($post['addReply']) &&  $post['addReply'] ==  1 ) {
+            $data = ["threadType"=>"reply", "reply"=>$reply, "status"=>"1", "actAsType"=>$actAsType];
+            $email = $this->_ticketHelper->getLoggedInUserDetail()['email'];
+            if ($email) {
+                $data["actAsEmail"]=$email;
+            }
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $reply);
+            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $data);
             $resultRedirect->setPath(
                 'uvdeskcon/ticketview/index/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]
             );

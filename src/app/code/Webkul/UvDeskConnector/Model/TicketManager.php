@@ -338,14 +338,17 @@ class TicketManager
         curl_close($ch);
     }
 
-    public function addReplyToTicket($ticketId,$ticketIncrementId,$reply,$actAsType,$email){
+    public function addReplyToTicket($ticketId,$ticketIncrementId ,$data){
+        // echo $email;die; 
 
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
         $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/'.$ticketId.'/threads.json';
-        $data = json_encode(["threadType"=>"reply", "reply"=>$reply, "status"=>"1","actAsType"=>"customer" ,"actAsEmail"=>$email, 
-            "attachments[]"=>""]);
+        $data = json_encode($data);
+        // echo "<pre>";
+        // print_r($data);
+        // die;
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer '.$access_token,
@@ -381,7 +384,6 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        $str = '';
         // Return  tickets 
         $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/attachment/'.$attachmenId.'.json ';
         $ch = curl_init($url);
@@ -402,5 +404,32 @@ class TicketManager
             return false;
         } 
         curl_close($ch);
-    }    
+    }
+    
+    public function trashTicket()
+    {
+        $access_token = $this->_helperData->getAccessToken();
+        $company_domain = $this->_helperData->getCompanyDomainName();
+        // Return  tickets 
+        $url = 'http://'.$company_domain.'.voipkul.com/en/ /api/ticket/4802/trash.json';
+        $ch = curl_init($url);
+        $headers = array(
+        'Authorization: Bearer '.$access_token,
+        );
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($output, 0, $header_size);
+        $response = substr($output, $header_size);
+        if ($info['http_code'] == 200) {
+            return ['response'=>$response,'info'=>$info]    ;
+        } else {
+            return false;
+        } 
+        curl_close($ch);
+    }      
 }

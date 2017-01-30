@@ -40,7 +40,11 @@
         <div class="col-sm-12">
           <div class="pull-left">
             <span class="round-tabs">
-              <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png">
+              <?php if(empty($ticketData['ticket']['customer']['smallThumbnail'])) { ?>
+                <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
+              <?php } else {?>
+                <img src="<?php echo $ticketData['ticket']['customer']['smallThumbnail'];?>">
+              <?php } ?>
             </span>
           </div>
           <div class="thread-info">
@@ -79,7 +83,11 @@
 		<div class="col-sm-12">    
 			<div class="pull-left">      
 				<span class="round-tabs">        
-				<img src="<?php echo $value['user']['smallThumbnail'];?>">      
+        <?php if(empty($value['user']['smallThumbnail'])) { ?>
+          <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
+        <?php } else {?>
+          <img src="<?php echo $value['user']['smallThumbnail'];?>">
+        <?php } ?>  
 				</span>    
 			</div>    
 			<div class="thread-body">      
@@ -113,10 +121,10 @@
 <div class="col-sm-12">
         <div class="pull-left">
           <span class="round-tabs">
-            <img src="https://cdn.uvdesk.com/website/179/dolls_free_photo-690x457.jpg">              
+            <img src="<?php echo $ticketData['ticket']['agent']['smallThumbnail']; ?>">            
           </span>
         </div>
-        <span class="userName">Peter Doe</span>
+        <span class="userName"><?php echo $ticketData['ticket']['agent']['detail']['agent']['name'];?></span>
         <div class="thread-body">
           <div class="thread-info">
             <!-- <br><br> -->

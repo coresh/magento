@@ -31,7 +31,7 @@
                 <td><?php echo $value['creation_date'] ;?></td>
                 <td><?php echo $value['replies'] ;?></td>
                 <td><?php echo $value['agent'] ;?></td>
-                <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
+                <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="_blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
               </tr>
             <?php } ?>
           <?php } else { ?>
@@ -160,32 +160,6 @@
 	            $('#popup-mpdal').modal('openModal');
 	            });
 
-                // $('#new-ticket-data').on('click',function(){
-                // 	var form =$("#uvdeskconnector-frontend-form");
-                //     var formData = form.serializeArray();
-                //     // if(formData[2].value == 0 || formData[].value == 0)
-                //     // {
-                //     //     return false;
-                //     // }
-                //     $.ajax({
-                //         url:"<?php //echo $block->getUrl('uvdeskcon/createticket/index')?>",
-                //         type:"GET",
-                //         data:form.serialize(),
-                //         dataType:"json",
-                //         beforeSend:function(){
-                //             $("#wait").css("display", "block");
-                //         },
-                //         complete: function(){
-                //             $("#wait").css("display", "none");
-                //         },
-                //         success: function($data){
-                //             if($data){
-                //             	location.reload(false);
-                //             }                                                        
-                //         }
-                //     });
-                // });
-
                 $('.pagination').on('click','li',function(){          
                     var pageNo = $(this).attr('data');
                     var parameter = addPageNo(pageNo);
@@ -278,7 +252,7 @@
     </td> 
 
     <td class="text-center">
-      <a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" class="btn btn-info"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a>
+      <a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="_blank" class="btn btn-info"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a>
     </td>
  </tr>
 </script>

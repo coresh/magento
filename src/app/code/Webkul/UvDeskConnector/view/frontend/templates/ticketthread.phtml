@@ -41,7 +41,11 @@
         <div class="col-sm-12">
           <div class="pull-left">
             <span class="round-tabs">
+            <?php if(empty($ticketData['ticket']['customer']['smallThumbnail'])) { ?>
               <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png">
+            <?php } else {?>
+               <img src="<?php echo $ticketData['ticket']['customer']['smallThumbnail'];?>">
+            <?php } ?>
             </span>
           </div>
           <div class="thread-info">
@@ -80,8 +84,12 @@
 		</div>  
 		<div class="col-sm-12">    
 			<div class="pull-left">      
-				<span class="round-tabs">        
-				<img src="<?php echo $value['user']['smallThumbnail'];?>">      
+				<span class="round-tabs">
+          <?php if(empty($value['user']['smallThumbnail'])) { ?>
+            <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
+          <?php } else {?>
+            <img src="<?php echo $value['user']['smallThumbnail'];?>">
+          <?php } ?>              
 				</span>    
 			</div>    
 			<div class="thread-body">      
@@ -101,7 +109,7 @@
 		</div>
 		<div class="attachments">
 		<?php foreach($value['attachments'] as $key=>$attachment){ ?>
-			<a href="http://oc-demo.webkul.com/pos/admin/index.php?route=uvdesk/uvdesk/download&amp;token=1BN2sAUe5HtJiq4vSzX0LhVOrD8N9w7R&amp;attachment=<?php echo $attachment['id'];?>" target="_blank" class="download-attachment">
+			<a href="<?php echo $block->getUrl('uvdeskcon/tickets/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment">
 				<i class="fa fa-download">
 				</i>
 			</a>
@@ -116,14 +124,18 @@
 <div class="col-sm-12">
         <div class="pull-left">
           <span class="round-tabs">
-            <img src="<?php echo $ticketData['ticket']['agent']['smallThumbnail'];?>">              
+            <?php if(empty($ticketData['ticket']['customer']['smallThumbnail'])) { ?>
+              <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png">
+            <?php } else {?>
+               <img src="<?php echo $ticketData['ticket']['customer']['smallThumbnail'];?>">
+            <?php } ?>              
           </span>
         </div>
-        <span class="userName">Peter Doe</span>
+        <span class="userName"><?php echo $ticketData['ticket']['customer']['detail']['customer']['name'];?></span>
         <div class="thread-body">
           <div class="thread-info">
             <!-- <br><br> -->
-            <form action="<?php echo $block->getUrl('uvdeskcon/ticketview/index') ?>addReply/1" method="post">
+            <form action="<?php echo $block->getUrl('uvdeskcon/ticketview/index') ?>addReply/1" method="post" enctype="multipart/form-data">
               <div class="reply border-none">
               <?php echo $block->getBlockHtml('formkey')?>
   					<textarea name="product[description]" class="required-entry input-text" id="custom_wysiwyg" rows="5" cols="75" ></textarea>							

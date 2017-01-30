@@ -8,31 +8,42 @@
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
+namespace Webkul\UvDeskConnector\Controller\TicketList;
 
-namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
-
-use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
-class DownloadAttachment extends \Magento\Backend\App\Action
+/**
+ * Webkul UvDeskConnector Landing page Index Controller.
+ */
+class DownloadAttachment extends Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /**
+     * @var PageFactory
+     */
     protected $_resultPageFactory;
 
     /**
-     * @param \Magento\Backend\App\Action\Context              $context
-     * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager
+     * @param Context     $context
+     * @param PageFactory $resultPageFactory
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\App\Response\Http\FileFactory $fileFactory,
+        Context $context,
+        PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) 
     {
-        parent::__construct($context);
+        $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManager        = $ticketManager;
+        parent::__construct($context);
     }
 
+    /**
+     * UvDeskConnector Landing page.
+     *
+     * @return \Magento\Framework\View\Result\Page
+     */
     public function execute()
     {
       $attachmenId = $this->getRequest()->getParam('attachment_id');
@@ -43,13 +54,5 @@ class DownloadAttachment extends \Magento\Backend\App\Action
       header('Content-Length: ' . strlen($file['response']));
       header('Connection: close');
       echo $file['response'];
-    }
-
-    /*
-     * Check permission via ACL resource
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
     }
 }

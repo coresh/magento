@@ -34,7 +34,8 @@ class Index extends Action
         \Magento\Framework\Json\Helper\Data $jsonHelper,        
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper
-    ) {
+    ) 
+    {
         $this->_resultPageFactory = $resultPageFactory;
         $this->_json = $jsonHelper;
         $this->_ticketManager = $ticketManager;
