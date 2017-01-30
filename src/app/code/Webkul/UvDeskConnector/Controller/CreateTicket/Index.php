@@ -56,7 +56,7 @@ class Index extends Action
             'name'=>$customerDetail['name'],
             'from'=>$customerDetail['email'],
             'subject'=>$post['subject'],
-            'reply'=>'klklllkl',
+            'reply'=>$post['message'],
             'type'=>$post['type']
         ];
         $response = $this->_ticketManager->createTicket($ticketData);

@@ -33,7 +33,8 @@ class Index extends Action
         Context $context,
         PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) {
+    ) 
+    {
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManager = $ticketManager;
         parent::__construct($context);
@@ -48,16 +49,17 @@ class Index extends Action
     {
         $resultPage = $this->_resultPageFactory->create();
         // $resultPage->getConfig()->getTitle()->set(__('UVdesk Add On'));
-
         // $resultPage->getConfig()->getTitle()->prepend(__('Tickets'));
         $post = $this->getRequest()->getParams();
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
-        if(isset($post['addReply']) &&  $post['addReply'] ==  1 ){
+        if (isset($post['addReply']) &&  $post['addReply'] ==  1 ) {
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $response = $this->_ticketManager->addReplyToTicket($ticketId,$tickeIncrementId,$reply);
-            $resultRedirect->setPath('uvdeskcon/ticketview/index/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]);
+            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $reply);
+            $resultRedirect->setPath(
+                'uvdeskcon/ticketview/index/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]
+            );
             return $resultRedirect;
         }
         return $resultPage;

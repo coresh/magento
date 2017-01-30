@@ -31,7 +31,7 @@
                 <td><?php echo $value['creation_date'] ;?></td>
                 <td><?php echo $value['replies'] ;?></td>
                 <td><?php echo $value['agent'] ;?></td>
-                <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" ><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
+                <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
               </tr>
             <?php } ?>
           <?php } else { ?>
@@ -126,13 +126,8 @@
                             }
                             var form =$("#uvdeskconnector-frontend-form");
                             var formData = form.serializeArray();
-                            if(formData[1].value == 0 || formData[2].value == 0)
-                            {
-                                alert('Please fill all fields');
-                                return false;
-                            }
                             $.ajax({
-                                url:"<?php //echo $block->getUrl('uvdeskcon/createticket/index')?>",
+                                url:"<?php echo $block->getUrl('uvdeskcon/createticket/index')?>",
                                 type:"GET",
                                 data:form.serialize(),
                                 dataType:"json",

@@ -10,7 +10,7 @@
  */
 namespace Webkul\UvDeskConnector\Model;
 
-class TicketManager 
+class TicketManager
 { 
     public function __construct(
         \Webkul\UvDeskConnector\Helper\Data $helperData,
@@ -46,9 +46,9 @@ class TicketManager
         if ($info['http_code'] == 200) {
             return json_decode($response);
         } elseif ($info['http_code'] == 401) {
-            $this->_messageManager->addError(__(json_decode($response,true)['error_description']));
+            $this->_messageManager->addError(__(json_decode($response, true)['error_description']));
             return json_decode($response);
-        } elseif($info['http_code'] == 500) {
+        } elseif ($info['http_code'] == 500 || $info['http_code'] == 0) {
             $this->_messageManager->addError(__('Invalid credentials !'));
             return ['error'=>'true'];
         } 
@@ -117,7 +117,7 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
-        if($info['http_code'] == 200) {
+        if ($info['http_code'] == 200) {
             return json_decode($response);
         } else {
             return false;
@@ -145,7 +145,7 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
-        if($info['http_code'] == 200) {
+        if ($info['http_code'] == 200) {
             return json_decode($response);
         } else {
             return false;
@@ -176,10 +176,10 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($server_output, 0, $header_size);
         $response = substr($server_output, $header_size);
-        if($info['http_code'] == 200 || $info['http_code'] == 201) {
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
             $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
             $customerUvdeskId  = $this->_customerSession->getCustomerUvdeskId();
-            if(!isset($customerUvdeskId)){
+            if (!isset($customerUvdeskId)) {
                 $customerEmail = $this->_customerSession->getCustomer()->getEmail();
                 $customerUvDeskData = $this->getCustomerFromEmail($customerEmail);
                 if (!empty($customerUvDeskData['customers'])) {
@@ -188,12 +188,12 @@ class TicketManager
                 }
             }   
             return true;
-        } elseif($info['http_code'] == 400) {
+        } elseif ($info['http_code'] == 400) {
             $this->_messageManager->addError(__(' Error, request data not valid. (http-code: 400).'));
-        } elseif($info['http_code'] == 404) {
+        } elseif ($info['http_code'] == 404) {
             $this->_messageManager->addError(__('Error, resource not found (http-code: 404)'));
         } else {
-            $this->_messageManager->addError(__('Error, HTTP Status Code :%1',$info['http_code']));
+            $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
         }
         curl_close($ch);
     }
@@ -216,9 +216,9 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($server_output, 0, $header_size);
         $response = substr($server_output, $header_size);
-        if($info['http_code'] == 200 || $info['http_code'] == 201){
-            return json_decode($response,true);
-        } elseif($info['http_code'] == 400) {
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
+            return json_decode($response, true);
+        } elseif ($info['http_code'] == 400) {
             return "";
         }
         curl_close($ch); 
@@ -247,15 +247,15 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($server_output, 0, $header_size);
         $response = substr($server_output, $header_size);
-        if($info['http_code'] == 200 || $info['http_code'] == 201) {
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
             $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
             return true;
-        } elseif($info['http_code'] == 400) {
+        } elseif ($info['http_code'] == 400) {
             $this->_messageManager->addError(__(' Error, request data not valid. (http-code: 400).'));
-        } elseif($info['http_code'] == 404) {
+        } elseif ($info['http_code'] == 404) {
             $this->_messageManager->addError(__('Error, resource not found (http-code: 404)'));
         } else {
-            $this->_messageManager->addError(__('Error, HTTP Status Code :%1',$info['http_code']));
+            $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
         }
         curl_close($ch); 
     }
@@ -278,9 +278,9 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($server_output, 0, $header_size);
         $response = substr($server_output, $header_size);
-        if($info['http_code'] == 200 || $info['http_code'] == 201){
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
             return $response;
-        } elseif($info['http_code'] == 400) {
+        } elseif ($info['http_code'] == 400) {
             return "";
         }
         curl_close($ch); 
@@ -304,7 +304,7 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
-        if($info['http_code'] == 200) {
+        if ($info['http_code'] == 200) {
             return json_decode($response,true);
         } else {
             return false;
@@ -330,21 +330,22 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
-        if($info['http_code'] == 200) {
-            return json_decode($response,true);
+        if ($info['http_code'] == 200) {
+            return json_decode($response, true);
         } else {
             return false;
         } 
         curl_close($ch);
     }
 
-    public function addReplyToTicket($ticketId,$ticketIncrementId,$reply){
+    public function addReplyToTicket($ticketId,$ticketIncrementId,$reply,$actAsType,$email){
 
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
         $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/'.$ticketId.'/threads.json';
-        $data = json_encode(["threadType"=>"reply", "reply"=>$reply, "status"=>"1","actAsType"=>'customer']);
+        $data = json_encode(["threadType"=>"reply", "reply"=>$reply, "status"=>"1","actAsType"=>"customer" ,"actAsEmail"=>$email, 
+            "attachments[]"=>""]);
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer '.$access_token,
@@ -360,18 +361,18 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($server_output, 0, $header_size);
         $response = substr($server_output, $header_size);
-        if($info['http_code'] == 200 || $info['http_code'] == 201) {
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
             $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
             return true;
-        } elseif($info['http_code'] == 400) {
+        } elseif ($info['http_code'] == 400) {
             $this->_messageManager->addError(__(' Error, request data not valid. (http-code: 400).'));
             return false;
-        } elseif($info['http_code'] == 404) {
+        } elseif ($info['http_code'] == 404) {
             $this->_messageManager->addError(__('Error, resource not found (http-code: 404)'));
             return false;
         } else {
-            $this->_messageManager->addError(__('Error, HTTP Status Code :%1',$info['http_code']));
-            return false;
+            $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
+            return false; 
         }
         curl_close($ch); 
     }
@@ -383,7 +384,6 @@ class TicketManager
         $str = '';
         // Return  tickets 
         $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/attachment/'.$attachmenId.'.json ';
-        // echo $url; die;
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -396,10 +396,7 @@ class TicketManager
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
-        // echo "<pre>";
-        // print_r($info);
-        // die;
-        if($info['http_code'] == 200) {
+        if ($info['http_code'] == 200) {
             return ['response'=>$response,'info'=>$info]    ;
         } else {
             return false;

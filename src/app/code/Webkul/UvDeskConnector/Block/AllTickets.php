@@ -15,10 +15,11 @@ class AllTickets extends \Magento\Framework\View\Element\Template
 {
 
     /**
-     * [__construct description]
-     * @param \Magento\Framework\View\Element\Template\Context $context [description]
-     * @param \Webkul\LoginForm\Model\NewsFactory              $model   [description]
-     * @param array                                            $data    [description]
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketHelper
+     * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager
+     * @param \Magento\Customer\Model\Session                  $customerSession
+     * @param array                                            $data
      */
 	public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -50,9 +51,6 @@ class AllTickets extends \Magento\Framework\View\Element\Template
             $pageNo = null;
         }
         $tickets = $this->_ticketManager->getAllTicketss($pageNo,null,null,null,$customerUvdeskId,null,null,null,null,null,null);
-        // echo "<pre>";
-        // print_r($tickets);
-        // die;
         return $this->_ticketHelper->formatData($tickets);   
     }
 

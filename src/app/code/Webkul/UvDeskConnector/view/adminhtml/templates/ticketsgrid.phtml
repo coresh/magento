@@ -228,7 +228,7 @@ $tag            = $block->getFilterDataFor('tag');
 
                 $('#check_all').click(function() {
                     var status = this.checked;
-                    $("input[name='selected']").prop('checked', status);
+                    $("tr td input[type='checkbox']").prop('checked', status);
                 });
 
                 $('.pagination').on('click','li',function(){
@@ -578,7 +578,7 @@ $tag            = $block->getFilterDataFor('tag');
        </td> 
 
        <td class="text-center">
-           <a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" class="btn btn-info">View</a>
+           <a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="blank" class="btn btn-info">View</a>
        </td>
    </tr>
 </script>

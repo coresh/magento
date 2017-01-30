@@ -18,7 +18,7 @@ use \Magento\Framework\App\Helper\AbstractHelper;
  */
 
 class Data extends AbstractHelper
-{	
+{   
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
@@ -66,16 +66,5 @@ class Data extends AbstractHelper
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
         return $companyDomainName;
-    }  
-
-
-    // public function getAccessToken() 
-    // {
-    //     return 'A289AA1A50DA12175D033D194DE5F5E813781A289AA1A50DA12175D033D194DE5F5E8';
-    // }
-
-    // public function getCompanyDomainName()
-    // {
-    //     return 'testingnew';
-    // }
+    }
 }

@@ -56,9 +56,9 @@ class Tickets extends AbstractHelper
         $ticketData = [];
         $tabData = [];
         $data = [];
-        $tickets = json_decode(json_encode($tickets),true);
-        if(!empty($tickets['tickets'])){
-            foreach($tickets['tickets'] as $ticket) {
+        $tickets = json_decode(json_encode($tickets), true);
+        if (!empty($tickets['tickets'])) {
+            foreach ($tickets['tickets'] as $ticket) {
                     $temp['priority'] = $ticket['priority']['name'];
                     $temp['priority_color'] = $ticket['priority']['color'];
                     $temp['incrementId'] = $ticket['incrementId'];
@@ -72,8 +72,8 @@ class Tickets extends AbstractHelper
                     $temp = [];
             }
         }
-        if(!empty($tickets['status'])){
-            foreach($tickets['status'] as $status) {
+        if (!empty($tickets['status'])) {
+            foreach ($tickets['status'] as $status) {
                     $temp['tab_name'] = $status['name'];
                     $temp['tab_id'] = $status['id'];
                     $temp['tab_count'] = $tickets['tabs'][$status['sortOrder']];
@@ -81,9 +81,9 @@ class Tickets extends AbstractHelper
                     $temp = [];
             }
         }
-        if(!empty($tickets['pagination'])){
-            foreach($tickets['pagination']['pagesInRange'] as $page) {
-                if($tickets['pagination']['pageCount']>1){
+        if (!empty($tickets['pagination'])) {
+            foreach ($tickets['pagination']['pagesInRange'] as $page) {
+                if ($tickets['pagination']['pageCount']>1) {
                     $temp['page_no'] = $page;
                     $paginationData[] = $temp;
                     $temp = [];
@@ -96,13 +96,12 @@ class Tickets extends AbstractHelper
         return $data ;
     }
 
-    public function formatParameter($parameter){
-        echo "<pre>";
-        print_r($parameter);
-        die;
+    public function formatParameter($parameter)
+    {
     }
 
-    public function getLoggedInUserDetail(){
+    public function getLoggedInUserDetail()
+    {
         $customerDetal = [];
         $customerDetal['email'] = $this->_customerSession->getCustomer()->getEmail();
         $customerDetal['name'] = $this->_customerSession->getCustomer()->getName();

@@ -14,13 +14,7 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-<!--                 <resource id="Webkul_SalesforceIq::salesforceConnector" title="SalesforceIQ Connector" sortOrder="50">
-                    <resource id="Webkul_SalesforceIq::customers" title="Categories" sortOrder="60">
-                        <resource id="Webkul_SalesforceIq::customers_delete" title="Customers Delete" sortOrder="70" />
-                        <resource id="Webkul_SalesforceIq::customers_exportcustomer" title="Customers Export" sortOrder="80" />  
-                        <resource id="Webkul_SalesforceIq::customers_index" title="Customers Grid" sortOrder="90" /> 
-                    </resource>
-                </resource>  -->   
+                <resource id="Webkul_UvDeskConnector::tickets_index" title="Customers Grid" sortOrder="90" />    
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">

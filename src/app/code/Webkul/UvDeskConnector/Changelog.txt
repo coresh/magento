@@ -5,5 +5,9 @@ Legend
 
 -------------------------------- Version 2.0.0 --------------------------------------
 	
-	+ Admin can all the tickets.
-	+ Customer can create or view his/her tickets
+	  +Integrate Uvdesk Helpdesk System with magento
+      +Admin can manage tickets from magento backend.
+      +Admin can reply on tickets.
+      +Admin can delete any ticket.
+      +Customers can reply to tickets from their magento store account on front-end.
+      +Real time synchronization between Uvdesk Helpdesk System and magento Store tickets.

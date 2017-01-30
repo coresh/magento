@@ -1,13 +1,13 @@
 <?php
 /**
-* Webkul Software.
-*
-* @category Webkul
-* @package Webkul_UvDeskConnector
-* @author Webkul
-* @copyright Copyright (c) 2010-2016 Webkul Software Private Limited (https://webkul.com)
-* @license https://store.webkul.com/license.html
-*/
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_UvDeskConnector
+ * @author    Webkul Software Private Limited
+ * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
 
 namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 
@@ -44,10 +44,12 @@ class TicketThread extends \Magento\Backend\App\Action
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
-        if(isset($post['addReply']) &&  $post['addReply'] ==  1 ){
+        if (isset($post['addReply']) &&  $post['addReply'] ==  1 ) {
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $response = $this->_ticketManager->addReplyToTicket($ticketId,$tickeIncrementId,$reply);
-            $resultRedirect->setPath('uvdeskcon/tickets/ticketthread/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]);
+            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $reply);
+            $resultRedirect->setPath(
+                'uvdeskcon/tickets/ticketthread/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]
+            );
             return $resultRedirect;
         }
 
@@ -59,6 +61,6 @@ class TicketThread extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_ticketthread');
+        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
     }
 }

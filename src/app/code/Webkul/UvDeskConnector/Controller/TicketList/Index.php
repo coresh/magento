@@ -56,7 +56,7 @@ class Index extends Action
         $post = $this->getRequest()->getParams();
         if (isset($post['pageNo']) && isset($post['isAjax'])) {
             $customerUvdeskId = $this->_customerSession->getCustomerUvdeskId();
-            $tickets = $this->_ticketManager->getAllTicketss($post['pageNo'],null,null,null,$customerUvdeskId);
+            $tickets = $this->_ticketManager->getAllTicketss($post['pageNo'], null, null, null, $customerUvdeskId);
             $formatedTickets = $this->_ticketsHelper->formatData($tickets);
             $this->getResponse()->setHeader('Content-type', 'application/json');
             $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));  
