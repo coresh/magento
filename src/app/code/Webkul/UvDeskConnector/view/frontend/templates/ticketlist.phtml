@@ -1,0 +1,258 @@
+<?php 
+  $customerDetail = $block->getTicketsAccToCustomer();
+  $ticketTypes = $block->getTicketsTypes();
+?> 
+<div class="panell panel-default">
+  <div class="panel-heading uvhead">
+        <h3 class="panel-title pull-left">Ticket List</h3>
+        <button id="uvdesk_create_ticket">Create Ticket</button>
+  </div>
+  <div class="panel-body">
+    <div class="table table-bordered table-hover">
+      <table style="width:100%">
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Ticket</th>
+            <th>Subject</th>
+            <th>Date Added</th>
+            <th>Replies</th>
+            <th>Agent</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="ticketBody">
+         <?php if(!empty($customerDetail['ticket_data'])) { ?>
+            <?php foreach ($customerDetail['ticket_data'] as $key=>$value) { ?>
+              <tr>
+                <td style="color:<?php echo $value['priority_color']; ?>; font-weight: bold;"><?php echo $value['priority'] ?></td>
+                <td>#<?php echo $value['incrementId'] ;?></td>
+                <td><?php echo $value['subject'] ;?></td>
+                <td><?php echo $value['creation_date'] ;?></td>
+                <td><?php echo $value['replies'] ;?></td>
+                <td><?php echo $value['agent'] ;?></td>
+                <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="_blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
+              </tr>
+            <?php } ?>
+          <?php } else { ?>
+            <tr>
+              <td colspan=6 style="text-align:center;vertical-align:middle;">No Ticket Found</td>
+            </tr>
+          <?php } ?>  
+        </tbody>
+      </table>
+      <div style="text-align:center;">
+          <ul class="pagination">
+            <?php foreach($customerDetail['pagination_data'] as $key=>$value) {?>
+                <li class='pagination-list uvdpagination' data=<?php echo $value['page_no'] ; ?>><a href="#"><?php echo $value['page_no'] ; ?></a></li>
+            <?php } ?>
+          </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="popup-mpdal" style="display:none;">
+    <div class="row">                
+        <div id="content" class="col-sm-12">      
+            <div class="panell panel-default">
+                <div class="panel-body">
+                    <form action="" method="post" enctype="multipart/form-data" class="form-horizontal" id="uvdeskconnector-frontend-form" data-mage-init='{"validation":{}}'>
+                    <div class="form-group required">
+                        <label for="input-type">Type</label>
+                        <br>
+                        <select name="type" id="type" class="form-control" style="margin-bottom: 10px;" data-validate="{required:true}">
+                         <option value="">Select type</option>
+                        <?php if(!empty($ticketTypes['types'])) { ?>
+                            <?php foreach($ticketTypes['types'] as $key => $value) { ?>
+                                <?php if($value['isActive']) { ?>
+                                    <option value=<?php echo $value['id'] ;?>><?php echo $value['name'];?></option>
+                                <?php } ?>
+                            <?php } ?>
+                        <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group required">
+                        <label for="input-subject" class="">Subject</label>
+                        <br>
+                        <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter Subject" value="" style="
+                        margin-bottom: 10px;" data-validate="{required:true}">
+                    </div>
+                    <div class="form-group required">
+                        <label for="input-type">Message</label>
+                        <br>
+                        <textarea name="message" id="message" class="form-control" placeholder="Brief Description about your query" style="width:100%;" data-validate="{required:true}"></textarea>
+                    </div>
+                    <button type="submit" id="new-ticket-data"  value="Create Ticket" style="display:none">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="wait" class="loading-mask" data-role="loader" style="display: none;">
+    <div class="popup popup-loading">
+      <div class="popup-inner">
+        <img alt="Loading..." src="<?php echo $block->getViewFileUrl('Webkul_UvDeskConnector::images/aa1b406.gif'); ?>"/>
+        <br>
+      </div>
+  </div>
+</div>
+<script type="text/javascript">
+    require(
+        [
+            'jquery',
+            'mage/template',
+            'Magento_Ui/js/modal/modal',
+            'mage/loader'
+        ],function($, template,modal){
+            $(document).ready(function(){
+	            $('#uvdesk_create_ticket').on('click',function(){
+	            var options = {
+	                type: 'popup',
+	                responsive: true,
+	                innerScroll: false,
+	                title: 'Create Tickets',
+                    buttons: [{
+                        text: 'Submit',
+                        class: '',
+                        id:'new-ticket-data',
+                        click: function() {
+                            var subject = $('#subject').val()
+                            var message = $('#message').val()
+                            var type = $('#type').val()
+                            if((subject =="" || subject == null || subject == undefined)||(message =="" || message == null || message == undefined) || (type =="" || type == null || type == undefined)) {
+                                $('#new-ticket-data').trigger('click');
+                                return false;
+                            }
+                            var form =$("#uvdeskconnector-frontend-form");
+                            var formData = form.serializeArray();
+                            $.ajax({
+                                url:"<?php echo $block->getUrl('uvdeskcon/createticket/index')?>",
+                                type:"GET",
+                                data:form.serialize(),
+                                dataType:"json",
+                                beforeSend:function(){
+                                    $("#wait").css("display", "block");
+                                },
+                                complete: function(){
+                                    $("#wait").css("display", "none");
+                                },
+                                success: function($data){
+                                    if($data){
+                                        location.reload(false);
+                                    }                                                        
+                                }
+                            });
+                        } //handler on button click
+                    },{
+                        text: 'Reset',
+                        class: '',
+                        id:'new-ticket-data',
+                        click: function() {
+                            $('#subject').val("");
+                            $('#message').val("");
+                            $('#type').val("");
+                        }
+                    }
+                    ]
+	            };
+	            var popup = modal(options, $('#popup-mpdal'));
+	            $('#popup-mpdal').modal('openModal');
+	            });
+
+                $('.pagination').on('click','li',function(){          
+                    var pageNo = $(this).attr('data');
+                    var parameter = addPageNo(pageNo);
+                    $(".pagination a").removeClass('active');
+                    $(this).find('a').addClass('active');
+                    $.ajax({
+                        url:"<?php echo $block->getUrl('uvdeskcon/ticketlist/index')?>"+parameter,
+                        type:"GET",
+                        data:{'isAjax':'true'},
+                        dataType:"json",
+                        beforeSend:function(){  
+                            $("#wait").css("display", "block");
+                        },
+                        complete: function(){
+                            $("#wait").css("display", "none");
+                        },
+                        success: function($data){
+                            var ticketRow="";
+                            $.each($data['ticket_data'], function() {
+                                var ticketTemplate = template('#ticket-template');;
+                                 ticketRow += ticketTemplate({
+                                                data: {
+                                                    priority: this['priority'],
+                                                    priorityColor: this['priority_color'],
+                                                    ticket: this['id'],
+                                                    name: this['name'],
+                                                    subject: this['subject'],
+                                                    date: this['creation_date'],
+                                                    replies: this['replies'],
+                                                    agent: this['agent'],
+                                                    incrementId:this['incrementId']
+                                                }
+                                });
+                            });
+                            $('#ticketBody').html(ticketRow);                                                  
+                        }
+                    });
+                });
+                function addPageNo($pageNo){
+                    var pathname = window.location.pathname; // Returns path only
+                    var url      = window.location.href;
+                    var splitArray = pathname.split('pageNo/');
+                    if(splitArray.length<2){
+                        if(pathname.substring(pathname.length-1, pathname.length) == '/'){
+                            var a = pathname+'pageNo/'+$pageNo;
+                        }else{
+                            var a = pathname+'/pageNo/'+$pageNo;
+                        }
+                        history.replaceState({}, "", a);
+                        pathname = window.location.pathname;
+                        var pathnameSplit = pathname.split('index/');
+                        return pathnameSplit[1];
+                    }else{
+                        var aa = splitArray[1].split('/').slice(1).join('/');
+                        var a = splitArray[0]+'pageNo/'+$pageNo+'/'+aa;
+                        history.replaceState({}, "", a);
+                        pathname = window.location.pathname;
+                        var pathnameSplit = pathname.split('index/');
+                        return pathnameSplit[1];
+                    }
+                } 
+
+            });
+        });
+</script>
+<script id="ticket-template" type="text/x-magento-template">
+ <tr>
+    <td class="text-center" style="color:<%- data.priorityColor %>;font-weight: bold;">
+      <%- data.priority %>
+    </td>
+
+    <td class="text-center">
+      #<%- data.incrementId %>
+    </td>
+
+    <td class="text-center">
+      <%- data.subject %>
+    </td>  
+
+    <td class="text-center">
+      <%- data.date %>
+    </td > 
+
+    <td class="text-center">
+      <label class="label label-info"><%- data.replies %></label>
+    </td> 
+
+    <td class="text-center">
+      <%- data.agent %>
+    </td> 
+
+    <td class="text-center">
+      <a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="_blank" class="btn btn-info"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a>
+    </td>
+ </tr>
+</script>

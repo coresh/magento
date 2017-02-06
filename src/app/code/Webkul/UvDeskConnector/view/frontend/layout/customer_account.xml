@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_UvDeskConnector
+ * @author    Webkul Software Private Limited
+ * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */ 
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+    <body>
+<!--         <attribute name="class" value="account"/>
+        <referenceContainer name="sidebar.main">
+            <block class="Magento\Framework\View\Element\Html\Links" name="customer_account_navigation_secondary" after="customer_account_navigation" template="Magento_Customer::account/navigation.phtml">
+                <block class="Magento\Framework\View\Element\Html\Link\Current" name="customer-account-navigation-account-link-secondary"> --> <!-- duplicate this as many times as you need, just make sure the name is unique -->
+<!--                     <arguments>
+                        <argument name="label" xsi:type="string" translate="true">UVdesk</argument>
+                        <argument name="path" xsi:type="string">uvdeskcon/ticketlist/index</argument>
+                    </arguments>
+                </block>
+            </block>
+        </referenceContainer> -->
+        <referenceBlock name="customer_account_navigation">
+            <block class="Magento\Framework\View\Element\Html\Link\Current" name="customer-account-navigation-suppport-ticket-link" after="-">
+                <arguments>
+                    <argument name="path" xsi:type="string">uvdeskcon/ticketlist/index</argument>
+                    <argument name="label" xsi:type="string">UVdesk</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

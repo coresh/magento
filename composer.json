@@ -1,0 +1,14 @@
+{
+    "name": "uvdesk/magento2-uvdesk-integration",
+    "description": "Connect your Magento2 site with UVdesk helpdesk system",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0"
+    },
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "proprietary"
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable" : "true"
+}
