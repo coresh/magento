@@ -16,10 +16,10 @@ If you are having trouble understanding workflow of this module then this is for
 ### Installation
 Manual Installation:
 -  Unzip the respective extension zip and then move "app" folder (inside "src" folder) into magento root directory.
--  Run Following Command via terminal
-	``` php bin/magento setup:upgrade ```
-	``` php bin/magento setup:di:compile ```
-	``` php bin/magento setup:static-content:deploy ```
+-  Run Following Command via terminal  
+	``` php bin/magento setup:upgrade ```  
+	``` php bin/magento setup:di:compile ```  
+	``` php bin/magento setup:static-content:deploy ```  
 -  Flush the cache and reindex all.
 
 ### Contributing
