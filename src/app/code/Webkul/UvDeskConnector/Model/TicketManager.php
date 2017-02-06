@@ -30,7 +30,7 @@ class TicketManager
         $company_domain = $this->_helperData->getCompanyDomainName();
 
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/tickets.json?'.$label;
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$label;
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -104,7 +104,7 @@ class TicketManager
             $str=$labels.$str;
         }
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/tickets.json?'.$str;
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$str;
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -131,7 +131,7 @@ class TicketManager
         $company_domain = $this->_helperData->getCompanyDomainName();
 
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/filters.json?'.$filterType.'=1';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/filters.json?'.$filterType.'=1';
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -158,7 +158,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/tickets.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
 
         $data = json_encode($ticketData);
         $ch = curl_init($url);
@@ -203,7 +203,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/customers.json?email='.$customerEmail;
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customers.json?email='.$customerEmail;
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer '.$access_token
@@ -229,7 +229,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/customer.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customer.json';
 
         $data = json_encode($ticketData);
         $ch = curl_init($url);
@@ -265,7 +265,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket-types.json?';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket-types.json?';
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer '.$access_token
@@ -291,7 +291,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/'.$ticketId.'/threads.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -317,7 +317,7 @@ class TicketManager
         $company_domain = $this->_helperData->getCompanyDomainName();
         $str = '';
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/'.$ticketIncrementId.'.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketIncrementId.'.json';
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -339,16 +339,12 @@ class TicketManager
     }
 
     public function addReplyToTicket($ticketId,$ticketIncrementId ,$data){
-        // echo $email;die; 
 
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // ticket url 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/'.$ticketId.'/threads.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
         $data = json_encode($data);
-        // echo "<pre>";
-        // print_r($data);
-        // die;
         $ch = curl_init($url);
         $headers = [
             'Authorization: Bearer '.$access_token,
@@ -385,7 +381,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/api/ticket/attachment/'.$attachmenId.'.json ';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/attachment/'.$attachmenId.'.json ';
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,
@@ -411,7 +407,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         // Return  tickets 
-        $url = 'http://'.$company_domain.'.voipkul.com/en/ /api/ticket/4802/trash.json';
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/ /api/ticket/4802/trash.json';
         $ch = curl_init($url);
         $headers = array(
         'Authorization: Bearer '.$access_token,

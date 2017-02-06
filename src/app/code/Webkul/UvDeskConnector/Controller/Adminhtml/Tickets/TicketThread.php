@@ -44,9 +44,15 @@ class TicketThread extends \Magento\Backend\App\Action
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
+        // $actAsType = 'customer'; 
         if (isset($post['addReply']) &&  $post['addReply'] ==  1 ) {
+            $data = ["threadType"=>"reply", "reply"=>$reply, "status"=>"1"];
+            // $email = $this->_ticketHelper->getLoggedInUserDetail()['email'];
+            // if ($email) {
+            //     $data["actAsEmail"]=$email;
+            // }
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $reply);
+            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $data);
             $resultRedirect->setPath(
                 'uvdeskcon/tickets/ticketthread/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]
             );

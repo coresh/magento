@@ -1,17 +1,17 @@
 <?php 
- 	$ticketThread = $block->getTicketThread();
- 	$ticketData   = $block->getSingleTicketData();
+  $ticketThread = $block->getTicketThread();
+  $ticketData   = $block->getSingleTicketData();
 ?>
 <div class="container-fluid">
             <div class="col-sm-3">
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Labels</h3></div>
         <div class="panel-body" id="uvdesk_backend_ticket_thread_panel">
-	        <?php foreach ($block->getAllTickets()['labels']['predefind'] as $key => $value) { ?>
-	            <a href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' style="color: #555;"><?php echo ucfirst($key); ?> <span class="label label-success"> <?php echo $value; ?></span>
-	            </a>
-	            <br>
-	        <?php } ?>
+          <?php foreach ($block->getAllTickets()['labels']['predefind'] as $key => $value) { ?>
+              <a href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' style="color: #555;"><?php echo ucfirst($key); ?> <span class="label label-success"> <?php echo $value; ?></span>
+              </a>
+              <br>
+          <?php } ?>
         </div>
 
       </div>
@@ -72,47 +72,50 @@
 
 <div class="ticket-thread">
 <?php foreach(array_reverse($ticketThread['threads']) as $key=>$value){?>
-	<div class="thread">
-		<div class="col-sm-12 thread-created-info text-center">
-			<span class="info">      
-				<span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span> <?php echo $value['user']['detail']['customer']['name'];?> replied
-			</span>    
-			<span class="text-right date pull-right"><?php echo $value['formatedCreatedAt'];?>  
-			</span>  
-		</div>  
-		<div class="col-sm-12">    
-			<div class="pull-left">      
-				<span class="round-tabs">        
+  <div class="thread">
+    <div class="col-sm-12 thread-created-info text-center">
+      <span class="info">      
+        <span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span> 
+        <?php
+          echo $value['user']['detail'][$value['userType']]['name'];
+        ?> replied
+      </span>    
+      <span class="text-right date pull-right"><?php echo $value['formatedCreatedAt'];?>  
+      </span>  
+    </div>  
+    <div class="col-sm-12">    
+      <div class="pull-left">      
+        <span class="round-tabs">        
         <?php if(empty($value['user']['smallThumbnail'])) { ?>
           <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
         <?php } else {?>
           <img src="<?php echo $value['user']['smallThumbnail'];?>">
         <?php } ?>  
-				</span>    
-			</div>    
-			<div class="thread-body">      
-				<div class="thread-info">        
-					<div class="thread-info-row first">          
-						<span class="cust-name">              
-							<strong><?php echo $value['user']['detail']['customer']['name'];?></strong>          
-						</span>          
-						<label class="user-type customer label label-info"><?php echo $value['userType'];?></label>        
-					</div>        
-					<div class="thread-info-row">        
-					</div>      
-				</div>      
-				<div class="reply">        
-					<div class="main-reply"><?php echo $value['reply'];?>
-			</div>  
-		</div>
-		<div class="attachments">
-		<?php foreach($value['attachments'] as $key=>$attachment){ ?>
-			<a href="<?php echo $block->getUrl('uvdeskcon/tickets/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment">
-				<i class="fa fa-download"></i>
-			</a>
-		<?php } ?>
-		</div>
-	</div>
+        </span>    
+      </div>    
+      <div class="thread-body">      
+        <div class="thread-info">        
+          <div class="thread-info-row first">          
+            <span class="cust-name">              
+              <strong><?php echo $value['user']['detail'][$value['userType']]['name'];?></strong>          
+            </span>          
+            <label class="user-type customer label label-info"><?php echo $value['userType'];?></label>        
+          </div>        
+          <div class="thread-info-row">        
+          </div>      
+        </div>      
+        <div class="reply">        
+          <div class="main-reply"><?php echo $value['reply'];?>
+      </div>  
+    </div>
+    <div class="attachments">
+    <?php foreach($value['attachments'] as $key=>$attachment){ ?>
+      <a href="<?php echo $block->getUrl('uvdeskcon/tickets/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment">
+        <i class="fa fa-download"></i>
+      </a>
+    <?php } ?>
+    </div>
+  </div>
 </div>
 </div>
 <hr>
@@ -131,35 +134,35 @@
             <form action="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread') ?>addReply/1" method="post">
               <div class="reply border-none">
               <?php echo $block->getBlockHtml('formkey')?>
-  					<textarea name="product[description]" class="required-entry input-text" id="custom_wysiwyg" rows="5" cols="75" ></textarea>							
-				    <script>
-						require([
-						    'jquery',
-						    'mage/adminhtml/wysiwyg/tiny_mce/setup'
-						], function(jQuery){
+            <textarea name="product[description]" class="required-entry input-text" id="custom_wysiwyg" rows="5" cols="75" ></textarea>             
+            <script>
+            require([
+                'jquery',
+                'mage/adminhtml/wysiwyg/tiny_mce/setup'
+            ], function(jQuery){
 
-						   tinyMCE.init({
-						    mode : "exact",
-						    elements: "custom_wysiwyg",
-						    theme : "advanced",
-						    plugins : "inlinepopups,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras",
-						    theme_advanced_buttons1 : "newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontselect,fontsizeselect",
-						    theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
-						    theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
-						    theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,|,visualchars,nonbreaking",
-						    theme_advanced_toolbar_location : "top",
-						    theme_advanced_toolbar_align : "left",
-						    theme_advanced_path_location : "bottom",
-						    extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
-						    theme_advanced_resize_horizontal : 'true',
-						    theme_advanced_resizing : 'true',
-						    apply_source_formatting : 'true',
-						    convert_urls : 'false',
-						    force_br_newlines : 'true',
-						    doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
-						  });
-						});
-						</script>
+               tinyMCE.init({
+                mode : "exact",
+                elements: "custom_wysiwyg",
+                theme : "advanced",
+                plugins : "inlinepopups,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras",
+                theme_advanced_buttons1 : "newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontselect,fontsizeselect",
+                theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+                theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+                theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,|,visualchars,nonbreaking",
+                theme_advanced_toolbar_location : "top",
+                theme_advanced_toolbar_align : "left",
+                theme_advanced_path_location : "bottom",
+                extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+                theme_advanced_resize_horizontal : 'true',
+                theme_advanced_resizing : 'true',
+                apply_source_formatting : 'true',
+                convert_urls : 'false',
+                force_br_newlines : 'true',
+                doctype : '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
+              });
+            });
+            </script>
                 <input name="ticket_id" value="<?php echo $ticketData['ticket']['id']?>" type="hidden">
                 <input name="incremet_id" value="<?php echo $ticketData['ticket']['incrementId']?>" type="hidden">
                 <div class="ff">
