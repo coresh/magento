@@ -17,19 +17,19 @@ use  Magento\Framework\Controller\ResultFactory;
 
 class TicketThread extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
    /**
      * @param \Magento\Backend\App\Action\Context         $context
      * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
      * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-     */      
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) 
+    )
     {
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
@@ -45,7 +45,7 @@ class TicketThread extends \Magento\Backend\App\Action
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
-        // $actAsType = 'customer'; 
+        // $actAsType = 'customer';
         if (isset($post['addReply']) &&  $post['addReply'] ==  1) {
             $lineEnd = "\r\n";
             $mime_boundary = md5(time());

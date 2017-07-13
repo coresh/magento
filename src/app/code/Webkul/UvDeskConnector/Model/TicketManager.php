@@ -11,7 +11,7 @@
 namespace Webkul\UvDeskConnector\Model;
 
 class TicketManager
-{ 
+{
     public function __construct(
         \Webkul\UvDeskConnector\Helper\Data $helperData,
         \Magento\Framework\Message\ManagerInterface $messageManager,
@@ -33,7 +33,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$label;
         $ch = curl_init($url);
         $headers = array(
@@ -55,7 +55,7 @@ class TicketManager
         } elseif ($info['http_code'] == 500 || $info['http_code'] == 0) {
             $this->_messageManager->addError(__('Invalid credentials !'));
             return ['error'=>'true'];
-        } 
+        }
         curl_close($ch);
     }
 
@@ -102,7 +102,7 @@ class TicketManager
         if (isset($labels)) {
             $str=$labels.$str;
         }
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$str;
         $ch = curl_init($url);
         $headers = array(
@@ -120,7 +120,7 @@ class TicketManager
             return json_decode($response);
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -133,7 +133,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/filters.json?'.$filterType.'=1';
         $ch = curl_init($url);
         $headers = array(
@@ -152,7 +152,7 @@ class TicketManager
             return json_decode($response);
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -161,11 +161,11 @@ class TicketManager
      *
      * @return String.
      */
-    public function createTicket($ticketData) 
+    public function createTicket($ticketData)
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
         $data = json_encode($ticketData);
         $ch = curl_init($url);
@@ -193,7 +193,7 @@ class TicketManager
                     $customerUvDeskId = $customerUvDeskData['customers'][0]['id'];
                     $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
                 }
-            }   
+            }
             return true;
         } elseif ($info['http_code'] == 400) {
             $this->_messageManager->addError(__(' Error, request data not valid. (http-code: 400).'));
@@ -214,7 +214,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customers.json?email='.$customerEmail;
         $ch = curl_init($url);
         $headers = [
@@ -233,7 +233,7 @@ class TicketManager
         } elseif ($info['http_code'] == 400) {
             return "";
         }
-        curl_close($ch); 
+        curl_close($ch);
     }
 
     /**
@@ -245,7 +245,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customer.json';
         $data = json_encode($ticketData);
         $ch = curl_init($url);
@@ -273,7 +273,7 @@ class TicketManager
         } else {
             $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
         }
-        curl_close($ch); 
+        curl_close($ch);
     }
 
     /**
@@ -285,7 +285,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket-types.json?';
         $ch = curl_init($url);
         $headers = [
@@ -304,7 +304,7 @@ class TicketManager
         } elseif ($info['http_code'] == 400) {
             return "";
         }
-        curl_close($ch); 
+        curl_close($ch);
     }
 
     /**
@@ -316,7 +316,7 @@ class TicketManager
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // Return  tickets 
+        // Return  tickets
         $str = "";
         if (isset($pageNo)) {
             $str.='page='.$pageNo;
@@ -341,7 +341,7 @@ class TicketManager
             return json_decode($response,true);
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -354,7 +354,7 @@ class TicketManager
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
         $str = '';
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketIncrementId.'.json';
         $ch = curl_init($url);
         $headers = array(
@@ -372,7 +372,7 @@ class TicketManager
             return json_decode($response, true);
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -385,7 +385,7 @@ class TicketManager
 
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
         $data = json_encode($data);
         $ch = curl_init($url);
@@ -414,21 +414,21 @@ class TicketManager
             return false;
         } else {
             $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
-            return false; 
+            return false;
         }
-        curl_close($ch); 
+        curl_close($ch);
     }
 
     /**
      * Curl request to add a reply to a tickets in UvDesk.
      *
      * @return  String.
-     */      
+     */
     public function addReplyToTicket($ticketId,$ticketIncrementId ,$data,$mime_boundary)
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url 
+        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
         $data = $data;
          $headers = array(
@@ -463,7 +463,7 @@ class TicketManager
             return false;
         } else {
             $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
-            return false; 
+            return false;
         }
         curl_close($ch);
     }
@@ -472,12 +472,12 @@ class TicketManager
      * Curl request to download the attachment of a ticket in UvDesk.
      *
      * @return  Json.
-     */  
+     */
     public function downloadAttachment($attachmenId)
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/attachment/'.$attachmenId.'.json';
         $ch = curl_init($url);
         $headers = array(
@@ -496,7 +496,7 @@ class TicketManager
             return ['response'=>$response,'info'=>$info]    ;
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -504,12 +504,12 @@ class TicketManager
      * Curl request to delete the tickets in UvDesk.
      *
      * @return  String.
-     */  
+     */
     public function trashTicket()
     {
         $access_token = $this->_helperData->getAccessToken();
         $company_domain = $this->_helperData->getCompanyDomainName();
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/ /api/ticket/4802/trash.json';
         $ch = curl_init($url);
         $headers = array(
@@ -528,15 +528,15 @@ class TicketManager
             return ['response'=>$response,'info'=>$info]    ;
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
-    } 
+    }
 
     /**
      * Curl request to change the agent of a ticket in UvDesk.
      *
      * @return  String.
-     */  
+     */
     public function assignAgentToTicket($ticketId,$agentId)
     {
         $access_token = $this->_helperData->getAccessToken();
@@ -561,7 +561,7 @@ class TicketManager
             return ['response'=>$response,'info'=>$info]    ;
         } else {
             return false;
-        } 
+        }
         curl_close($ch);
     }
 
@@ -569,7 +569,7 @@ class TicketManager
      * Curl request to delete the tickets in UvDesk.
      *
      * @return  String.
-     */      
+     */
     public function deleteTicket($ticketIds)
     {
         $access_token = $this->_helperData->getAccessToken();
@@ -596,6 +596,6 @@ class TicketManager
             return ['response'=>true];
         } else {
             return ['response'=>false];
-        } 
-    }  
+        }
+    }
 }
