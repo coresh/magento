@@ -21,16 +21,20 @@ class DownloadAttachment extends \Magento\Backend\App\Action
 
     /**
      * @param \Magento\Backend\App\Action\Context              $context
+     * @param \Magento\Framework\App\Response\Http\FileFactory $fileFactory
+     * @param \Magento\Framework\Controller\Result\RawFactory  $resultRawFactory
      * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Response\Http\FileFactory $fileFactory,
+        \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) 
     {
         parent::__construct($context);
         $this->_ticketManager        = $ticketManager;
+        $this->resultRawFactory      = $resultRawFactory;
     }
 
     public function execute()
@@ -42,7 +46,9 @@ class DownloadAttachment extends \Magento\Backend\App\Action
       header('Content-Type: '.$file['info']['content_type']); 
       header('Content-Length: ' . strlen($file['response']));
       header('Connection: close');
-      echo $file['response'];
+      $resultRaw = $this->resultRawFactory->create();
+      $resultRaw->setContents($file['response']); //set content for download file here
+      return $resultRaw;
     }
 
     /*
@@ -50,6 +56,6 @@ class DownloadAttachment extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
+        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets');
     }
 }

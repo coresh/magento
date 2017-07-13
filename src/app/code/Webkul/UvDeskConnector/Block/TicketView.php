@@ -13,12 +13,12 @@ namespace Webkul\UvDeskConnector\Block;
 
 class TicketView extends \Magento\Framework\View\Element\Template
 {
-
     /**
      * [__construct description]
-     * @param \Magento\Framework\View\Element\Template\Context $context [description]
-     * @param \Webkul\LoginForm\Model\NewsFactory              $model   [description]
-     * @param array                                            $data    [description]
+     * @param \Magento\Framework\View\Element\Template\Context $context       [description]
+     * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketHelper  [description]
+     * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager [description]
+     * @param array                                            $data          [description]
      */
 	public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -34,13 +34,12 @@ class TicketView extends \Magento\Framework\View\Element\Template
     public function getLoggedInUserDetail(){
         $customerDetal = $this->_ticketHelper->getLoggedInUserDetail();
         return $customerDetal;
-
     }
 
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId);
+        $threads = $this->_ticketManager->getTicketThread($ticketId,null);
         return $threads;   
     }
 

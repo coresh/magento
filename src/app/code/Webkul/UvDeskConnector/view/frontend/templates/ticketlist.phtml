@@ -1,11 +1,22 @@
+<!--
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul 
+ * @package   Webkul_UvDeskConnector
+ * @author    Webkul Software Private Limited
+ * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+-->
 <?php 
   $customerDetail = $block->getTicketsAccToCustomer();
   $ticketTypes = $block->getTicketsTypes();
 ?> 
 <div class="panell panel-default">
   <div class="panel-heading uvhead">
-        <h3 class="panel-title pull-left">Ticket List</h3>
-        <button id="uvdesk_create_ticket">Create Ticket</button>
+        <h3 class="panel-title pull-left"><?php /* @escapeNotVerified */ echo __('Ticket List') ?></h3>
+        <button id="uvdesk_create_ticket"><?php /* @escapeNotVerified */ echo __('Create Ticket') ?></button>
   </div>
   <div class="panel-body">
     <div class="table table-bordered table-hover">
@@ -36,7 +47,7 @@
             <?php } ?>
           <?php } else { ?>
             <tr>
-              <td colspan=6 style="text-align:center;vertical-align:middle;">No Ticket Found</td>
+              <td colspan=6 style="text-align:center;vertical-align:middle;"><?php /* @escapeNotVerified */ echo __('No Ticket Found') ?></td>
             </tr>
           <?php } ?>  
         </tbody>
@@ -58,10 +69,10 @@
                 <div class="panel-body">
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal" id="uvdeskconnector-frontend-form" data-mage-init='{"validation":{}}'>
                     <div class="form-group required">
-                        <label for="input-type">Type</label>
+                        <label for="input-type"><?php /* @escapeNotVerified */ echo __('Type') ?></label>
                         <br>
                         <select name="type" id="type" class="form-control" style="margin-bottom: 10px;" data-validate="{required:true}">
-                         <option value="">Select type</option>
+                         <option value=""><?php /* @escapeNotVerified */ echo __('Select type') ?></option>
                         <?php if(!empty($ticketTypes['types'])) { ?>
                             <?php foreach($ticketTypes['types'] as $key => $value) { ?>
                                 <?php if($value['isActive']) { ?>
@@ -72,7 +83,7 @@
                         </select>
                     </div>
                     <div class="form-group required">
-                        <label for="input-subject" class="">Subject</label>
+                        <label for="input-subject" class=""><?php /* @escapeNotVerified */ echo __('Subject') ?></label>
                         <br>
                         <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter Subject" value="" style="
                         margin-bottom: 10px;" data-validate="{required:true}">
@@ -135,12 +146,12 @@
                                     $("#wait").css("display", "block");
                                 },
                                 complete: function(){
-                                    $("#wait").css("display", "none");
+                                    $("#wait .popup-loading .popup-inner").find('img').remove();
                                 },
                                 success: function($data){
-                                    if($data){
+                                    // if($data){
                                         location.reload(false);
-                                    }                                                        
+                                    // }                                                        
                                 }
                             });
                         } //handler on button click
@@ -174,6 +185,7 @@
                             $("#wait").css("display", "block");
                         },
                         complete: function(){
+                            // $("#wait .popup-loading .popup-inner").find('img').remove();
                             $("#wait").css("display", "none");
                         },
                         success: function($data){

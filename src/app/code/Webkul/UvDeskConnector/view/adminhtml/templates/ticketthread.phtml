@@ -1,11 +1,30 @@
+<!--
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul 
+ * @package   Webkul_UvDeskConnector
+ * @author    Webkul Software Private Limited
+ * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+-->
 <?php 
- 	$ticketThread = $block->getTicketThread();
- 	$ticketData   = $block->getSingleTicketData();
+  $ticketId = $this->getRequest()->getParam('id');
+  $ticketThread = $block->getTicketThread();
+ 	$ticketThreadTotalCount = $ticketThread['pagination']['totalCount'];
+  $expandButtonLabel = "All Expanded";
+  if ($ticketThreadTotalCount>10) {
+    $expandButtonCount = $ticketThreadTotalCount - 10;
+    $expandButtonLabel = "Expand ".$expandButtonCount." More...";
+  }
+  $nextPageNo = $ticketThread['pagination']['next'] ?? 0; 
+ 	$ticketData = $block->getSingleTicketData();
 ?>
 <div class="container-fluid">
             <div class="col-sm-3">
       <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">Labels</h3></div>
+        <div class="panel-heading"><h3 class="panel-title"><?php /* @escapeNotVerified */ echo __('Labels') ?></h3></div>
         <div class="panel-body" id="uvdesk_backend_ticket_thread_panel">
 	        <?php foreach ($block->getAllTickets()['labels']['predefind'] as $key => $value) { ?>
 	            <a href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' style="color: #555;"><?php echo ucfirst($key); ?> <span class="label label-success"> <?php echo $value; ?></span>
@@ -32,8 +51,9 @@
       </div>
       <div class="thread">
         <div class="col-sm-12 thread-created-info text-center">
-          <span class="info">
-         <?php echo $ticketData['ticket']['customer']['detail']['customer']['name'];?> created a ticket </span>
+          <span class="info" style="background-color: #3c5794;color: white;padding: 6px;border-radius: 10px;">
+            <?php echo $ticketData['ticket']['customer']['detail']['customer']['name'];?> <?php /* @escapeNotVerified */ echo __('created a ticket') ?> 
+          </span>
           <span class="text-right date pull-right">
             <?php echo $ticketData['ticket']['formatedCreatedAt'];?></span>
         </div>
@@ -59,14 +79,14 @@
           <div class="thread-body">
             <div class="reply border-none">
               <div class="main-reply">
-                <?php echo $ticketData['createThread']['reply'];?>.<br>
+                <?php echo $ticketData['createThread']['reply'];?><br>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="text-center expand-div">
-        <button class="btn btn-primary" id="button-load">All Expanded</button>
+        <button class="btn btn-primary" id="button-load" data-next-page = "<?php echo $nextPageNo ;?>"><?php echo $expandButtonLabel ; ?></button>
         <span class="loader-border"></span>
       </div>
 
@@ -75,7 +95,10 @@
 	<div class="thread">
 		<div class="col-sm-12 thread-created-info text-center">
 			<span class="info">      
-				<span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span> <?php echo $value['user']['detail']['customer']['name'];?> replied
+				<span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span> 
+        <?php
+          echo $value['user']['detail'][$value['userType']]['name'];
+        ?> replied
 			</span>    
 			<span class="text-right date pull-right"><?php echo $value['formatedCreatedAt'];?>  
 			</span>  
@@ -94,7 +117,7 @@
 				<div class="thread-info">        
 					<div class="thread-info-row first">          
 						<span class="cust-name">              
-							<strong><?php echo $value['user']['detail']['customer']['name'];?></strong>          
+							<strong><?php echo $value['user']['detail'][$value['userType']]['name'];?></strong>          
 						</span>          
 						<label class="user-type customer label label-info"><?php echo $value['userType'];?></label>        
 					</div>        
@@ -121,23 +144,26 @@
 <div class="col-sm-12">
         <div class="pull-left">
           <span class="round-tabs">
-            <img src="<?php echo $ticketData['ticket']['agent']['smallThumbnail']; ?>">            
+            <?php if(empty($ticketData['ticket']['agent']['smallThumbnail'])) { ?>
+              <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
+            <?php } else {?>
+              <img src="<?php echo $ticketData['ticket']['agent']['smallThumbnail'];?>">
+            <?php } ?>
           </span>
         </div>
         <span class="userName"><?php echo $ticketData['ticket']['agent']['detail']['agent']['name'];?></span>
         <div class="thread-body">
           <div class="thread-info">
             <!-- <br><br> -->
-            <form action="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread') ?>addReply/1" method="post">
+            <form action="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread') ?>addReply/1" method="post" data-mage-init='{"validation":{}}' enctype="multipart/form-data">
               <div class="reply border-none">
               <?php echo $block->getBlockHtml('formkey')?>
-  					<textarea name="product[description]" class="required-entry input-text" id="custom_wysiwyg" rows="5" cols="75" ></textarea>							
+  					<textarea name="product[description]" class="required-entry input-text" id="custom_wysiwyg" rows="5" cols="75" data-validate="{required:true}"></textarea>							
 				    <script>
 						require([
 						    'jquery',
 						    'mage/adminhtml/wysiwyg/tiny_mce/setup'
 						], function(jQuery){
-
 						   tinyMCE.init({
 						    mode : "exact",
 						    elements: "custom_wysiwyg",
@@ -178,14 +204,23 @@
   </div>
 </div>
 </div>
+<div id="wait" class="loadingg-mask" data-role="loader" style="display: none;">
+    <div class="popupp popupp-loading">
+      <div class="popupp-inner">
+        <img alt="Loading..." src="<?php echo $block->getViewFileUrl('Webkul_UvDeskConnector::images/aa1b406.gif'); ?>"/>
+        <br>
+      </div>
+  </div>
+</div>
 <script type="text/javascript">
     require(
         [
-            'jquery',
-            'mage/template',
-            'mage/loader'
+          'jquery',
+          'mage/template',
+          'mage/loader'
         ],function($, template){
             $(document).ready(function(){
+              var expandButton  = $('#button-load');
                 var x;
                 $('#addFile').on('click',function(){
                   var employee = "";
@@ -220,7 +255,59 @@
                   } else {
                     preview.src = "";
                   }
-                });          
+                });
+
+                expandButton.on('click',function(){
+                    var nextPageNo = expandButton.data("nextPage");
+                    if (nextPageNo) {
+                    var parameter =  "<?php echo 'ticketId/'.$ticketId.'/pageNo/';?>"+nextPageNo;
+                      $.ajax({
+                          url:"<?php echo $block->getUrl('uvdeskcon/tickets/getTicketThread')?>"+parameter,
+                          type:"GET",
+                          dataType:"json",
+                          beforeSend:function(){
+                              $("#wait").css("display", "block");
+                          },
+                          complete: function(){
+                              $("#wait").css("display", "none");
+                          },
+                          success: function($data){
+                              var employee="";
+                              var employeTab=""
+                              var ticketPagination=""
+                              $.each($data['ticket_thread']['thread'], function() {
+                                  var employeeTemplate = template('#ticket-thread-template');
+                                  employee += employeeTemplate({
+                                                  data: {
+                                                    id:this['id'],
+                                                    name:this['name'],
+                                                    userSmallThumbNail:this['userSmallThumbNail'],
+                                                    customerDetail:this['customerDetail'],
+                                                    userType:this['userType'],
+                                                    reply:this['reply'],
+                                                    formatedCreatedAt:this['formatedCreatedAt']
+                                                  }
+                                  });
+                                  employee +="<hr>";
+                              });
+                              $('.ticket-thread').append(employee); 
+                                  if ($data['ticket_thread']['pagination']['currentPage'] == $data['ticket_thread']['pagination']['lastPage']) {
+                                    expandButton.data('nextPage',0);
+                                    expandButton.text('All Expanded');
+                                    expandButton.unbind( "click" );
+                                  } else {
+                                    expandButton.data("nextPage",$data['ticket_thread']['pagination']['next']);
+                                    var noOfThreadsRemaining = $data['ticket_thread']['pagination']['totalCount'] - ($data['ticket_thread']['pagination']['currentPage'] * $data['ticket_thread']['pagination']['numItemsPerPage']);
+                                    expandButton.text('Expand'+" "+noOfThreadsRemaining+" "+'More...');
+                                  }
+                          }
+                      });
+                    }else{
+                      expandButton.data('nextPage',0);
+                      expandButton.text('All Expanded');
+                      expandButton.unbind( "click" );
+                  }
+                });        
             });
         });
 </script>
@@ -232,4 +319,44 @@
     </span>
     <input name="attachment[]" class="fileUpload" type="file">
   </div>
+</script>
+
+<script id="ticket-thread-template" type="text/x-magento-template">
+   <div class="thread">
+    <div class="col-sm-12 thread-created-info text-center">
+      <span class="info">      
+        <span id="thread<%- data.id %>" class="copy-thread-link">#<%- data.id %></span> 
+        <%- data.name %> replied
+      </span>    
+      <span class="text-right date pull-right"><%- data.formatedCreatedAt %>  
+      </span>  
+    </div>  
+    <div class="col-sm-12">    
+      <div class="pull-left">      
+        <span class="round-tabs">        
+        <% if(data.userSmallThumbNail == null) {%>
+          <img src="https://cdn.uvdesk.com/uvdesk/images/d94332c.png"/>
+        <% } else { %>
+          <img src="<%- data.userSmallThumbNail %>">
+        <% } %>
+        </span>    
+      </div>    
+      <div class="thread-body">      
+        <div class="thread-info">        
+          <div class="thread-info-row first">          
+            <span class="cust-name">              
+              <strong><%- data.customerDetail %></strong>          
+            </span>          
+            <label class="user-type customer label label-info"><%- data.userType %></label>        
+          </div>        
+          <div class="thread-info-row">        
+          </div>      
+        </div>      
+        <div class="reply">        
+          <div class="main-reply"><%- data.reply %>
+      </div>  
+    </div>
+  </div>
+</div>
+</div> 
 </script>

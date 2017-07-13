@@ -16,7 +16,6 @@ use Magento\Framework\App\RequestInterface;
  
 class AfterCustomerLoggedIn implements ObserverInterface
 {
-
     /** @var Magento\Framework\App\RequestInterface */
     protected $_request;
 
@@ -27,14 +26,15 @@ class AfterCustomerLoggedIn implements ObserverInterface
     protected $_ticketManager;
 
     /**
-     * @param \Psr\Log\LoggerInterface        $loggerInterface  
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param RequestInterface                $requestInterface
+     * @param \Psr\Log\LoggerInterface                    $loggerInterface
+     * @param \Magento\Customer\Model\Session             $customerSession
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     * @param RequestInterface                            $requestInterface
      */
     public function __construct(
         \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Customer\Model\Session $customerSession,
-        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager, 
+        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         RequestInterface $requestInterface
     ) {
         $this->_logger = $loggerInterface;

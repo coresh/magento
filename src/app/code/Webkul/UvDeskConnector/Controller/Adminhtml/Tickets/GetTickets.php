@@ -83,12 +83,11 @@ class GetTickets extends \Magento\Backend\App\Action
 
     }
     
-
     /*
      * Check permission via ACL resource
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
+        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets');
     }
 }

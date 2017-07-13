@@ -74,10 +74,11 @@ class Tickets extends \Magento\Backend\Block\Template
     public function labelParamater(){
         return $this->getRequest()->getParam('labels');
     }
-        public function getTicketThread()
+    
+    public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId);
+        $threads = $this->_ticketManager->getTicketThread($ticketId,null);
         return $threads;   
     }
 

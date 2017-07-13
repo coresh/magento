@@ -26,8 +26,10 @@ class Index extends Action
     protected $_resultPageFactory;
 
     /**
-     * @param Context     $context
-     * @param PageFactory $resultPageFactory
+     * @param Context                                     $context
+     * @param PageFactory                                 $resultPageFactory
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     * @param \Webkul\UvDeskConnector\Helper\Tickets      $ticketHelper
      */
     public function __construct(
         Context $context,
@@ -64,7 +66,7 @@ class Index extends Action
                 $data["actAsEmail"]=$email;
             }
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $data);
+            $response = $this->_ticketManager->addReplyToTickett($ticketId, $tickeIncrementId, $data);
             $resultRedirect->setPath(
                 'uvdeskcon/ticketview/index/', ['id' => $ticketId,'increment_id'=>$tickeIncrementId]
             );

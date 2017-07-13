@@ -16,7 +16,6 @@ use \Magento\Framework\App\Helper\AbstractHelper;
 /**
  * UvDeskConnector tickets helper.
  */
-
 class Tickets extends AbstractHelper
 {
     /**
@@ -30,34 +29,43 @@ class Tickets extends AbstractHelper
     protected $_resourceConfig;
 
     /**
-     * @param Magento\Framework\App\Helper\Context       $context
-     * @param \Magento\Framework\Json\Helper\Data        $jsonHelper
-     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
-     * @param Connection                                 $connection
-     * @param Logger                                     $logger
+     * @param Magento\Framework\App\Helper\Context        $context
+     * @param \Magento\Framework\Json\Helper\Data         $jsonHelper
+     * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
+     * @param Connection                                  $connection
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
-        \Magento\Customer\Model\Session $customerSession
+        \Magento\Customer\Model\Session $customerSession,
+        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) 
     {
-    
         $this->_json = $jsonHelper;
         $this->_resourceConfig = $resourceConfig;
         $this->_customerSession = $customerSession;
+        $this->_ticketManager = $ticketManager;
         parent::__construct($context);
     }
 
+    /**
+     * Return the ticket data after formatting it with proper key value pair.
+     *
+     * @return Array.
+     */
     public function formatData($tickets=[]) 
     {
         $paginationData = [];
         $ticketData = [];
+        $ticketThreadData = [];
+        $ticketThreadPaginationData = [];
         $tabData = [];
         $data = [];
+        $allAgent = $this->_ticketManager->getFilterDataFor('agent');
         $tickets = json_decode(json_encode($tickets), true);
-        if (!empty($tickets['tickets'])) {
+        if (isset($tickets['tickets']) && !empty($tickets['tickets'])) {
             foreach ($tickets['tickets'] as $ticket) {
                     $temp['priority'] = $ticket['priority']['name'];
                     $temp['priority_color'] = $ticket['priority']['color'];
@@ -68,11 +76,13 @@ class Tickets extends AbstractHelper
                     $temp['creation_date'] = $ticket['formatedCreatedAt'];
                     $temp['replies'] = $ticket['totalThreads'];
                     $temp['agent'] = $ticket['agent']['name'];
+                    // $allAgent[] = $ticket['agent']['name'];
                     $ticketData[] = $temp;
                     $temp = [];
             }
+            // $ticketData['allAgent'] = $allAgent;
         }
-        if (!empty($tickets['status'])) {
+        if (isset($tickets['status']) && !empty($tickets['status'])) {
             foreach ($tickets['status'] as $status) {
                     $temp['tab_name'] = $status['name'];
                     $temp['tab_id'] = $status['id'];
@@ -81,7 +91,7 @@ class Tickets extends AbstractHelper
                     $temp = [];
             }
         }
-        if (!empty($tickets['pagination'])) {
+        if (isset($tickets['pagination']) && !empty($tickets['pagination'])) {
             foreach ($tickets['pagination']['pagesInRange'] as $page) {
                 if ($tickets['pagination']['pageCount']>1) {
                     $temp['page_no'] = $page;
@@ -89,20 +99,44 @@ class Tickets extends AbstractHelper
                     $temp = [];
                 }
             }
+        }
+        if (isset($tickets['threads']) && !empty($tickets['threads'])) {
+            foreach ($tickets['threads'] as $thread) {
+                        $temp['id'] = $thread['id'];
+                        $temp['name'] = $thread['user']['detail'][$thread['userType']]['name'];
+                        $temp['userSmallThumbNail'] = $thread['user']['smallThumbnail'];
+                        $temp['customerDetail'] = $thread['user']['detail'][$thread['userType']]['name']; 
+                        $temp['userType'] = $thread['userType'];
+                        $temp['reply'] = $thread['reply'];
+                        $temp['formatedCreatedAt'] = $thread['formatedCreatedAt'];
+                        $ticketThreadData[] = $temp;
+                        $temp = [];
+            }
+            $ticketThreadPaginationData['currentPage'] = $tickets['pagination']['current'];
+            $ticketThreadPaginationData['lastPage'] = $tickets['pagination']['last'];
+            $ticketThreadPaginationData['next'] = $tickets['pagination']['next'] ?? 0;
+            $ticketThreadPaginationData['numItemsPerPage'] = $tickets['pagination']['numItemsPerPage']; 
+            $ticketThreadPaginationData['totalCount'] = $tickets['pagination']['totalCount']; 
+
         }        
         $data['ticket_data'] = $ticketData;
         $data['tab_data'] = $tabData;
         $data['pagination_data'] = $paginationData;
+        $data['agent-information'] = $allAgent;
+        $data['ticket_thread']['thread'] = $ticketThreadData;
+        $data['ticket_thread']['pagination'] = $ticketThreadPaginationData;
         return $data ;
     }
 
-    public function formatParameter($parameter)
-    {
-    }
-
+    /**
+     * Return the logged in user details.
+     *
+     * @return Array.
+     */
     public function getLoggedInUserDetail()
     {
         $customerDetal = [];
+        $customerDetal['entity_id'] = $this->_customerSession->getCustomer()->getEntityId();
         $customerDetal['email'] = $this->_customerSession->getCustomer()->getEmail();
         $customerDetal['name'] = $this->_customerSession->getCustomer()->getName();
         return $customerDetal;

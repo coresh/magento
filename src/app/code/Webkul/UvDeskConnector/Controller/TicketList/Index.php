@@ -9,10 +9,10 @@
  * @license   https://store.webkul.com/license.html
  */
 namespace Webkul\UvDeskConnector\Controller\TicketList;
-
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\App\RequestInterface;
 
 /**
  * Webkul UvDeskConnector Landing page Index Controller.
@@ -25,8 +25,12 @@ class Index extends Action
     protected $_resultPageFactory;
 
     /**
-     * @param Context     $context
-     * @param PageFactory $resultPageFactory
+     * @param Context                                     $context
+     * @param PageFactory                                 $resultPageFactory
+     * @param \Magento\Customer\Model\Session             $customerSession
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     * @param \Webkul\UvDeskConnector\Helper\Tickets      $ticketsHelper
      */
     public function __construct(
         Context $context,
@@ -43,6 +47,22 @@ class Index extends Action
         $this->_ticketManager = $ticketManager;
         $this->_ticketsHelper = $ticketsHelper;
         parent::__construct($context);
+    }
+
+    /**
+     * Check customer is logged in or not ?
+     *
+     * @param RequestInterface $request
+     * @return \Magento\Framework\App\ResponseInterface
+     */
+    public function dispatch(RequestInterface $request)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+        if (!$customerSession->authenticate()) {
+            $this->_actionFlag->set('', self::FLAG_NO_DISPATCH, true);
+        }
+        return parent::dispatch($request);
     }
 
     /**

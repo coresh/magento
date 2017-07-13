@@ -19,17 +19,23 @@ class Index extends \Magento\Backend\App\Action
     /** @var \Magento\Framework\View\Result\PageFactory */    
     protected $_resultPageFactory;
 
+    /** @var \Webkul\UvDeskConnector\Helper\Data */    
+    protected $_helperData;
+
    /**
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * @param \Webkul\UvDeskConnector\Helper\Data $helperData
      */      
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Webkul\UvDeskConnector\Helper\Data $helperData
     ) 
     {
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
+        $this->_helperData = $helperData;
     }
 
     public function execute()
@@ -44,6 +50,6 @@ class Index extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
+        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets');
     }
 }

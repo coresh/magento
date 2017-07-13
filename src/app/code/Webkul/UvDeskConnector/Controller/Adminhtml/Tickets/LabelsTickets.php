@@ -44,6 +44,6 @@ class LabelsTickets extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets_index');
+        return $this->_authorization->isAllowed('Webkul_UvDeskConnector::tickets');
     }
 }

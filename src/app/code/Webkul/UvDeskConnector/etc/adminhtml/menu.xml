@@ -12,7 +12,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Webkul_UvDeskConnector::uvDeskConnector" title="UvDesk Connector" module="Webkul_UvDeskConnector" sortOrder="50" resource="Webkul_UvDeskConnector::uvDeskConnector" />
-	    <add id="Webkul_UvDeskConnector::tickets" title="Tickets" module="Webkul_UvDeskConnector" sortOrder="50" parent="Webkul_UvDeskConnector::uvDeskConnector" action="uvdeskcon/tickets/index" resource="Webkul_UvDeskConnector::tickets"/>
+        <add id="Webkul_UvDeskConnector::tickets" title="UvDesk Connector" module="Webkul_UvDeskConnector" sortOrder="10" resource="Webkul_UvDeskConnector::tickets" />
+	    <add id="Webkul_UvDeskConnector::tickets_list" title="Tickets" module="Webkul_UvDeskConnector" sortOrder="10" parent="Webkul_UvDeskConnector::tickets" action="uvdeskcon/tickets/index" resource="Webkul_UvDeskConnector::tickets"/>
 	</menu>
 </config>

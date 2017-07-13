@@ -178,3 +178,27 @@ table {
     width: 200px;
     z-index: 1003;
 }
+.loading-old, .loadingg-mask {
+    background: rgba(255,255,255,0.4);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 2003;
+}
+.popupp-loading {
+    /*background: rgba(255,255,255,0.8);*/
+    border-color: #ef672f;
+    color: #ef672f;
+    font-size: 14px;
+    font-weight: bold;
+    left: 50%;
+    margin-left: -100px;
+    padding: 100px 0 10px;
+    position: fixed;
+    text-align: center;
+    top: 40%;
+    width: 200px;
+    z-index: 1003;
+}

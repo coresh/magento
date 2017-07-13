@@ -16,7 +16,7 @@ now module is properly installed
 
 #User Guide
 
-For Magento2 UvDeskConnector UVdesk connector module's working process follow user guide - 
+For Magento2 UvDeskConnector UVdesk connector module's working process follow user guide - http://webkul.com/blog/uvdesk-magento2-free-helpdesk-ticket-system/ 
 
 #Support
 

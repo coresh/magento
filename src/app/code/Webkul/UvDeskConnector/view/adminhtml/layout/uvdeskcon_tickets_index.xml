@@ -13,17 +13,10 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 	<update handle="styles"/>
     <head>
-<!--         <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js" src_type="url"/>
-        <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js" src_type="url"/> -->
-<!--         <script src="Webkul_UvDeskConnector::dataTablesjs.js"/>
-        <script src="Webkul_UvDeskConnector::bootstrapjs.js"/> -->
-<!--         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" src_type="url"/>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" src_type="url"/> -->
         <css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" src_type="url"/>
         <css src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" src_type="url"/>
+        <css src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.css" src_type="url"/>
         <css src="Webkul_UvDeskConnector::css/uvdesk.css"/>        
-        <!-- <css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" src_type="url"/> -->
-        <!-- <css src="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" src_type="url"/> -->
     </head>	
 	<body>
 	    <referenceContainer name="content">

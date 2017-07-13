@@ -13,7 +13,6 @@ namespace Webkul\UvDeskConnector\Block;
 
 class AllTickets extends \Magento\Framework\View\Element\Template
 {
-
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketHelper

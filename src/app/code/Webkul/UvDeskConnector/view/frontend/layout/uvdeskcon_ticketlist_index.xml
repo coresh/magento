@@ -10,25 +10,13 @@
  * @license   https://store.webkul.com/license.html
  */
 -->
-<!-- <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head> -->
-       <!-- for css file -->
-<!--        <css src="Webkul_LoginForm::css/login.css"/> -->
-<!--         <title></title>
-    </head>
-    <body>
-        <referenceContainer name="content">
-            <block class="Webkul\UvDeskConnector\Block\AllTickets" name="uvdeskconnector_block" template="Webkul_UvDeskConnector::ticketlist.phtml" cacheable="false">
-            </block>
-        </referenceContainer>
-    </body>
-</page> -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="customer_account"/>    
     <head>
-<!--         <css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" src_type="url"/>
-        <css src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" src_type="url"/> -->
-        <!-- <css src="Webkul_UvDeskConnector::css/bootstrap.css"/>   -->
+        <title>Ticket List</title>
+        <!--<css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" src_type="url"/>
+        <css src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" src_type="url"/> 
+        <css src="Webkul_UvDeskConnector::css/bootstrap.css"/>   -->
         <css src="Webkul_UvDeskConnector::css/uvdesk.css"/>  
         <css src="Webkul_UvDeskConnector::css/ticket_view.css"/>  
     </head>

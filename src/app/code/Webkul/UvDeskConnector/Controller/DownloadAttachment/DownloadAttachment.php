@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
-namespace Webkul\UvDeskConnector\Controller\TicketList;
+namespace Webkul\UvDeskConnector\Controller\DownloadAttachment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -31,11 +31,13 @@ class DownloadAttachment extends Action
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
+        \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) 
     {
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManager        = $ticketManager;
+        $this->resultRawFactory      = $resultRawFactory;
         parent::__construct($context);
     }
 
@@ -53,6 +55,8 @@ class DownloadAttachment extends Action
       header('Content-Type: '.$file['info']['content_type']); 
       header('Content-Length: ' . strlen($file['response']));
       header('Connection: close');
-      echo $file['response'];
+      $resultRaw = $this->resultRawFactory->create();
+      $resultRaw->setContents($file['response']); //set content for download file here
+      return $resultRaw;
     }
 }

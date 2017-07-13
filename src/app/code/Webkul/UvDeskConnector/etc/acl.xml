@@ -14,7 +14,8 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Webkul_UvDeskConnector::tickets_index" title="Customers Grid" sortOrder="90" />    
+                <resource id="Webkul_UvDeskConnector::tickets" title="UV desk connector" sortOrder="10" >
+                </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">

@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "github"]
+	url = https://github.com/uvdesk/magento.git
+	fetch = +refs/heads/*:refs/remotes/github/*
+[remote "origin"]
+	url = https://192.168.1.210/developer/magento2_uv_desk_connector.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
