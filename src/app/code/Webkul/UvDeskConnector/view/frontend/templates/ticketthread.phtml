@@ -283,6 +283,7 @@
                   reader.onloadend = function () {
                     preview.css('background-image','url(' +reader.result+ ')');
                     preview.css('background-size','cover');
+                    preview.parent().find('label').remove();
                     preview.parent().append(label);
                   }
                   if (file) {
