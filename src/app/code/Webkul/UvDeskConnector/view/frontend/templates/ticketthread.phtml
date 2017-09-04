@@ -18,7 +18,7 @@
     $expandButtonCount = $ticketThreadTotalCount - 10;
     $expandButtonLabel = "Expand ".$expandButtonCount." More...";
   }
-  $nextPageNo = $ticketThread['pagination']['next'] ?? 0;
+  $nextPageNo = isset($ticketThread['pagination']['next']) ? $ticketThread['pagination']['next'] : 0;
  	$ticketData   = $block->getSingleTicketData();
 ?>
 <div class="well well-lg" style="font-size: 201%"><?php /* @escapeNotVerified */ echo __('UVdesk #') ?><?php echo $ticketData['ticket']['incrementId']?> <?php /* @escapeNotVerified */ echo __('Ticket Thread') ?></div>
@@ -278,10 +278,12 @@
                 $(".reply").on('change','input',function(e){
                   var preview = $(this).parent().find("span:first-child");
                   var file    = this.files[0];
+                  var label = "<label>"+file.name+"</label>";
                   var reader  = new FileReader();
                   reader.onloadend = function () {
                     preview.css('background-image','url(' +reader.result+ ')');
                     preview.css('background-size','cover');
+                    preview.parent().append(label);
                   }
                   if (file) {
                     reader.readAsDataURL(file);
