@@ -2,7 +2,7 @@
 /**
  * Webkul Software.
  *
- * @category  Webkul 
+ * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)

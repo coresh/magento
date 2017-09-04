@@ -156,3 +156,11 @@ label {
     width: 200px;
     z-index: 1003;
 }
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.row-from-bootstrap {
+  margin-right: -15px;
+  margin-left: -15px;
+}

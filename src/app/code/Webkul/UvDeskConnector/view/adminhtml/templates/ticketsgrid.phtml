@@ -27,7 +27,7 @@ $type           = $block->getFilterDataFor('type');
 $tag            = $block->getFilterDataFor('tag');
 ?>
 <div class="container-fluid">
-<div class="row">
+<div class="row-from-bootstrap">
   <?php if(!array_key_exists('error', $tickets)) { ?>
     <div class="col-md-3">
         <div class="panel-group">
@@ -135,17 +135,17 @@ $tag            = $block->getFilterDataFor('tag');
     <div id="ticket-list" style="clear:both;">
     <div class="panel-heading">
     <div class="uvdesk_navbar btn-group width-100">
-        <?php foreach($tickets['status'] as $status) { ?>
+        <?php foreach($tickets['status'] as $status) {   ?>
                 <a tab-id="<?php echo $status['id']; ?>" class="btn btn-default width-16">
-                <i class="<?php echo $block->getGlycophins($status['id']);?>"></i>
-                    <span class="hidden-xs"><?php echo $status['name'] ?></span><br>
+                <i class="<?php echo $block->getGlycophins($status['id']); ?>"></i>
+                    <span class="hidden-xs"><?php echo $status['name']; ?></span><br>
                     <span class="label label-info"><?php echo $tickets['tabs'][$status['id']] ?></span>
                 </a>
         <?php } ?>
     </div>
     </div>
     <div class="panel-body">
-    <div clas="table-responsive">
+    <div class="table-responsive">
     <table  class="table table-bordered table-hover" cellspacing="0" width="100%">
         <thead>
             <tr>
@@ -252,7 +252,8 @@ $tag            = $block->getFilterDataFor('tag');
             'jquery',
             'mage/template',
             'Magento_Ui/js/modal/alert',
-		    'Magento_Ui/js/modal/confirm'
+		    'Magento_Ui/js/modal/confirm',
+            'jquery/jquery-storageapi'
         ],function($, template,alert,confirmation){
             $(document).ready(function(){
                 var addListAfterElemetId;
@@ -287,7 +288,7 @@ $tag            = $block->getFilterDataFor('tag');
                     if(ticket_ids.length == 0){
                         alert({
                             title: 'Attention',
-                            content: 'You haven not selected any items!',
+                            content: 'You have not selected any items!',
                             actions: {
                                 always: function(){
                                     return false;
@@ -338,6 +339,7 @@ $tag            = $block->getFilterDataFor('tag');
                     if(e.toElement.nodeName == 'I' || e.toElement.nodeName =='SPAN' || e.toElement.nodeName == 'INPUT') {
                         //return false;
                     } else {
+                        $('div.bootstrap-select').attr('class','btn-group bootstrap-select');
                         if(window.currentInputSearch!=""){
                             $ul = window.currentInputSearch.parent().siblings('ul');
                             $ticketId = $(this).data('ticketid');
@@ -478,7 +480,7 @@ $tag            = $block->getFilterDataFor('tag');
                     }
                 });
 
-                $('div#ticket-filters').on('click','i',function(){
+                $('div#filters').on('click','i',function(){
                     filterType = $(this).parent().parent().children('div .pos-relative').attr('filter-type');
                     var id = $(this).attr('filter-id');
                     var ar = typeOfArray(filterType);

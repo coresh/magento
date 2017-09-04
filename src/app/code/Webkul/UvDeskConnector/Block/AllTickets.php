@@ -20,7 +20,7 @@ class AllTickets extends \Magento\Framework\View\Element\Template
      * @param \Magento\Customer\Model\Session                  $customerSession
      * @param array                                            $data
      */
-	public function __construct(
+    public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
@@ -33,29 +33,35 @@ class AllTickets extends \Magento\Framework\View\Element\Template
         $this->_customerSession = $customerSession;
     }
 
-    public function getLoggedInUserDetail(){
+    public function getLoggedInUserDetail()
+    {
         $customerDetal = $this->_ticketHelper->getLoggedInUserDetail();
         return $customerDetal;
-
     }
 
     public function getTicketsAccToCustomer()
     {
         $customerUvdeskId = $this->_customerSession->getCustomerUvdeskId();
         $pageNo = $this->getRequest()->getParam('pageNo');
-        if(!isset($customerUvdeskId)){
+        if (!isset($customerUvdeskId)) {
             $customerUvdeskId = 0;
-        }        
-        if(!isset($pageNo)){
+        }
+        if (!isset($pageNo)) {
             $pageNo = null;
         }
-        $tickets = $this->_ticketManager->getAllTicketss($pageNo,null,null,null,$customerUvdeskId,null,null,null,null,null,null);
-        return $this->_ticketHelper->formatData($tickets);   
+        $tickets = $this->_ticketManager->getAllTicketss($pageNo, null, null, null, $customerUvdeskId, null, null, null, null, null, null);
+        return $this->_ticketHelper->formatData($tickets);
     }
 
     public function getTicketsTypes()
     {
         $tickets = $this->_ticketManager->getTicketTypes();
-        return json_decode($tickets,true);   
+        return json_decode($tickets, true);
+    }
+
+    public function getAllAgents()
+    {
+        $tickets = $this->_ticketManager->getAllMembers();
+        return $tickets;
     }
 }

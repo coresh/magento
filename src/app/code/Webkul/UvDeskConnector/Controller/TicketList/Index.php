@@ -9,6 +9,7 @@
  * @license   https://store.webkul.com/license.html
  */
 namespace Webkul\UvDeskConnector\Controller\TicketList;
+
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
@@ -36,11 +37,11 @@ class Index extends Action
         Context $context,
         PageFactory $resultPageFactory,
         \Magento\Customer\Model\Session $customerSession,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,     
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+    ) {
+    
         $this->_resultPageFactory = $resultPageFactory;
         $this->_json = $jsonHelper;
         $this->_customerSession = $customerSession;
@@ -74,16 +75,38 @@ class Index extends Action
     {
         $resultPage = $this->_resultPageFactory->create();
         $post = $this->getRequest()->getParams();
-        if (isset($post['pageNo']) && isset($post['isAjax'])) {
+        $page = $this->checkStatus('pageNo');
+        $label = $this->checkStatus('labels');
+        $tab = $this->checkStatus('tab');
+        $agent = $this->checkStatus('agent');
+        $customer = $this->checkStatus('customer');
+        $group = $this->checkStatus('group');
+        $team = $this->checkStatus('team');
+        $priority = $this->checkStatus('priority');
+        $type = $this->checkStatus('type');
+        $tag = $this->checkStatus('tag');
+        $mailbox = $this->checkStatus('mailbox');
+        $status = $this->checkStatus('status');
+        $sort = $this->checkStatus('sort');
+        if (isset($post['isAjax'])) {
             $customerUvdeskId = $this->_customerSession->getCustomerUvdeskId();
-            $tickets = $this->_ticketManager->getAllTicketss($post['pageNo'], null, null, null, $customerUvdeskId);
+            $tickets = $this->_ticketManager->getAllTicketss($page, $label, $tab, $agent, $customerUvdeskId, $group, $team, $priority, $type, $tag, $mailbox, $status, $sort);
             $formatedTickets = $this->_ticketsHelper->formatData($tickets);
             $this->getResponse()->setHeader('Content-type', 'application/json');
-            $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));  
-
+            $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));
         } else {
             // $resultPage->getConfig()->getTitle()->set(__('UVdesk Add On'));
             return $resultPage;
+        }
+    }
+
+    public function checkStatus($code)
+    {
+        $flag = $this->getRequest()->getParam($code);
+        if (isset($flag)) {
+            return $this->getRequest()->getParam($code);
+        } else {
+            return null;
         }
     }
 }

@@ -58,28 +58,30 @@ class Tickets extends \Magento\Backend\Block\Template
     {
         $page = 1;
         $flag = $this->getRequest()->getParam('labels');
-        if(isset($flag)){
+        if (isset($flag)) {
             $page = $this->getRequest()->getParam('labels');
         }
         $response = null;
         $response = $this->_ticketManager->getAllTickets($page);
-        return json_decode(json_encode($response),true);
+        return json_decode(json_encode($response), true);
     }
 
-    public function getFilterDataFor($filterType){
+    public function getFilterDataFor($filterType)
+    {
         $response = $this->_ticketManager->getFilterDataFor($filterType);
         return $response;
-    }  
+    }
 
-    public function labelParamater(){
+    public function labelParamater()
+    {
         return $this->getRequest()->getParam('labels');
     }
-    
+
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId,null);
-        return $threads;   
+        $threads = $this->_ticketManager->getTicketThread($ticketId, null);
+        return $threads;
     }
 
     public function getSingleTicketData()

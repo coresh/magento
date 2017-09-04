@@ -20,7 +20,7 @@ class TicketView extends \Magento\Framework\View\Element\Template
      * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager [description]
      * @param array                                            $data          [description]
      */
-	public function __construct(
+    public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
@@ -31,7 +31,8 @@ class TicketView extends \Magento\Framework\View\Element\Template
         $this->_ticketManager = $ticketManager;
     }
 
-    public function getLoggedInUserDetail(){
+    public function getLoggedInUserDetail()
+    {
         $customerDetal = $this->_ticketHelper->getLoggedInUserDetail();
         return $customerDetal;
     }
@@ -39,14 +40,13 @@ class TicketView extends \Magento\Framework\View\Element\Template
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId,null);
-        return $threads;   
+        $threads = $this->_ticketManager->getTicketThread($ticketId, null);
+        return $threads;
     }
 
     public function isCustomer($name)
     {
-        if($name == 'customer')
-        {
+        if ($name == 'customer') {
             return 'customer';
         }
         return '';

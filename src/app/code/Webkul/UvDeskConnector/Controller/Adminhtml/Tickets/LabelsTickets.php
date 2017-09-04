@@ -16,18 +16,18 @@ use Magento\Framework\View\Result\PageFactory;
 
 class LabelsTickets extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
    /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     */      
+    * @param \Magento\Backend\App\Action\Context $context
+    * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+    */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory
-    ) 
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
     }

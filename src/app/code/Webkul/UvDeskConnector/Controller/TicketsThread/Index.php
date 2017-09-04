@@ -14,20 +14,20 @@ namespace Webkul\UvDeskConnector\Controller\TicketsThread;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
-use  Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Controller\ResultFactory;
 
 class Index extends Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
-    /** @var \Magento\Framework\Json\Helper\Data */    
+    /** @var \Magento\Framework\Json\Helper\Data */
     protected $_jsonHelper;
 
-    /** @var \UvDeskConnector\Model\TicketManager */    
+    /** @var \UvDeskConnector\Model\TicketManager */
     protected $_ticketManager;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */    
+    /** @var \Webkul\UvDeskConnector\Helper\Tickets */
     protected $_ticketsHelper;
 
     /**
@@ -40,11 +40,11 @@ class Index extends Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,        
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
         $this->_json = $jsonHelper;
@@ -56,7 +56,7 @@ class Index extends Action
     {
         $page = $this->checkStatus('pageNo');
         $ticketId = $this->checkStatus('ticketId');
-        $tickets = $this->_ticketManager->getTicketThread($ticketId,$page);
+        $tickets = $this->_ticketManager->getTicketThread($ticketId, $page);
         $formatedTickets = $this->_ticketsHelper->formatData($tickets);
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));

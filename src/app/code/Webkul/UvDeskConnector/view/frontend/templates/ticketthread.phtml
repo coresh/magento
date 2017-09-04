@@ -25,7 +25,7 @@
 <div class="container-fluid">
 
 <!-- <div class="panel panel-default">
- <div class="panel-heading">UVdesk #<?php //echo $ticketData['ticket']['incrementId']?> Ticket Thread</div>
+ <div class="panel-heading">UVdesk # Ticket Thread</div>
   <div class="panel-body"> -->
     <div class="col-sm-3">
       <div class="panel panel-default">
@@ -82,6 +82,14 @@
               <div class="main-reply">
                 <?php echo $ticketData['createThread']['reply'];?>
               </div>
+              <div class="attachments">
+              <?php foreach($ticketData['createThread']['attachments'] as $key=>$attachment){ ?>
+                <a href="<?php echo $block->getUrl('uvdeskcon/downloadattachment/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment" title='<?php echo $attachment['name']; ?>' style="background-image:url('<?php echo $attachment['attachmentThumb']; ?>');background-size:cover;">
+                  <i class="fa fa-download">
+                  </i>
+                </a>
+              <?php } ?>
+              </div>
             </div>
           </div>
         </div>
@@ -129,7 +137,7 @@
 		</div>
 		<div class="attachments">
 		<?php foreach($value['attachments'] as $key=>$attachment){ ?>
-			<a href="<?php echo $block->getUrl('uvdeskcon/downloadattachment/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment">
+			<a href="<?php echo $block->getUrl('uvdeskcon/downloadattachment/downloadattachment').'attachment_id/'.$attachment['id'].'/name/'.$attachment['name'];?>" target="_blank" class="download-attachment" title='<?php echo $attachment['name']; ?>' style="background-image:url('<?php echo $attachment['attachmentThumb']; ?>');background-size:cover;">
 				<i class="fa fa-download">
 				</i>
 			</a>
@@ -225,24 +233,25 @@
             $(document).ready(function(){
                 var expandButton  = $('#button-load');
                 $('#save-btn').click(function(e) {
+                    e.preventDefault();
                     if ($("#edit-ticket").valid()!==false) {
-                        if ($('#custom_wysiwyg_ifr').length) {
-                            var desc = $('#custom_wysiwyg_ifr').contents().find('#tinymce').text();
-                            $('#custom_wysiwyg-error').remove();
-                            if (desc === "" || desc === null) {
-                                $('#custom_wysiwyg-error').remove();
-                                $('#custom_wysiwyg').parent().find("#error").append('<div class="mage-error" generated="true" id="custom_wysiwyg-error">This is a required field.</div>');
-                            }
-                            if (desc !== "" && desc !== null) {
-                                $('#save-btn span span').text($t("Saving")+'..');
-                                $('.button').css('opacity','0.7');
-                                $('.button').css('cursor','default');
-                                $('.button').attr('disabled','disabled');
+                        // if ($('#custom_wysiwyg_ifr').length) {
+                            // var desc = $('#custom_wysiwyg_ifr').contents().find('#tinymce').text();
+                            // $('#custom_wysiwyg-error').remove();
+                            // if (desc === "" || desc === null) {
+                                // $('#custom_wysiwyg-error').remove();
+                                // $('#custom_wysiwyg').parent().find("#error").append('<div class="mage-error" generated="true" id="custom_wysiwyg-error">This is a required field.</div>');
+                            // }
+                            // if (desc !== "" && desc !== null) {
+                                $('#save-btn span span').text("Saving"+'....');
+                                $('#save-btn').css('opacity','0.7');
+                                $('#save-btn').css('cursor','default');
+                                $('#save-btn').attr('disabled','disabled');
                                 $('#edit-ticket').submit();
-                            } else {
-                                return false;
-                            }
-                        }
+                            // } else {
+                                // return false;
+                            // }
+                        // }
                     }
                 });
                 var x;

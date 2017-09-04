@@ -2,20 +2,26 @@
 /**
  * Webkul Software.
  *
- * @category  Webkul 
+ * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
 -->
-<?php 
+<?php
   $customerDetail = $block->getTicketsAccToCustomer();
   $ticketTypes = $block->getTicketsTypes();
-?> 
+  $allAgents = $block->getAllAgents();
+?>
 <div class="panell panel-default">
   <div class="panel-heading uvhead">
         <h3 class="panel-title pull-left"><?php /* @escapeNotVerified */ echo __('Ticket List') ?></h3>
+        <select class="pull-right" id="sort_ticket" style="margin-top:1%;margin-right:16%;width:12%;" title="Sort by">
+            <option value="">Sort By .......</option>
+            <option value="t.id">Ticket Id</option>
+            <option value="agentName">Agent Name</option>
+        </select>
         <button id="uvdesk_create_ticket"><?php /* @escapeNotVerified */ echo __('Create Ticket') ?></button>
   </div>
   <div class="panel-body">
@@ -31,9 +37,39 @@
             <th>Agent</th>
             <th>Action</th>
           </tr>
+          <tr>
+            <th>
+                <select name="filter_priority" id="filter_priority" data-style="btn-info">
+                     <option value=""><?php /* @escapeNotVerified */ echo __('please select......'); ?>
+                     <?php foreach( $customerDetail['priority'] as $priority) { ?>
+                        <option value="<?php echo $priority['id']; ?>" > <?php echo $priority['name']; ?> </option>
+                     <?php } ?>
+                </select>
+            </th>
+            <th>
+                <select name="filter_status" id="filter_status"  >
+                     <option value=""><?php /* @escapeNotVerified */ echo __('please select......'); ?>
+                     <?php foreach( $customerDetail['status'] as $status) { ?>
+                        <option value="<?php echo $status['id']; ?>" > <?php echo $status['name']; ?> </option>
+                     <?php } ?>
+                </select>
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>
+                <select name="filter_agent" id="filter_agent"  >
+                     <option value=""><?php /* @escapeNotVerified */ echo __('please select......'); ?>
+                     <?php foreach( $allAgents as $agent) { ?>
+                        <option value="<?php echo $agent->id; ?>" > <?php echo $agent->name; ?> </option>
+                     <?php } ?>
+                </select>
+            </th>
+            <th><button type="button" id="filter_button" >Submit</button></th>
+          </tr>
         </thead>
         <tbody id="ticketBody">
-         <?php if(!empty($customerDetail['ticket_data'])) { ?>
+         <?php if(!empty($customerDetail['ticket_data'])) {   ?>
             <?php foreach ($customerDetail['ticket_data'] as $key=>$value) { ?>
               <tr>
                 <td style="color:<?php echo $value['priority_color']; ?>; font-weight: bold;"><?php echo $value['priority'] ?></td>
@@ -49,7 +85,7 @@
             <tr>
               <td colspan=6 style="text-align:center;vertical-align:middle;"><?php /* @escapeNotVerified */ echo __('No Ticket Found') ?></td>
             </tr>
-          <?php } ?>  
+          <?php } ?>
         </tbody>
       </table>
       <div style="text-align:center;">
@@ -63,37 +99,45 @@
   </div>
 </div>
 <div id="popup-mpdal" style="display:none;">
-    <div class="row">                
-        <div id="content" class="col-sm-12">      
+    <div class="row">
+        <div id="content" class="col-sm-12">
             <div class="panell panel-default">
                 <div class="panel-body">
-                    <form action="" method="post" enctype="multipart/form-data" class="form-horizontal" id="uvdeskconnector-frontend-form" data-mage-init='{"validation":{}}'>
-                    <div class="form-group required">
-                        <label for="input-type"><?php /* @escapeNotVerified */ echo __('Type') ?></label>
-                        <br>
-                        <select name="type" id="type" class="form-control" style="margin-bottom: 10px;" data-validate="{required:true}">
-                         <option value=""><?php /* @escapeNotVerified */ echo __('Select type') ?></option>
-                        <?php if(!empty($ticketTypes['types'])) { ?>
-                            <?php foreach($ticketTypes['types'] as $key => $value) { ?>
-                                <?php if($value['isActive']) { ?>
-                                    <option value=<?php echo $value['id'] ;?>><?php echo $value['name'];?></option>
+                    <form action="<?php echo $block->getUrl('uvdeskcon/createticket/index'); ?>" method="post" enctype="multipart/form-data" class="form-horizontal" id="uvdeskconnector-frontend-form" data-mage-init='{"validation":{}}'>
+                        <div class="form-group required">
+                            <label for="input-type"><?php /* @escapeNotVerified */ echo __('Type') ?></label>
+                            <br>
+                            <select name="type" id="type" class="form-control" style="margin-bottom: 10px;" data-validate="{required:true}">
+                            <option value=""><?php /* @escapeNotVerified */ echo __('Select type') ?></option>
+                            <?php if(!empty($ticketTypes['types'])) { ?>
+                                <?php foreach($ticketTypes['types'] as $key => $value) { ?>
+                                    <?php if($value['isActive']) { ?>
+                                        <option value=<?php echo $value['id'] ;?>><?php echo $value['name'];?></option>
+                                    <?php } ?>
                                 <?php } ?>
                             <?php } ?>
-                        <?php } ?>
-                        </select>
-                    </div>
-                    <div class="form-group required">
-                        <label for="input-subject" class=""><?php /* @escapeNotVerified */ echo __('Subject') ?></label>
-                        <br>
-                        <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter Subject" value="" style="
-                        margin-bottom: 10px;" data-validate="{required:true}">
-                    </div>
-                    <div class="form-group required">
-                        <label for="input-type">Message</label>
-                        <br>
-                        <textarea name="message" id="message" class="form-control" placeholder="Brief Description about your query" style="width:100%;" data-validate="{required:true}"></textarea>
-                    </div>
-                    <button type="submit" id="new-ticket-data"  value="Create Ticket" style="display:none">
+                            </select>
+                        </div>
+                        <div class="form-group required">
+                            <label for="input-subject" class=""><?php /* @escapeNotVerified */ echo __('Subject') ?></label>
+                            <br>
+                            <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter Subject" value="" style="
+                            margin-bottom: 10px;" data-validate="{required:true}">
+                        </div>
+                        <div class="form-group required">
+                            <label for="input-type">Message</label>
+                            <br>
+                            <textarea name="message" id="message" class="form-control" placeholder="Brief Description about your query" style="width:100%;" data-validate="{required:true}"></textarea>
+                        </div>
+                        <div class="ff">
+                        <div class="attachment-div">
+                            <span class="download-attachment-ticket-creation upload-attachment"><i class="fa fa-upload"></i><span >×</span></span>
+                            <input name="attachment[]" class="fileUpload" type="file">
+                        </div>
+                        </div>
+                        <span id="addFile">+ Attach File</span>
+                        <br><br>
+                        <button type="submit" id="new-ticket-data"  value="Create Ticket" style="display:none">
                     </form>
                 </div>
             </div>
@@ -135,25 +179,27 @@
                                 $('#new-ticket-data').trigger('click');
                                 return false;
                             }
-                            var form =$("#uvdeskconnector-frontend-form");
-                            var formData = form.serializeArray();
-                            $.ajax({
-                                url:"<?php echo $block->getUrl('uvdeskcon/createticket/index')?>",
-                                type:"GET",
-                                data:form.serialize(),
-                                dataType:"json",
-                                beforeSend:function(){
-                                    $("#wait").css("display", "block");
-                                },
-                                complete: function(){
-                                    $("#wait .popup-loading .popup-inner").find('img').remove();
-                                },
-                                success: function($data){
-                                    // if($data){
-                                        location.reload(false);
-                                    // }                                                        
-                                }
-                            });
+                            $('#new-ticket-data').trigger('click');
+                            $("#wait").css("display", "block");
+                            // var form =$("#uvdeskconnector-frontend-form");
+                            // var formData = form.serializeArray();
+                            // $.ajax({
+                            //     url:"<?php echo $block->getUrl('uvdeskcon/createticket/index')?>",
+                            //     type:"GET",
+                            //     data:form.serialize(),
+                            //     dataType:"json",
+                            //     beforeSend:function(){
+                            //         $("#wait").css("display", "block");
+                            //     },
+                            //     complete: function(){
+                            //         $("#wait .popup-loading .popup-inner").find('img').remove();
+                            //     },
+                            //     success: function($data){
+                            //         // if($data){
+                            //             location.reload(false);
+                            //         // }
+                            //     }
+                            // });
                         } //handler on button click
                     },{
                         text: 'Reset',
@@ -171,9 +217,10 @@
 	            $('#popup-mpdal').modal('openModal');
 	            });
 
-                $('.pagination').on('click','li',function(){          
+                $('.pagination').on('click','li',function(){
                     var pageNo = $(this).attr('data');
                     var parameter = addPageNo(pageNo);
+                    // parameter = addParameter();
                     $(".pagination a").removeClass('active');
                     $(this).find('a').addClass('active');
                     $.ajax({
@@ -181,7 +228,7 @@
                         type:"GET",
                         data:{'isAjax':'true'},
                         dataType:"json",
-                        beforeSend:function(){  
+                        beforeSend:function(){
                             $("#wait").css("display", "block");
                         },
                         complete: function(){
@@ -206,7 +253,7 @@
                                                 }
                                 });
                             });
-                            $('#ticketBody').html(ticketRow);                                                  
+                            $('#ticketBody').html(ticketRow);
                         }
                     });
                 });
@@ -232,8 +279,157 @@
                         var pathnameSplit = pathname.split('index/');
                         return pathnameSplit[1];
                     }
-                } 
+                }
 
+                var x;
+                $('#addFile').on('click',function(){
+                  var employee = "";
+                  var employeeTemplate = template('#ticketAttachment-template');
+                    employee += employeeTemplate({
+                    data: {}
+                  });
+                  $('.ff').append(employee);
+                });
+
+                $('.ff').on('click','span',function(){
+                    if($(this).index() == 0){
+                      x =$(this).parent().find("input[type='file']") ;
+                      x.trigger('click');
+                    }else{
+                      var j = $(this).parent();
+                      j.parent().remove();
+                      $(this).parent().remove();
+                    }
+                });
+                $("#popup-mpdal").on('change','input[name="attachment[]"]',function(e){
+                  var preview = $(this).parent().find("span:first-child");
+                  var file    = this.files[0];
+                  var reader  = new FileReader();
+                  reader.onloadend = function () {
+                    preview.css('background-image','url(' +reader.result+ ')');
+                    preview.css('background-size','cover');
+                  }
+                  if (file) {
+                    reader.readAsDataURL(file);
+                  } else {
+                    preview.src = "";
+                  }
+                });
+                function getFiltersParameter() {
+                    var priority = $('#filter_priority').val();
+                    var status = $('#filter_status').val();
+                    var agent = $('#filter_agent').val();
+                    var sort = $('#sort_ticket').val();
+                    var parameter = "" ;
+                    if ($('#filter_priority').val()!="") {
+                        if (parameter=="") {
+                            parameter += 'priority/'+priority;
+                        } else {
+                            parameter += '/priority/'+priority;
+                        }
+                    }
+                    if ($('#filter_status').val()!="") {
+                        if (parameter=="") {
+                            parameter += 'status/'+status;
+                        } else {
+                            parameter += '/status/'+status;
+                        }
+                    }
+                    if ($('#filter_agent').val()!="") {
+                        if (parameter=="") {
+                            parameter += 'agent/'+agent;
+                        } else {
+                            parameter += '/agent/'+agent;
+                        }
+                    }
+                    if (sort != "") {
+                        if (parameter=="") {
+                            parameter += 'sort/'+sort;
+                        } else {
+                            parameter += '/sort/'+sort;
+                        }
+                    }
+                    return parameter;
+                }
+                function addFiltersParameter(parameter) {
+                    var pathname = window.location.pathname+"index"; // Returns path only
+                    var url      = window.location.href;
+                    var splitArray = pathname.split('index/');
+                    if(splitArray.length<2){
+                        if(pathname.substring(pathname.length-1, pathname.length) == '/'){
+                            var a = pathname+parameter;
+                        }else{
+                            var a = pathname+"/"+parameter;
+                        }
+                        history.replaceState({}, "", a);
+                        pathname = window.location.pathname;
+                        var pathnameSplit = pathname.split('index/');
+                        return pathnameSplit[1];
+                    }else{
+                        var aa = splitArray[1];
+                        var a = splitArray[0]+'index/'+parameter;
+                        history.replaceState({}, "", a);
+                        pathname = window.location.pathname;
+                        var pathnameSplit = pathname.split('index/');
+                        return pathnameSplit[1];
+                    }
+                }
+
+                $("#filter_button").on('click',function(){
+                    var parameter = getFiltersParameter();
+                    parameter = addFiltersParameter(parameter);
+                    $.ajax({
+                        url:"<?php echo $block->getUrl('uvdeskcon/ticketlist/index')?>"+parameter,
+                        type:"GET",
+                        data:{'isAjax':'true'},
+                        dataType:"json",
+                        beforeSend:function(){
+                            $("#wait").css("display", "block");
+                        },
+                        complete: function(){
+                            // $("#wait .popup-loading .popup-inner").find('img').remove();
+                            $("#wait").css("display", "none");
+                        },
+                        success: function($data){
+                            var ticketRow="";
+                            var ticketPagination="";
+                            $.each($data['ticket_data'], function() {
+                                var ticketTemplate = template('#ticket-template');;
+                                 ticketRow += ticketTemplate({
+                                                data: {
+                                                    priority: this['priority'],
+                                                    priorityColor: this['priority_color'],
+                                                    ticket: this['id'],
+                                                    name: this['name'],
+                                                    subject: this['subject'],
+                                                    date: this['creation_date'],
+                                                    replies: this['replies'],
+                                                    agent: this['agent'],
+                                                    incrementId:this['incrementId']
+                                                }
+                                });
+                            });
+                            $.each($data['pagination_data'], function() {
+                                var ticketTemplate = template('#ticketPagination-template');;
+                                 ticketPagination += ticketTemplate({
+                                                data: {
+                                                    pageNo: this['page_no']
+                                                }
+                                });
+                            });
+                            if (ticketRow == "") {
+                                ticketRow = '<tr><td colspan=8 style="text-align:center;vertical-align:middle;"><?php /* @escapeNotVerified */ echo __('No Ticket Found') ?></td></tr>';
+                            }
+                            $('#ticketBody').html(ticketRow);
+                            $('.pagination').html(ticketPagination);
+                        }
+                    });
+                });
+                // $('#sort_ticket').on('change',function(){
+                //     var pathname = window.location.pathname; // Returns path only
+                //     var url      = window.location.href+'/sort/ticketId';
+                //     history.replaceState({}, "", url);
+                // });
             });
         });
 </script>
@@ -249,22 +445,33 @@
 
     <td class="text-center">
       <%- data.subject %>
-    </td>  
+    </td>
 
     <td class="text-center">
       <%- data.date %>
-    </td > 
+    </td >
 
     <td class="text-center">
       <label class="label label-info"><%- data.replies %></label>
-    </td> 
+    </td>
 
     <td class="text-center">
       <%- data.agent %>
-    </td> 
+    </td>
 
     <td class="text-center">
       <a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="_blank" class="btn btn-info"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a>
     </td>
  </tr>
+</script>
+<script id="ticketAttachment-template" type="text/x-magento-template">
+  <div class="attachment-div">
+    <span class="download-attachment-ticket-creation upload-attachment">
+      <i class="fa fa-upload"></i><span>×</span>
+    </span>
+    <input name="attachment[]" class="fileUpload" type="file">
+  </div>
+</script>
+<script id="ticketPagination-template" type="text/x-magento-template">
+    <li class='pagination-list uvdpagination' data="<%- data.pageNo %>"><a href="#"><%- data.pageNo %></a></li>
 </script>

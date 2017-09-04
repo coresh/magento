@@ -16,16 +16,16 @@ use Magento\Framework\View\Result\PageFactory;
 
 class AgentAssign extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
-    /** @var \Magento\Framework\Json\Helper\Data */    
+    /** @var \Magento\Framework\Json\Helper\Data */
     protected $_jsonHelper;
 
-    /** @var \UvDeskConnector\Model\TicketManager */    
+    /** @var \UvDeskConnector\Model\TicketManager */
     protected $_ticketManager;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */    
+    /** @var \Webkul\UvDeskConnector\Helper\Tickets */
     protected $_ticketsHelper;
 
     /**
@@ -38,11 +38,11 @@ class AgentAssign extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,        
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
         $this->_json = $jsonHelper;
@@ -54,9 +54,9 @@ class AgentAssign extends \Magento\Backend\App\Action
     {
         $ticketId = $this->getRequest()->getParam('ticketid');
         $agentId = $this->getRequest()->getParam('agentId');
-        $tickets = $this->_ticketManager->assignAgentToTicket($ticketId,$agentId);
+        $tickets = $this->_ticketManager->assignAgentToTicket($ticketId, $agentId);
         $this->getResponse()->setHeader('Content-type', 'application/json');
-        $this->getResponse()->setBody($this->_json->jsonEncode($tickets));          
+        $this->getResponse()->setBody($this->_json->jsonEncode($tickets));
     }
     
     /*

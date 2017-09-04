@@ -16,16 +16,16 @@ use Magento\Framework\View\Result\PageFactory;
 
 class GetTickets extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
-    /** @var \Magento\Framework\Json\Helper\Data */    
+    /** @var \Magento\Framework\Json\Helper\Data */
     protected $_jsonHelper;
 
-    /** @var \UvDeskConnector\Model\TicketManager */    
+    /** @var \UvDeskConnector\Model\TicketManager */
     protected $_ticketManager;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */    
+    /** @var \Webkul\UvDeskConnector\Helper\Tickets */
     protected $_ticketsHelper;
 
     /**
@@ -38,11 +38,11 @@ class GetTickets extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,        
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
         $this->_json = $jsonHelper;
@@ -53,7 +53,7 @@ class GetTickets extends \Magento\Backend\App\Action
     public function execute()
     {
         $page = $this->checkStatus('pageNo');
-        $label = $this->checkStatus('labels');  
+        $label = $this->checkStatus('labels');
         $tab = $this->checkStatus('tab');
         $agent = $this->checkStatus('agent');
         $customer = $this->checkStatus('customer');
@@ -66,7 +66,7 @@ class GetTickets extends \Magento\Backend\App\Action
         $tickets = $this->_ticketManager->getAllTicketss($page, $label, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
         $formatedTickets = $this->_ticketsHelper->formatData($tickets);
         $this->getResponse()->setHeader('Content-type', 'application/json');
-        $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));          
+        $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));
         // $resultPage = $this->_resultPageFactory->create();
         // $resultPage->getConfig()->getTitle()->prepend(__('Tickets'));
         // return $resultPage;
@@ -80,7 +80,6 @@ class GetTickets extends \Magento\Backend\App\Action
         } else {
             return null;
         }
-
     }
     
     /*

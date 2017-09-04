@@ -33,8 +33,8 @@ class DownloadAttachment extends Action
         PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) 
-    {
+    ) {
+    
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManager        = $ticketManager;
         $this->resultRawFactory      = $resultRawFactory;
@@ -48,15 +48,15 @@ class DownloadAttachment extends Action
      */
     public function execute()
     {
-      $attachmenId = $this->getRequest()->getParam('attachment_id');
-      $name = $this->getRequest()->getParam('name');
-      $file = $this->_ticketManager->downloadAttachment($attachmenId);
-      header('Content-Disposition: attachment; filename="'.$name.'"');
-      header('Content-Type: '.$file['info']['content_type']); 
-      header('Content-Length: ' . strlen($file['response']));
-      header('Connection: close');
-      $resultRaw = $this->resultRawFactory->create();
-      $resultRaw->setContents($file['response']); //set content for download file here
-      return $resultRaw;
+        $attachmenId = $this->getRequest()->getParam('attachment_id');
+        $name = $this->getRequest()->getParam('name');
+        $file = $this->_ticketManager->downloadAttachment($attachmenId);
+        header('Content-Disposition: attachment; filename="'.$name.'"');
+        header('Content-Type: '.$file['info']['content_type']);
+        header('Content-Length: ' . strlen($file['response']));
+        header('Connection: close');
+        $resultRaw = $this->resultRawFactory->create();
+        $resultRaw->setContents($file['response']); //set content for download file here
+        return $resultRaw;
     }
 }

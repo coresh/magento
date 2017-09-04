@@ -32,8 +32,8 @@ class Data extends AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Customer\Model\Session $customerSession
-    ) 
-    {
+    ) {
+    
         $this->_resourceConfig = $resourceConfig;
         $this->_customerSession = $customerSession;
         parent::__construct($context);
@@ -52,7 +52,7 @@ class Data extends AbstractHelper
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
         return $status;
-    } 
+    }
 
     /**
      * Return the access token.
@@ -67,7 +67,7 @@ class Data extends AbstractHelper
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
         return $accessToken;
-    }  
+    }
 
     /**
      * Return the company domain name.
@@ -89,7 +89,8 @@ class Data extends AbstractHelper
      *
      * @return Boolean.
      */
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         return $this->_customerSession->isLoggedIn();
     }
 
@@ -98,7 +99,7 @@ class Data extends AbstractHelper
      *
      * @return String.
      */
-    public function getSecretket() 
+    public function getSecretket()
     {
         $secretkey =  $this->scopeConfig
                                  ->getValue(
@@ -113,7 +114,7 @@ class Data extends AbstractHelper
      *
      * @return String.
      */
-    public function getRedirectUrl() 
+    public function getRedirectUrl()
     {
         $url =  $this->scopeConfig
                                  ->getValue(
