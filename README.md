@@ -32,3 +32,7 @@ This is an open source project. If you'd like to contribute
  - Push to your branch
     ``` git push -u origin your-branch ```
  - Create new pull request.
+
+### Install through composer
+composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git
+composer require webkul/uvdeskconnector:dev-master
