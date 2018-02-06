@@ -16,9 +16,9 @@ If you are having trouble understanding workflow of this module then this is for
 ### Installation
 
 Install through composer:
-- Run Following:
-    ``` composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git ```  
-    ``` composer require webkul/uvdeskconnector:dev-master ```
+- Run Following Command via terminal  
+	``` composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git ```
+	``` composer require webkul/uvdeskconnector:dev-master ```
 	``` php bin/magento setup:upgrade ```  
 	``` php bin/magento setup:di:compile ```  
 	``` php bin/magento setup:static-content:deploy ```
