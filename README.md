@@ -14,6 +14,17 @@ If you are having trouble understanding workflow of this module then this is for
 ](http://webkul.com/blog/uvdesk-magento2-free-helpdesk-ticket-system/)
  
 ### Installation
+
+Install through composer:
+- Run Following:
+    ``` composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git ```  
+    ``` composer require webkul/uvdeskconnector:dev-master ```
+	``` php bin/magento setup:upgrade ```  
+	``` php bin/magento setup:di:compile ```  
+	``` php bin/magento setup:static-content:deploy ```
+-  Flush the cache and reindex all.  
+  
+
 Manual Installation:
 -  Unzip the respective extension zip and then move "app" folder (inside "src" folder) into magento root directory.
 -  Run Following Command via terminal  
@@ -32,7 +43,3 @@ This is an open source project. If you'd like to contribute
  - Push to your branch
     ``` git push -u origin your-branch ```
  - Create new pull request.
-
-### Install through composer
-composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git
-composer require webkul/uvdeskconnector:dev-master
