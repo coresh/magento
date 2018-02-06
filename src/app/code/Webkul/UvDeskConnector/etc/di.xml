@@ -3,33 +3,25 @@
 /**
 * Webkul Software.
 *
-* @category Webkul
-* @package Webkul_UvDeskConnector
-* @author Webkul
-* @copyright Copyright (c) 2010-2016 Webkul Software Private Limited (https://webkul.com)
-* @license https://store.webkul.com/license.html
+* @category  Webkul
+* @package   Webkul_UvDeskConnector
+* @author    Webkul
+* @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+* @license   https://store.webkul.com/license.html
 */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-	<type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+    <type name="Webkul\UvDeskConnector\Logger\Handler">
         <arguments>
-            <argument name="collections" xsi:type="array">
-                <item name="uvdeskcon_tickets_listing_data_source" xsi:type="string">Webkul\UvDeskConnector\Model\ResourceModel\Tickets\Grid\Collection</item>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Webkul\UvDeskConnector\Logger\UvdeskLogger">
+        <arguments>
+            <argument name="name" xsi:type="string">uvdesk</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Webkul\UvDeskConnector\Logger\Handler</item>
             </argument>
         </arguments>
     </type>
-    <type name="Webkul\UvDeskConnector\Model\ResourceModel\Tickets\Grid\Collection">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">wk_uvdeskcon_tickets_mapping</argument>
-            <argument name="eventPrefix" xsi:type="string">eshopsync_categories_listing_collection</argument>
-            <argument name="eventObject" xsi:type="string">eshopsync_categories_listing_collection</argument>
-            <argument name="resourceModel" xsi:type="string">Webkul\UvDeskConnector\Model\ResourceModel\Tickets</argument>
-        </arguments>
-    </type>
-     <virtualType name="TicketsGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Webkul\UvDeskConnector\Model\ResourceModel\Tickets\Grid\Collection</argument>
-            <argument name="filterPool" xsi:type="object" shared="false">TicketsDataProvider</argument>
-        </arguments>
-    </virtualType> 
 </config>

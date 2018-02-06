@@ -15,7 +15,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
 /**
- * Webkul UvDeskConnector Landing page Index Controller.
+ * DownloadAttachment class
  */
 class DownloadAttachment extends Action
 {
@@ -23,40 +23,54 @@ class DownloadAttachment extends Action
      * @var PageFactory
      */
     protected $_resultPageFactory;
+    
+    /**
+     * @var \Magento\Framework\Controller\Result\RawFactory
+     */
+    protected $_resultRawFactory;
+    
+    /**
+     * @var \Webkul\UvDeskConnector\Model\TicketManagerCustomer
+     */
+    protected $_ticketManagerCustomer;
 
     /**
-     * @param Context     $context
-     * @param PageFactory $resultPageFactory
+     * __construct function
+     *
+     * @param Context                                             $context
+     * @param PageFactory                                         $resultPageFactory
+     * @param \Magento\Framework\Controller\Result\RawFactory     $resultRawFactory
+     * @param \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
-        \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) 
-    {
+        \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer
+    ) {
+    
         $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManager        = $ticketManager;
-        $this->resultRawFactory      = $resultRawFactory;
+        $this->_ticketManagerCustomer = $ticketManagerCustomer;
+        $this->_resultRawFactory = $resultRawFactory;
         parent::__construct($context);
     }
 
     /**
-     * UvDeskConnector Landing page.
+     * execute function
      *
-     * @return \Magento\Framework\View\Result\Page
+     * @return void
      */
     public function execute()
     {
-      $attachmenId = $this->getRequest()->getParam('attachment_id');
-      $name = $this->getRequest()->getParam('name');
-      $file = $this->_ticketManager->downloadAttachment($attachmenId);
-      header('Content-Disposition: attachment; filename="'.$name.'"');
-      header('Content-Type: '.$file['info']['content_type']); 
-      header('Content-Length: ' . strlen($file['response']));
-      header('Connection: close');
-      $resultRaw = $this->resultRawFactory->create();
-      $resultRaw->setContents($file['response']); //set content for download file here
-      return $resultRaw;
+        $attachmenId = $this->getRequest()->getParam('attachment_id');
+        $name = $this->getRequest()->getParam('name');
+        $file = $this->_ticketManagerCustomer->downloadAttachment($attachmenId);
+        header('Content-Disposition: attachment; filename="'.$name.'"');
+        header('Content-Type: '.$file['info']['content_type']);
+        header('Content-Length: ' . strlen($file['response']));
+        header('Connection: close');
+        $resultRaw = $this->_resultRawFactory->create();
+        $resultRaw->setContents($file['response']);
+        return $resultRaw;
     }
 }

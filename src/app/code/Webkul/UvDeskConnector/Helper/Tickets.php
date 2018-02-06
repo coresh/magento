@@ -14,36 +14,39 @@ namespace Webkul\UvDeskConnector\Helper;
 use \Magento\Framework\App\Helper\AbstractHelper;
 
 /**
- * UvDeskConnector tickets helper.
+ * Tickets class
  */
 class Tickets extends AbstractHelper
 {
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var \Magento\Customer\Model\Session
      */
-    protected $_json;
+    protected $_customerSession;
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
-     */    
+     */
     protected $_resourceConfig;
+    
+    /**
+     * @var \Webkul\UvDeskConnector\Model\TicketManager
+     */
+    protected $_ticketManager;
 
     /**
-     * @param Magento\Framework\App\Helper\Context        $context
-     * @param \Magento\Framework\Json\Helper\Data         $jsonHelper
+     * __construct function
+     *
+     * @param \Magento\Framework\App\Helper\Context       $context
      * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
-     * @param Connection                                  $connection
+     * @param \Magento\Customer\Model\Session             $customerSession
      * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Customer\Model\Session $customerSession,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) 
-    {
-        $this->_json = $jsonHelper;
+    ) {
         $this->_resourceConfig = $resourceConfig;
         $this->_customerSession = $customerSession;
         $this->_ticketManager = $ticketManager;
@@ -55,12 +58,20 @@ class Tickets extends AbstractHelper
      *
      * @return Array.
      */
-    public function formatData($tickets=[]) 
+    public function formatData($tickets = [])
     {
+        if (isset($tickets['error'])) {
+            return $tickets;
+        }
+        if (isset($tickets['response']['error'])) {
+            return $tickets;
+        }
         $paginationData = [];
         $ticketData = [];
         $ticketThreadData = [];
         $ticketThreadPaginationData = [];
+        $ticketPriorityData = [];
+        $ticketStatusData = [];
         $tabData = [];
         $data = [];
         $allAgent = $this->_ticketManager->getFilterDataFor('agent');
@@ -76,6 +87,9 @@ class Tickets extends AbstractHelper
                     $temp['creation_date'] = $ticket['formatedCreatedAt'];
                     $temp['replies'] = $ticket['totalThreads'];
                     $temp['agent'] = $ticket['agent']['name'];
+                if (isset($ticket['status'])) {
+                    $temp['status'] = ['name'=> $ticket['status']['name'], 'color'=>$ticket['status']['color']];
+                }
                     // $allAgent[] = $ticket['agent']['name'];
                     $ticketData[] = $temp;
                     $temp = [];
@@ -86,26 +100,37 @@ class Tickets extends AbstractHelper
             foreach ($tickets['status'] as $status) {
                     $temp['tab_name'] = $status['name'];
                     $temp['tab_id'] = $status['id'];
-                    $temp['tab_count'] = $tickets['tabs'][$status['sortOrder']];
+                    $temp['tab_count'] = $tickets['tabs'][$status['id']];
                     $tabData[] = $temp;
                     $temp = [];
             }
         }
         if (isset($tickets['pagination']) && !empty($tickets['pagination'])) {
-            foreach ($tickets['pagination']['pagesInRange'] as $page) {
-                if ($tickets['pagination']['pageCount']>1) {
-                    $temp['page_no'] = $page;
+                // if ($tickets['pagination']['pageCount']>1) {
+                    $temp['first'] = $tickets['pagination']['first'];
+                    $temp['last'] = $tickets['pagination']['last'];
+                    $temp['previous'] = 0;
+            if (isset($tickets['pagination']['previous'])) {
+                $temp['previous'] = $tickets['pagination']['previous'];
+            }
+                    $temp['next'] = 0;
+            if (isset($tickets['pagination']['next'])) {
+                $temp['next'] = $tickets['pagination']['next'];
+            }
+                    $temp['firstPageInRange'] = $tickets['pagination']['firstPageInRange'];
+                    $temp['lastPageInRange'] = $tickets['pagination']['lastPageInRange'];
+                    $temp['pagesInRange'] = $tickets['pagination']['pagesInRange'];
+                    $temp['pageCount'] = $tickets['pagination']['pageCount'];
                     $paginationData[] = $temp;
                     $temp = [];
-                }
-            }
+                // }
         }
         if (isset($tickets['threads']) && !empty($tickets['threads'])) {
             foreach ($tickets['threads'] as $thread) {
                         $temp['id'] = $thread['id'];
                         $temp['name'] = $thread['user']['detail'][$thread['userType']]['name'];
                         $temp['userSmallThumbNail'] = $thread['user']['smallThumbnail'];
-                        $temp['customerDetail'] = $thread['user']['detail'][$thread['userType']]['name']; 
+                        $temp['customerDetail'] = $thread['user']['detail'][$thread['userType']]['name'];
                         $temp['userType'] = $thread['userType'];
                         $temp['reply'] = $thread['reply'];
                         $temp['formatedCreatedAt'] = $thread['formatedCreatedAt'];
@@ -114,17 +139,34 @@ class Tickets extends AbstractHelper
             }
             $ticketThreadPaginationData['currentPage'] = $tickets['pagination']['current'];
             $ticketThreadPaginationData['lastPage'] = $tickets['pagination']['last'];
-            $ticketThreadPaginationData['next'] = $tickets['pagination']['next'] ?? 0;
-            $ticketThreadPaginationData['numItemsPerPage'] = $tickets['pagination']['numItemsPerPage']; 
-            $ticketThreadPaginationData['totalCount'] = $tickets['pagination']['totalCount']; 
-
-        }        
+            $ticketThreadPaginationData['next'] = isset($tickets['pagination']['next']) ? $tickets['pagination']['next'] : 0;
+            $ticketThreadPaginationData['numItemsPerPage'] = $tickets['pagination']['numItemsPerPage'];
+            $ticketThreadPaginationData['totalCount'] = $tickets['pagination']['totalCount'];
+        }
+        if (isset($tickets['priority']) && !empty($tickets['priority'])) {
+            foreach ($tickets['priority'] as $priority) {
+                        $temp['id'] = $priority['id'];
+                        $temp['name'] = $priority['name'];
+                        $ticketPriorityData[] = $temp;
+                        $temp = [];
+            }
+        }
+        if (isset($tickets['status']) && !empty($tickets['status'])) {
+            foreach ($tickets['status'] as $status) {
+                        $temp['id'] = $status['id'];
+                        $temp['name'] = $status['name'];
+                        $ticketStatusData[] = $temp;
+                        $temp = [];
+            }
+        }
         $data['ticket_data'] = $ticketData;
         $data['tab_data'] = $tabData;
         $data['pagination_data'] = $paginationData;
         $data['agent-information'] = $allAgent;
         $data['ticket_thread']['thread'] = $ticketThreadData;
         $data['ticket_thread']['pagination'] = $ticketThreadPaginationData;
+        $data['priority'] = $ticketPriorityData;
+        $data['status'] = $ticketStatusData;
         return $data ;
     }
 
@@ -140,6 +182,27 @@ class Tickets extends AbstractHelper
         $customerDetal['email'] = $this->_customerSession->getCustomer()->getEmail();
         $customerDetal['name'] = $this->_customerSession->getCustomer()->getName();
         return $customerDetal;
-    } 
+    }
 
+    public function ticketValidation($ticketIncrementId = "")
+    {
+        if ($ticketIncrementId == "") {
+            return false;
+        }
+        $ticketInformation = $this->_ticketManager->getSingleTicketData($ticketIncrementId);
+        if ($ticketInformation == false) {
+            return false;
+        }
+        if (is_array($ticketInformation)) {
+            $ticketCustomerId = $ticketInformation['ticket']['customer']['id'];
+            $ticketCustomerEmail = $ticketInformation['ticket']['customer']['email'];
+            $loggedInCustomerId = $this->_customerSession->getCustomerUvdeskId();
+            $loggedInCustomerEmail = $this->_customerSession->getCustomer()->getEmail();
+            if (!($ticketCustomerId == $loggedInCustomerId && $ticketCustomerEmail == $loggedInCustomerEmail)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }

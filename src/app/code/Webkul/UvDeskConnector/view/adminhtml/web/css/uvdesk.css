@@ -156,3 +156,30 @@ label {
     width: 200px;
     z-index: 1003;
 }
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.row-from-bootstrap {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+.vertical-menu a {
+    background-color: #eee;
+    color: black;
+    display: block;
+    padding: 3px;
+    text-decoration: none;
+    margin-bottom:2px;
+}
+.vertical-menu a span{
+  float:right;
+}
+.vertical-menu a:hover {
+    background-color: #ccc;
+}
+
+.vertical-menu a.active {
+    background-color: #ccc;
+    color: white;
+}

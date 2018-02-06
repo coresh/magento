@@ -11,55 +11,64 @@
 
 namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
-
+/**
+ * GetTicketThread class
+ */
 class GetTicketThread extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
-    protected $_resultPageFactory;
 
-    /** @var \Magento\Framework\Json\Helper\Data */    
-    protected $_jsonHelper;
-
-    /** @var \UvDeskConnector\Model\TicketManager */    
+    /**
+     * @var \UvDeskConnector\Model\TicketManager
+     */
     protected $_ticketManager;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */    
+    /**
+     * @var \Webkul\UvDeskConnector\Helper\Tickets
+     */
     protected $_ticketsHelper;
 
     /**
-     * @param \Magento\Backend\App\Action\Context         $context
-     * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
-     * @param \Magento\Framework\Json\Helper\Data         $jsonHelper
-     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-     * @param \Webkul\UvDeskConnector\Helper\Tickets      $ticketsHelper
+     * @var \Magento\Framework\Controller\Result\JsonFactory
+     */
+    protected $_jsonResultFactory;
+
+    /**
+     * __construct function
+     *
+     * @param \Magento\Backend\App\Action\Context              $context
+     * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager
+     * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketsHelper
+     * @param \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,        
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
-        \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+        \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper,
+        \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
+    ) {
+    
         parent::__construct($context);
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_json = $jsonHelper;
         $this->_ticketManager = $ticketManager;
         $this->_ticketsHelper = $ticketsHelper;
+        $this->_jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
+        $result = $this->_jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $ticketId = $this->checkStatus('ticketId');
-        $tickets = $this->_ticketManager->getTicketThread($ticketId,$page);
+        $tickets = $this->_ticketManager->getTicketThread($ticketId, $page);
         $formatedTickets = $this->_ticketsHelper->formatData($tickets);
-        $this->getResponse()->setHeader('Content-type', 'application/json');
-        $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));
+        return $result->setData($formatedTickets);
     }
 
+    /**
+     * checkStatus function check the particular field is set in params array or not ?
+     *
+     * @param string $code
+     * @return string|null
+     */
     public function checkStatus($code)
     {
         $flag = $this->getRequest()->getParam($code);

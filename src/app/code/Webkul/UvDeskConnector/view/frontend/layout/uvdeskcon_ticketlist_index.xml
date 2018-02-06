@@ -14,9 +14,9 @@
     <update handle="customer_account"/>    
     <head>
         <title>Ticket List</title>
-        <!--<css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" src_type="url"/>
+       <!--<css src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" src_type="url"/>-->
         <css src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" src_type="url"/> 
-        <css src="Webkul_UvDeskConnector::css/bootstrap.css"/>   -->
+        <!--<css src="Webkul_UvDeskConnector::css/bootstrap.css"/>-->
         <css src="Webkul_UvDeskConnector::css/uvdesk.css"/>  
         <css src="Webkul_UvDeskConnector::css/ticket_view.css"/>  
     </head>

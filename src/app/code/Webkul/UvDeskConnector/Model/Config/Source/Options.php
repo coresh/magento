@@ -2,7 +2,7 @@
 /**
  * Webkul Software.
  *
- * @category  Webkul 
+ * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
@@ -11,6 +11,9 @@
 
 namespace Webkul\UvDeskConnector\Model\Config\Source;
 
+/**
+ * Options class
+ */
 class Options implements \Magento\Framework\Option\ArrayInterface
 {
     /**

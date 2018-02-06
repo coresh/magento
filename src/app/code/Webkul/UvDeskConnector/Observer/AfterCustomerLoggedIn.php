@@ -26,6 +26,8 @@ class AfterCustomerLoggedIn implements ObserverInterface
     protected $_ticketManager;
 
     /**
+     * __construct function
+     *
      * @param \Psr\Log\LoggerInterface                    $loggerInterface
      * @param \Magento\Customer\Model\Session             $customerSession
      * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager

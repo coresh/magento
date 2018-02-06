@@ -27,65 +27,131 @@ class Tickets extends \Magento\Backend\Block\Template
      * @var \Magento\Framework\Json\EncoderInterface
      */
     protected $jsonEncoder;
+    
+    /**
+     * @var \Webkul\UvDeskConnector\Helper\Data
+     */
+    protected $_helper;
 
     /**
      * AssignProducts constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
-     * @param array $data
+     * @param \Magento\Backend\Block\Template\Context     $context
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     * @param \Magento\Cms\Model\Wysiwyg\Config           $wysiwygConfig
+     * @param \Webkul\UvDeskConnector\Helper\Data         $helper
+     * @param array                                       $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
         \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig,
+        \Webkul\UvDeskConnector\Helper\Data $helper,
         array $data = []
     ) {
         $this->_ticketManager = $ticketManager;
         $this->_wysiwygConfig = $wysiwygConfig;
+        $this->_helper = $helper;
         parent::__construct($context, $data);
     }
 
+    /**
+     * getWysiwygConfig function
+     *
+     * @return json
+     */
     public function getWysiwygConfig()
     {
         $config = $this->_wysiwygConfig->getConfig();
-        $config = json_encode($config->getData());
-        // return $config;
+        $config = json_encode($config->getData(), true);
+        return $config;
     }
 
-    public function getAllTickets()
+    /**
+     * getAllTicketsAccToLabel function get all ticket acc to label
+     *
+     * @return array
+     */
+    public function getAllTicketsAccToLabel()
     {
         $page = 1;
         $flag = $this->getRequest()->getParam('labels');
-        if(isset($flag)){
+        if (isset($flag)) {
             $page = $this->getRequest()->getParam('labels');
         }
         $response = null;
-        $response = $this->_ticketManager->getAllTickets($page);
-        return json_decode(json_encode($response),true);
+        $response = $this->_ticketManager->getAllTicketsAccToLabel($page);
+        return $response;
     }
 
-    public function getFilterDataFor($filterType){
-        $response = $this->_ticketManager->getFilterDataFor($filterType);
-        return $response;
-    }  
+    /**
+     * getFilterDataFor function get the ticket acc to the selected filters
+     *
+     * @param string $filterType
+     * @return array
+     */
+    public function getFilterDataFor($filterType)
+    {
+        return $this->_ticketManager->getFilterDataFor($filterType);
+    }
 
-    public function labelParamater(){
+    /**
+     * labelParamater function get the selected labels
+     *
+     * @return strings
+     */
+    public function labelParamater()
+    {
         return $this->getRequest()->getParam('labels');
     }
-    
+
+    /**
+     * getTicketThread function return the all thread of particular ticket id
+     *
+     * @return array
+     */
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId,null);
-        return $threads;   
+        $threads = $this->_ticketManager->getTicketThread($ticketId, null);
+        return $threads;
     }
 
+    /**
+     * getErrorMessage function
+     *
+     * @param array $response
+     * @return string
+     */
+    public function getErrorMessage($response = [])
+    {
+        return $this->_helper->getErrorMessage($response);
+    }
+
+    /**
+     * getSingleTicketData function get all data related to a single ticket using ticket increment id
+     *
+     * @return array
+     */
     public function getSingleTicketData()
     {
         $ticketIncrementId = $this->getRequest()->getParam('increment_id');
         $ticketData = $this->_ticketManager->getSingleTicketData($ticketIncrementId);
         return $ticketData ;
+    }
+
+    /**
+     * selectedLabelClass function return the active selected label
+     *
+     * @param string $key
+     * @return string
+     */
+    public function selectedLabelClass($key = "")
+    {
+        $label = $this->labelParamater();
+        if ($label == $key) {
+            return 'active';
+        }
+        return '';
     }
 }

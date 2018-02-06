@@ -14,29 +14,32 @@ namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Delete class
+ */
 class Delete extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Data */    
+    /** @var \Webkul\UvDeskConnector\Helper\Data */
     protected $_helperData;
 
-   /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Webkul\UvDeskConnector\Helper\Data $helperData
-     */      
+    /**
+     * __construct function
+     *
+     * @param \Magento\Backend\App\Action\Context         $context
+     * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
+     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Webkul\UvDeskConnector\Helper\Data $helperData,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-    ) 
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
-        $this->_helperData = $helperData;
         $this->_ticketManager = $ticketManager;
     }
 
@@ -47,12 +50,12 @@ class Delete extends \Magento\Backend\App\Action
         $post = $this->getRequest()->getParams();
         if (isset($post['id']) && !empty($post['id'])) {
             // foreach ($post['id'] as $ticketId) {
-                $response = $this->_ticketManager->deleteTicket($post['id']);
-                if($response['response']) {
-                    $successCount++;
-                } else {
-                    $errorCount++;
-                }
+            $response = $this->_ticketManager->deleteTicket($post['id']);
+            if ($response['response']) {
+                $successCount++;
+            } else {
+                $errorCount++;
+            }
             // }/
             if ($successCount) {
                 $this->messageManager->addSuccess(__("Success ! Ticket(s) removed successfully."));

@@ -11,49 +11,54 @@
 
 namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
-
+/**
+ * GetTickets class
+ */
 class GetTickets extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */    
+    /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
 
-    /** @var \Magento\Framework\Json\Helper\Data */    
-    protected $_jsonHelper;
-
-    /** @var \UvDeskConnector\Model\TicketManager */    
+    /** @var \UvDeskConnector\Model\TicketManager */
     protected $_ticketManager;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */    
+    /** @var \Webkul\UvDeskConnector\Helper\Tickets */
     protected $_ticketsHelper;
 
     /**
-     * @param \Magento\Backend\App\Action\Context         $context
-     * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
-     * @param \Magento\Framework\Json\Helper\Data         $jsonHelper
-     * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-     * @param \Webkul\UvDeskConnector\Helper\Tickets      $ticketsHelper
+     * @var \Magento\Framework\Controller\Result\JsonFactory
+     */
+    protected $_jsonResultFactory;
+
+    /**
+     * __construct function
+     *
+     * @param \Magento\Backend\App\Action\Context              $context
+     * @param \Magento\Framework\View\Result\PageFactory       $resultPageFactory
+     * @param \Webkul\UvDeskConnector\Model\TicketManager      $ticketManager
+     * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketsHelper
+     * @param \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,        
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
-        \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
-    ) 
-    {
+        \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper,
+        \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
+    ) {
+    
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
-        $this->_json = $jsonHelper;
         $this->_ticketManager = $ticketManager;
         $this->_ticketsHelper = $ticketsHelper;
+        $this->_jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
+        $result = $this->_jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
-        $label = $this->checkStatus('labels');  
+        $label = $this->checkStatus('labels');
         $tab = $this->checkStatus('tab');
         $agent = $this->checkStatus('agent');
         $customer = $this->checkStatus('customer');
@@ -63,15 +68,17 @@ class GetTickets extends \Magento\Backend\App\Action
         $type = $this->checkStatus('type');
         $tag = $this->checkStatus('tag');
         $mailbox =$this->checkStatus('mailbox');
-        $tickets = $this->_ticketManager->getAllTicketss($page, $label, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
+        $tickets = $this->_ticketManager->getAllTickets($page, $label, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
         $formatedTickets = $this->_ticketsHelper->formatData($tickets);
-        $this->getResponse()->setHeader('Content-type', 'application/json');
-        $this->getResponse()->setBody($this->_json->jsonEncode($formatedTickets));          
-        // $resultPage = $this->_resultPageFactory->create();
-        // $resultPage->getConfig()->getTitle()->prepend(__('Tickets'));
-        // return $resultPage;
+        return $result->setData($formatedTickets);
     }
 
+    /**
+     * checkStatus function check the particular field is set in params array or not ?
+     *
+     * @param string $code
+     * @return string|null
+     */
     public function checkStatus($code)
     {
         $flag = $this->getRequest()->getParam($code);
@@ -80,7 +87,6 @@ class GetTickets extends \Magento\Backend\App\Action
         } else {
             return null;
         }
-
     }
     
     /*

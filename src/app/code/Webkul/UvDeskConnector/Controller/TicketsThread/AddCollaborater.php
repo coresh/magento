@@ -14,9 +14,9 @@ namespace Webkul\UvDeskConnector\Controller\TicketsThread;
 use Magento\Framework\App\Action\Action;
 
 /**
- * Index class
+ * AddCollaborater class
  */
-class Index extends Action
+class AddCollaborater extends Action
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
@@ -27,59 +27,39 @@ class Index extends Action
     /** @var \UvDeskConnector\Model\TicketManagerCustomer */
     protected $_ticketManagerCustomer;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Tickets */
-    protected $_ticketsHelper;
-
     /**
      * __construct function
      *
      * @param \Magento\Backend\App\Action\Context                 $context
      * @param \Magento\Framework\View\Result\PageFactory          $resultPageFactory
      * @param \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer
-     * @param \Webkul\UvDeskConnector\Helper\Tickets              $ticketsHelper
      * @param \Magento\Framework\Controller\Result\JsonFactory    $jsonResultFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer,
-        \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper,
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
     
         parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketsHelper = $ticketsHelper;
         $this->_jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
         $result = $this->_jsonResultFactory->create();
-        $page = $this->checkStatus('pageNo');
-        $ticketId = $this->checkStatus('ticketId');
-        $tickets = $this->_ticketManagerCustomer->getTicketThread($ticketId, $page);
-        $formatedTickets = $this->_ticketsHelper->formatData($tickets);
-        return $result->setData([$formatedTickets]);
-    }
-
-    /**
-     * checkStatus function check the particular field is set in params array or not ?
-     *
-     * @param string $code
-     * @return string|null
-     */
-    public function checkStatus($code)
-    {
-        $flag = $this->getRequest()->getParam($code);
-        if (isset($flag)) {
-            return $this->getRequest()->getParam($code);
-        } else {
-            return null;
+        $successCount = 0;
+        $errorCount = 0;
+        $post = $this->getRequest()->getParams();
+        if ((isset($post['ticketId']) && !empty($post['ticketId'])) && (isset($post['email']) && !empty($post['email']))) {
+                $response = $this->_ticketManagerCustomer->addCollaborater($post['ticketId'], $post['email']);
+                return $result->setData($response);
         }
     }
-    
+
     /*
      * Check permission via ACL resource
      */

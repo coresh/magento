@@ -12,9 +12,10 @@
 namespace Webkul\UvDeskConnector\Helper;
 
 use \Magento\Framework\App\Helper\AbstractHelper;
+use Webkul\UvDeskConnector\Logger\UvdeskLogger;
 
 /**
- * UvDeskConnector data helper.
+ * Data class
  */
 class Data extends AbstractHelper
 {
@@ -22,20 +23,43 @@ class Data extends AbstractHelper
      * @var \Magento\Config\Model\ResourceModel\Config
      */
     protected $_resourceConfig;
+    
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $_customerSession;
+    
+    /**
+     * @var \Webkul\UvDeskConnector\Logger\UvdeskLogger
+     */
+    protected $_logger;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
-     * @param \Magento\Customer\Model\Session            $customerSession
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    protected $_encryptor;
+
+    /**
+     * __construct function
+     *
+     * @param \Magento\Framework\App\Helper\Context                 $context
+     * @param \Magento\Config\Model\ResourceModel\Config            $resourceConfig
+     * @param \Magento\Customer\Model\Session                       $customerSession
+     * @param UvdeskLogger                                          $uvdeskLogger
+     * @param \Magento\Framework\Encryption\EncryptorInterface      $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
-        \Magento\Customer\Model\Session $customerSession
-    ) 
-    {
+        \Magento\Customer\Model\Session $customerSession,
+        UvdeskLogger $uvdeskLogger,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+    ) {
+    
         $this->_resourceConfig = $resourceConfig;
         $this->_customerSession = $customerSession;
+        $this->_logger = $uvdeskLogger;
+        $this->_encryptor = $encryptor;
         parent::__construct($context);
     }
 
@@ -52,7 +76,7 @@ class Data extends AbstractHelper
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
         return $status;
-    } 
+    }
 
     /**
      * Return the access token.
@@ -66,8 +90,8 @@ class Data extends AbstractHelper
                                      'uvdesk_conn/uvdesk_config/uvdesk_accesstoken',
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
-        return $accessToken;
-    }  
+        return $this->_encryptor->decrypt($accessToken);
+    }
 
     /**
      * Return the company domain name.
@@ -89,7 +113,8 @@ class Data extends AbstractHelper
      *
      * @return Boolean.
      */
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         return $this->_customerSession->isLoggedIn();
     }
 
@@ -98,7 +123,7 @@ class Data extends AbstractHelper
      *
      * @return String.
      */
-    public function getSecretket() 
+    public function getSecretket()
     {
         $secretkey =  $this->scopeConfig
                                  ->getValue(
@@ -113,7 +138,7 @@ class Data extends AbstractHelper
      *
      * @return String.
      */
-    public function getRedirectUrl() 
+    public function getRedirectUrl()
     {
         $url =  $this->scopeConfig
                                  ->getValue(
@@ -121,5 +146,34 @@ class Data extends AbstractHelper
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
         return $url;
+    }
+
+    /**
+     * log function log the error message.
+     *
+     * @param string $message
+     * @param array $data
+     * @return void
+     */
+    public function loge($message = "", $data = [])
+    {
+        $this->_logger->critical($message, $data);
+    }
+
+    /**
+     * getErrorMessage function return the error message acc to key of response array
+     *
+     * @param array $tickets
+     * @return string
+     */
+    public function getErrorMessage($tickets = [])
+    {
+        if (isset($tickets['error_description'])) {
+            return $tickets['error_description'];
+        }
+        if (isset($tickets['error']) && $tickets['error']!==1 && $tickets['error']!==0) {
+            return $tickets['error'];
+        }
+        return __("Please properly filled the Uvdesk configuration.");
     }
 }
