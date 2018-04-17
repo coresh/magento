@@ -34,18 +34,14 @@
             <table style="width:100%">
                 <thead>
                     <tr>
-                        <th><?php /* @escapeNotVerified */ echo __('Priority'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Ticket Id'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Status'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Subject'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Created On'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Replies'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Agent'); ?></th>
                         <th><?php /* @escapeNotVerified */ echo __('Action'); ?></th>
                     </tr>
                     <tr>
-                        <th>
-                        </th>
                         <th></th>
                         <th>
                             <select name="filter_status" id="filter_status" title="<?php /* @escapeNotVerified */ echo __('please select filter status'); ?>" >
@@ -57,7 +53,6 @@
                         </th>
                         <th></th>
                         <th></th>
-                        <th></th>
                         <th>
                         </th>
                         <th><button type="button" id="filter_button" ><?php /* @escapeNotVerified */ echo __('Submit'); ?></button></th>
@@ -67,12 +62,10 @@
                 <tbody id="ticketBody">
                     <?php foreach ($customerDetail['ticket_data'] as $key=>$value) { ?>
                         <tr>
-                            <td style="color:<?php echo $value['priority_color']; ?>; font-weight: bold;"><?php echo $value['priority'] ?></td>
                             <td><?php echo $value['incrementId'] ;?></td>
                             <td style="color:<?php echo $value['status']['color']; ?>; font-weight: bold;"><?php echo $value['status']['name'] ;?></td>
                             <td><?php echo $value['subject'] ;?></td>
                             <td><?php echo $value['creation_date'] ;?></td>
-                            <td><?php echo $value['replies'] ;?></td>
                             <td><?php echo $value['agent'] ;?></td>
                             <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="_blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
                         </tr>
@@ -249,6 +242,9 @@
 
                 $('.pagination').on('click','li',function(){
                     var pageNo = $(this).attr('data');
+                    if (pageNo == undefined) {
+                        return false;
+                    }
                     var parameter = addPageNo(pageNo);
                     var selectedPageNo = pageNo;
                     // parameter = addParameter();
@@ -277,6 +273,8 @@
                                                     priorityColor: this['priority_color'],
                                                     ticket: this['id'],
                                                     name: this['name'],
+                                                    status: this['status']['name'],
+                                                    statusColor: this['status']['color'],
                                                     subject: this['subject'],
                                                     date: this['creation_date'],
                                                     replies: this['replies'],
@@ -493,9 +491,6 @@
 </script>
 <script id="ticket-template" type="text/x-magento-template">
  <tr>
-    <td class="text-center" style="color:<%- data.priorityColor %>;font-weight: bold;">
-      <%- data.priority %>
-    </td>
 
     <td class="text-center">
       #<%- data.incrementId %>
@@ -512,10 +507,6 @@
     <td class="text-center">
       <%- data.date %>
     </td >
-
-    <td class="text-center">
-      <label class="label label-info"><%- data.replies %></label>
-    </td>
 
     <td class="text-center">
       <%- data.agent %>

@@ -72,7 +72,7 @@ class TicketManager
      *
      * @return json.
      */
-    public function getAllTicketsAccToLabel($label)
+    public function getAllTicketsAccToLabel($label, $isLabelId = false)
     {
         $access_token = $this->getAccessToken();
         if (isset($access_token['error'])) {
@@ -83,7 +83,11 @@ class TicketManager
             return $company_domain;
         }
         // Return  tickets
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$label;
+        if (!$isLabelId) {
+            $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$label;
+        } else {
+            $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?label='.$label;
+        }
         $ch = curl_init($url);
         $headers = [
         'Authorization: Bearer '.$access_token,
@@ -113,7 +117,7 @@ class TicketManager
      *
      * @return json.
      */
-    public function getAllTickets($page = null, $labels = null, $tab = null, $agent = null, $customer = null, $group = null, $team = null, $priority = null, $type = null, $tag = null, $mailbox = null, $status = null, $sort = null)
+    public function getAllTickets($page = null, $labels = null, $labelId = null, $tab = null, $agent = null, $customer = null, $group = null, $team = null, $priority = null, $type = null, $tag = null, $mailbox = null, $status = null, $sort = null)
     {
         $access_token = $this->getAccessToken();
         if (isset($access_token['error'])) {
@@ -162,6 +166,10 @@ class TicketManager
         }
         if (isset($labels)) {
             $str.="&".$labels;
+        } else {
+            if (isset($labelId)) {
+                $str.="&label=".$labelId;
+            }
         }
         // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$str;
@@ -637,7 +645,7 @@ class TicketManager
          if ($info['http_code'] == 200 || $info['http_code'] == 201) {
              $this->_messageManager->addSuccess(__('Success ! Reply added successfully.'));
              return true;
-         } else {
+            } else {
                 $this->log('', ['response'=>$response, 'info'=>$info]);
                 $message = $this->_helperData->getErrorMessage($response);
                 $this->_messageManager->addError(__($message));
@@ -840,6 +848,7 @@ class TicketManager
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
         $response = $this->getJsonDecodeResponse($response);
+        curl_close($ch);
         if ($info['http_code'] == 200) {
             return $response;
         } else {
@@ -852,7 +861,41 @@ class TicketManager
             $this->_messageManager->addError(__($message));
             return ['error'=>'true'];
         }
+    }
+
+    /**
+     * checkCredentials function check the credentials are correct or not before save in configuration
+     *
+     * @param string $access_token
+     * @param string $company_domain
+     * @return bool
+     */
+    public function checkCredentials($access_token = "", $company_domain = "") {
+        if (preg_match('/^\*+$/', $access_token)) {
+            $access_token = $this->_helperData->getAccessToken();
+        }
+        // Return  tickets 
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
+        $ch = curl_init($url);
+        $headers = array(
+            'Authorization: Bearer '.$access_token,
+        );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($output, 0, $header_size);
+        $response = substr($output, $header_size);
         curl_close($ch);
+        if($info['http_code'] == 200) {
+            return true;
+        } else  {
+            $response = $this->getJsonDecodeResponse($response);
+            $this->log('', ['response'=>$response, 'info'=>$info]);
+            return false;
+        }
     }
 
     /**

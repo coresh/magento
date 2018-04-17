@@ -75,12 +75,19 @@ class Tickets extends \Magento\Backend\Block\Template
     public function getAllTicketsAccToLabel()
     {
         $page = 1;
+        $isLabelId = false;
         $flag = $this->getRequest()->getParam('labels');
+        $flag1 = $this->getRequest()->getParam('labelsId');
         if (isset($flag)) {
             $page = $this->getRequest()->getParam('labels');
+        } else {
+            if (isset($flag1)) {
+                $page = $this->getRequest()->getParam('labelsId');
+                $isLabelId = true;
+            }
         }
-        $response = null;
-        $response = $this->_ticketManager->getAllTicketsAccToLabel($page);
+        $response = null;   
+        $response = $this->_ticketManager->getAllTicketsAccToLabel($page, $isLabelId);
         return $response;
     }
 
@@ -102,7 +109,15 @@ class Tickets extends \Magento\Backend\Block\Template
      */
     public function labelParamater()
     {
-        return $this->getRequest()->getParam('labels');
+        $label = $this->getRequest()->getParam('labels');
+        $labelId = $this->getRequest()->getParam('labelsId');
+        if (isset($label)) {
+            return $label;
+        } else {
+            if (isset($labelId))
+                return $labelId;
+        }
+        return null;
     }
 
     /**

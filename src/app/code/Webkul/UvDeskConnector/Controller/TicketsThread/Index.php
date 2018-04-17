@@ -11,12 +11,12 @@
 
 namespace Webkul\UvDeskConnector\Controller\TicketsThread;
 
-use Magento\Framework\App\Action\Action;
+use Webkul\UvDeskConnector\Controller\AbstractController;
 
 /**
  * Index class
  */
-class Index extends Action
+class Index extends AbstractController
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
@@ -47,11 +47,11 @@ class Index extends Action
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
     
-        parent::__construct($context);
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
         $this->_ticketsHelper = $ticketsHelper;
         $this->_jsonResultFactory = $jsonResultFactory;
+        parent::__construct($context, $resultPageFactory);
     }
 
     public function execute()

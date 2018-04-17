@@ -10,7 +10,7 @@
  */
 namespace Webkul\UvDeskConnector\Controller\CreateTicket;
 
-use Magento\Framework\App\Action\Action;
+use Webkul\UvDeskConnector\Controller\AbstractController;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\ResultFactory;
@@ -18,7 +18,7 @@ use Magento\Framework\Controller\ResultFactory;
 /**
  * Index class
  */
-class Index extends Action
+class Index extends AbstractController
 {
     /**
      * @var PageFactory
@@ -53,7 +53,7 @@ class Index extends Action
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
         $this->_ticketHelper = $ticketHelper;
-        parent::__construct($context);
+        parent::__construct($context, $resultPageFactory);
     }
 
     /**

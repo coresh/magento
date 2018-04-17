@@ -10,14 +10,14 @@
  */
 namespace Webkul\UvDeskConnector\Controller\DownloadAttachment;
 
-use Magento\Framework\App\Action\Action;
+use Webkul\UvDeskConnector\Controller\AbstractController;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
 /**
  * DownloadAttachment class
  */
-class DownloadAttachment extends Action
+class DownloadAttachment extends AbstractController
 {
     /**
      * @var PageFactory
@@ -52,7 +52,7 @@ class DownloadAttachment extends Action
         $this->_resultPageFactory = $resultPageFactory;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
         $this->_resultRawFactory = $resultRawFactory;
-        parent::__construct($context);
+        parent::__construct($context, $resultPageFactory);
     }
 
     /**

@@ -74,6 +74,22 @@ class AllTickets extends \Magento\Framework\View\Element\Template
         // if (!isset($pageNo)) {
         //     $pageNo = null;
         // }
+        if (!isset($customerUvdeskId)) {
+            $customerData = [];
+            $customerData['email'] = $this->_customerSession->getCustomer()->getEmail();
+            $customerData['firstName'] = $this->_customerSession->getCustomer()->getFirstname();
+            $customerData['lastName'] = $this->_customerSession->getCustomer()->getLastname();
+            $customerData['contactNumber'] = "";
+            $customerData['isActive'] = 1;
+            
+            $customerUvDeskData = $this->_ticketManagerCustomer->createCustomerAtUveDesk($customerData);
+            if(isset($customerUvDeskData['id'])){
+                $this->_customerSession->setCustomerUvdeskId($customerUvDeskData['id']);
+            }
+            else {
+                return $customerUvDeskData; 
+            }
+        }
         $tickets = $this->_ticketManagerCustomer->getAllTickets($page, $label, $tab, $agent, $customerUvdeskId, $group, $team, $priority, $type, $tag, $mailbox);
         return $this->_ticketHelper->formatData($tickets);
     }

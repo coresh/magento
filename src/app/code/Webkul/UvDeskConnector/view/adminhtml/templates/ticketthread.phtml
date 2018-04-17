@@ -59,7 +59,7 @@
 	            </a>
 	        <?php } ?>
 	        <?php foreach ($block->getAllTicketsAccToLabel()['labels']['custom'] as $key => $value) { ?>
-	            <a href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' style="color: #555;"><?php echo ucfirst($key); ?> <span class="label label-success"> <?php echo $value; ?></span>
+	            <a href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labelsId/'.$value['id'] ;?>' style="color: #555;"><?php echo ucfirst($value['name']); ?> <span class="label label-success"> <?php echo $value['count']; ?></span>
 	            </a>
 	        <?php } ?>
         </div>

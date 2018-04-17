@@ -11,9 +11,9 @@
 
 namespace Webkul\UvDeskConnector\Controller\TicketsThread;
 
-use Magento\Framework\App\Action\Action;
+use Webkul\UvDeskConnector\Controller\AbstractController;
 
-class RemoveCollaborator extends Action
+class RemoveCollaborator extends AbstractController
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
     protected $_resultPageFactory;
@@ -37,15 +37,17 @@ class RemoveCollaborator extends Action
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory,
         \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
     ) {
     
-        parent::__construct($context);
+        $this->_resultPageFactory = $resultPageFactory;
         $this->_jsonResultFactory = $jsonResultFactory;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
         $this->_ticketsHelper = $ticketsHelper;
+        parent::__construct($context, $resultPageFactory);
     }
 
     public function execute()

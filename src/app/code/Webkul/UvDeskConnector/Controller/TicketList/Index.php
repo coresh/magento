@@ -10,15 +10,14 @@
  */
 namespace Webkul\UvDeskConnector\Controller\TicketList;
 
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\App\RequestInterface;
+use Webkul\UvDeskConnector\Controller\AbstractController;
 
 /**
  * Index class
  */
-class Index extends Action
+class Index extends AbstractController
 {
     /**
      * @var PageFactory
@@ -69,23 +68,7 @@ class Index extends Action
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
         $this->_ticketsHelper = $ticketsHelper;
         $this->_jsonResultFactory = $jsonResultFactory;
-        parent::__construct($context);
-    }
-
-    /**
-     * Check customer is logged in or not ?
-     *
-     * @param RequestInterface $request
-     * @return \Magento\Framework\App\ResponseInterface
-     */
-    public function dispatch(RequestInterface $request)
-    {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
-        if (!$customerSession->authenticate()) {
-            $this->_actionFlag->set('', self::FLAG_NO_DISPATCH, true);
-        }
-        return parent::dispatch($request);
+        parent::__construct($context, $resultPageFactory);
     }
 
     /**

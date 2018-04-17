@@ -151,15 +151,15 @@ class TicketManagerCustomer
         $response = substr($server_output, $header_size);
         if ($info['http_code'] == 200 || $info['http_code'] == 201) {
             $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
-            $customerUvdeskId  = $this->_customerSession->getCustomerUvdeskId();
-            if (!isset($customerUvdeskId)) {
-                $customerEmail = $this->_customerSession->getCustomer()->getEmail();
-                $customerUvDeskData = $this->getCustomerFromEmail($customerEmail);
-                if (!empty($customerUvDeskData['customers'])) {
-                    $customerUvDeskId = $customerUvDeskData['customers'][0]['id'];
-                    $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
-                }
-            }
+            // $customerUvdeskId  = $this->_customerSession->getCustomerUvdeskId();
+            // if (!isset($customerUvdeskId)) {
+            //     $customerEmail = $this->_customerSession->getCustomer()->getEmail();
+            //     $customerUvDeskData = $this->getCustomerFromEmail($customerEmail);
+            //     if (!empty($customerUvDeskData['customers'])) {
+            //         $customerUvDeskId = $customerUvDeskData['customers'][0]['id'];
+            //         $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
+            //     }
+            // }
             return true;
         } else {
             $this->log('There is an error in creating ticket from customer end', ['response'=>$response, 'info'=>$info]);
@@ -486,6 +486,53 @@ class TicketManagerCustomer
             return ['error'=>true, 'error_description'=> __('There is some error in getting the ticket details. Please contact administration.')];
         }
         curl_close($ch);
+    }
+
+    /**
+     * createCustomerAtUvDesk function is use to create customer at uvdesk.
+     *
+     * @param array $customerData
+     * @return array
+     */
+    public function createCustomerAtUveDesk($customerData = []) {
+        $access_token = $this->getAccessToken();
+        if (isset($access_token['error'])) {
+            return $access_token;
+        }
+        $company_domain = $this->getCompanyDomainName();
+        if (isset($company_domain['error'])) {
+            return $company_domain;
+        }
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customers.json';
+        $customerData = json_encode($customerData);
+        $headers = [
+        "Authorization: Bearer ".$access_token
+        ];
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $customerData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $server_output = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($server_output, 0, $header_size);
+        $response = substr($server_output, $header_size);
+        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
+            return $this->getJsonDecodeResponse($response);
+        } else {
+            $response = $this->getJsonDecodeResponse($response);
+            $this->log('There is an error in creating customer at uvdesk end', ['response'=>$response, 'info'=>$info]);
+            if (isset($response['error'])) {
+                return $response;
+            }
+            return "";
+        }
     }
 
     /**

@@ -59,6 +59,7 @@ class GetTickets extends \Magento\Backend\App\Action
         $result = $this->_jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $label = $this->checkStatus('labels');
+        $labelId = $labelId = $this->checkStatus('labelsId'); 
         $tab = $this->checkStatus('tab');
         $agent = $this->checkStatus('agent');
         $customer = $this->checkStatus('customer');
@@ -68,7 +69,7 @@ class GetTickets extends \Magento\Backend\App\Action
         $type = $this->checkStatus('type');
         $tag = $this->checkStatus('tag');
         $mailbox =$this->checkStatus('mailbox');
-        $tickets = $this->_ticketManager->getAllTickets($page, $label, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
+        $tickets = $this->_ticketManager->getAllTickets($page, $label, $labelId, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
         $formatedTickets = $this->_ticketsHelper->formatData($tickets);
         return $result->setData($formatedTickets);
     }

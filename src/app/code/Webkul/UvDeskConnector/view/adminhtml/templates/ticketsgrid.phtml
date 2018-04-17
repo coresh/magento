@@ -15,6 +15,7 @@ if(!array_key_exists('error', $tickets)) {
     $lastPage = $tickets['pagination']['last'];
     $startPage = $tickets['pagination']['startPage'];
     $endPage = $tickets['pagination']['endPage'];
+    $totalCount = $tickets['pagination']['totalCount'];
     $selectedLabel = $block->labelParamater();
 } else if(array_key_exists('error', $tickets)) {
     $errorMessage = $block->getErrorMessage($tickets);
@@ -41,7 +42,7 @@ $tag            = $block->getFilterDataFor('tag');
                     <a class="<?php echo $block->selectedLabelClass($key); ?>" href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' id="<?php echo $key; ?>" style="font-weight:800;color: #333;text-decoration:none;"><?php echo ucfirst($key); ?> <span class="label label-success"><?php echo $value; ?></span></a>
                 <?php } ?>
                 <?php foreach ($tickets['labels']['custom'] as $key => $value) { ?>
-                    <a class="<?php echo $block->selectedLabelClass($key); ?>" href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labels/'.$key ;?>' id="<?php echo $key; ?>" style="font-weight:800;color: #333;text-decoration:none;"><?php echo ucfirst($key); ?> <span class="label label-success"><?php echo $value; ?></span></a>
+                    <a class="<?php echo $block->selectedLabelClass($value['id']); ?>" href='<?php echo $block->getUrl("uvdeskcon/tickets/index/");echo 'labelsId/'.$value['id'] ;?>' id="<?php echo $value['name']; ?>" style="font-weight:800;color: #333;text-decoration:none;"><?php echo ucfirst($value['name']); ?> <span class="label label-success"><?php echo $value['count']; ?></span></a>
                 <?php } ?>
               </div>
             </div>
@@ -224,7 +225,7 @@ $tag            = $block->getFilterDataFor('tag');
         </tbody>
     </table>
     <ul class="pagination">
-        <?php if($startPage != $endPage) {?>
+        <?php if($totalCount > 0 && ($startPage != $endPage)) {?>
             <?php if (isset($tickets['pagination']['previous']) && $tickets['pagination']['previous']!=0) { ?>
                 <li class='pagination-list uvdpagination' data=<?php echo $tickets['pagination']['previous']; ?>><a href="#">&laquo</a></li>
             <?php } ?>
