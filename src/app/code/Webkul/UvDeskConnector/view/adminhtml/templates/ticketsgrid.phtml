@@ -11,6 +11,7 @@
 -->
 <?php
 $tickets = $block->getAllTicketsAccToLabel();
+$baseUvdesAdminUrl = $this->getUrl('uvdeskcon/tickets/index');
 if(!array_key_exists('error', $tickets)) {
     $lastPage = $tickets['pagination']['last'];
     $startPage = $tickets['pagination']['startPage'];
@@ -272,6 +273,13 @@ $tag            = $block->getFilterDataFor('tag');
 		    'Magento_Ui/js/modal/confirm',
             'jquery/jquery-storageapi'
         ],function($, template,alert,confirmation){
+            $(window).on('beforeunload', function(e){
+                var url = "<?php echo $baseUvdesAdminUrl ;?>";
+                console.log(url);
+                if (history.pushState) {
+                    window.history.replaceState({}, "", url);
+                }
+            });
             $(document).ready(function(){
                 var addListAfterElemetId;
                 window.currentInputSearch = "";
@@ -316,7 +324,7 @@ $tag            = $block->getFilterDataFor('tag');
                     } else if (ticket_ids.length != 0) {
                                 confirmation({
                                     title: 'Confirm Action',
-                                    content: 'Are you sure?You want to perform this action.',
+                                    content: 'Are you sure you want to perform this action?',
                                     actions: {
                                         confirm: function(){
                                             $.ajax({
@@ -459,6 +467,7 @@ $tag            = $block->getFilterDataFor('tag');
                     'keyup':function(){
                         filterType = $(this).parent().attr('filter-type');
                         addListAfterElemetId = $(this).attr('id');
+                        var flag = 0;
                         if($(this).val().length>1)
                         {
                             var str = $(this).val();
@@ -470,12 +479,15 @@ $tag            = $block->getFilterDataFor('tag');
                                         var patt = new RegExp(str,'i');
                                         var res = patt.test(prop.name);
                                     if(res){
+                                        flag = 1;
                                      html+='<li filter-id="'+prop.id+'">'+prop.name+'</li>';
                                     }
                                  });
                             });
                             html += '</ul></div>';
-                            $(html).insertAfter("#"+addListAfterElemetId);
+                            if (flag == 1) {
+                                $(html).insertAfter("#"+addListAfterElemetId);
+                            }
                         }
                     },
                     'blur':function(){
@@ -659,7 +671,10 @@ $tag            = $block->getFilterDataFor('tag');
                     if(last[0] == '' && last[1] == ''){
                         var a = splitArray[0];
                         if(a.substring(a.length-1, a.length) == '/'){
-                            a = a.substring(0, a.length-1)
+                            a = a.substring(0, a.length-1);
+                        }
+                        if(aa.charAt(0) != '/'){
+                            aa = '/'+aa;
                         }
                         history.replaceState({}, "", a+aa);
                         pathname = window.location.pathname;
