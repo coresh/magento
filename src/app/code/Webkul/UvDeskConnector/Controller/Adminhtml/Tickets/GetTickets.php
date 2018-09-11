@@ -59,7 +59,7 @@ class GetTickets extends \Magento\Backend\App\Action
         $result = $this->_jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $label = $this->checkStatus('labels');
-        $labelId = $labelId = $this->checkStatus('labelsId'); 
+        $labelId = $labelId = $this->checkStatus('labelsId');
         $tab = $this->checkStatus('tab');
         $agent = $this->checkStatus('agent');
         $customer = $this->checkStatus('customer');

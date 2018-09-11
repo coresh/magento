@@ -22,24 +22,31 @@
 <div class="panell panel-default">
   <div class="panel-heading uvhead">
         <h3 class="panel-title pull-left"><?php /* @escapeNotVerified */ echo __('Ticket List') ?></h3>
-        <select class="pull-right" id="sort_ticket" style="margin-top:1%;margin-right:16%;width:12%;" title="Sort by">
+        <select class="pull-right" id="sort_ticket"  title="Sort by">
             <option value=""><?php /* @escapeNotVerified */ echo __('Sort By .......'); ?></option>
             <option value="t.id"><?php /* @escapeNotVerified */ echo __('Ticket Id'); ?></option>
             <option value="name"><?php /* @escapeNotVerified */ echo __('Agent Name'); ?></option>
         </select>
+        <select name="filter_status_res" id="filter_status_res"  title="<?php /* @escapeNotVerified */ echo __('please select filter status'); ?>" >
+            <option value=""><?php /* @escapeNotVerified */ echo __('All'); ?>
+            <?php foreach( $customerDetail['status'] as $status) { ?>
+                <option value="<?php echo $status['id']; ?>" > <?php echo $status['name']; ?> </option>
+            <?php } ?>
+        </select>
+        <button type="button" id="filter_button_res">Submit</button>
         <button id="uvdesk_create_ticket"><?php /* @escapeNotVerified */ echo __('Create Ticket') ?></button>
   </div>
     <div class="panel-body">
-        <div class="table table-bordered table-hover table-responsive">
-            <table style="width:100%">
+        <div class="table-wrapper orders-history">
+            <table class="data table table-order-items history">
                 <thead>
                     <tr>
-                        <th><?php /* @escapeNotVerified */ echo __('Ticket Id'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Status'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Subject'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Created On'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Agent'); ?></th>
-                        <th><?php /* @escapeNotVerified */ echo __('Action'); ?></th>
+                        <th scope="col" class="col ticket id"><?php /* @escapeNotVerified */ echo __('Ticket Id'); ?></th>
+                        <th scope="col" class="col status"><?php /* @escapeNotVerified */ echo __('Status'); ?></th>
+                        <th scope="col" class="col subject"><?php /* @escapeNotVerified */ echo __('Subject'); ?></th>
+                        <th scope="col" class="col createdon"><?php /* @escapeNotVerified */ echo __('Created On'); ?></th>
+                        <th scope="col" class="col agent"><?php /* @escapeNotVerified */ echo __('Agent'); ?></th>
+                        <th scope="col" class="col action"><?php /* @escapeNotVerified */ echo __('Action'); ?></th>
                     </tr>
                     <tr>
                         <th></th>
@@ -62,12 +69,12 @@
                 <tbody id="ticketBody">
                     <?php foreach ($customerDetail['ticket_data'] as $key=>$value) { ?>
                         <tr>
-                            <td><?php echo $value['incrementId'] ;?></td>
-                            <td style="color:<?php echo $value['status']['color']; ?>; font-weight: bold;"><?php echo $value['status']['name'] ;?></td>
-                            <td><?php echo $value['subject'] ;?></td>
-                            <td><?php echo $value['creation_date'] ;?></td>
-                            <td><?php echo $value['agent'] ;?></td>
-                            <td><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="_blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
+                            <td data-th="Ticket Id" class="col ticket id"><?php echo $value['incrementId'] ;?></td>
+                            <td data-th="Status" class="col status" style="color:<?php echo $block->escapeHtml($value['status']['color']); ?>; font-weight: bold;"><?php echo $value['status']['name'] ;?></td>
+                            <td data-th="Subject" class="col subject"><?php echo $block->escapeHtml($value['subject']) ?></td>
+                            <td data-th="Created On" class="col createdon"><?php echo $block->escapeHtml($value['creation_date']) ?></td>
+                            <td data-th="Agent" class="col agent"><?php echo $block->escapeHtml(($value['agent'])) ?></td>
+                            <td data-th="Action" class="col action"><a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<?php echo $value['id'] ?>/increment_id/<?php echo $value['incrementId']; ?>" target="_blank"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a></td>
                         </tr>
                     <?php } ?>
                 </tbody>
@@ -76,7 +83,7 @@
                     <tr>
                         <td colspan=6 style="text-align:center;vertical-align:middle;"><?php /* @escapeNotVerified */ echo __('No Ticket Found') ?></td>
                     </tr>
-                </tbody>     
+                </tbody>
     <?php } ?>
             </table>
             <?php if($customerDetail['pagination_data'][0]['pageCount']> 1) { ?>
@@ -129,13 +136,13 @@
                                 <div class="form-group required">
                                     <label for="input-subject" class=""><?php /* @escapeNotVerified */ echo __('Subject') ?></label>
                                     <br>
-                                    <input type="text" name="subject" id="subject" class="form-control validate-no-html-tags" placeholder="Enter Subject" value="" style="
+                                    <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter Subject" value="" style="
                                     margin-bottom: 10px;" data-validate="{required:true}">
                                 </div>
                                 <div class="form-group required">
                                     <label for="input-type">Message</label>
                                     <br>
-                                    <textarea name="message" id="message" class="form-control validate-no-html-tags" placeholder="Brief Description about your query" style="width:100%;" data-validate="{required:true}"></textarea>
+                                    <textarea name="message" id="message" class="form-control" placeholder="Brief Description about your query" style="width:100%;" data-validate="{required:true}"></textarea>
                                 </div>
                                 <div class="wk-uvdesk-attachments">
                                 <div class="attachment-div">
@@ -152,7 +159,7 @@
             </div>
         </div>
     </div>
-<?php } else { ?>  
+<?php } else { ?>
     <div id="popup-mpdal" style="display:none;">
         <div class="row">
             <div id="content" class="col-sm-12">
@@ -363,8 +370,11 @@
                 });
                 function getFiltersParameter() {
                     // var priority = $('#filter_priority').val();
-                    var status = $('#filter_status').val();
-                    // var agent = $('#filter_agent').val();
+                    if($(window).width() <= 540){
+                        var status = $('#filter_status_res').val();
+                    } else {
+                        var status = $('#filter_status').val();
+                    }
                     var sort = $('#sort_ticket').val();
                     var parameter = "" ;
                     // if ($('#filter_priority').val()!="") {
@@ -374,7 +384,7 @@
                     //         parameter += '/priority/'+priority;
                     //     }
                     // }
-                    if ($('#filter_status').val()!="") {
+                    if (status!="") {
                         if (parameter=="") {
                             parameter += 'status/'+status;
                         } else {
@@ -421,7 +431,7 @@
                     }
                 }
 
-                $("#filter_button").on('click',function(){
+                $("#filter_button, #filter_button_res").on('click',function(){
                     var parameter = getFiltersParameter();
                     parameter = addFiltersParameter(parameter);
                     $.ajax({
@@ -492,27 +502,27 @@
 <script id="ticket-template" type="text/x-magento-template">
  <tr>
 
-    <td class="text-center">
+    <td data-th="Ticket Id" class="col ticket id text-center">
       #<%- data.incrementId %>
     </td>
-    
-    <td class="text-center" style="color:<%- data.statusColor %>;font-weight: bold;">
+
+    <td data-th="Status" class="col status text-center" style="color:<%- data.statusColor %>;font-weight: bold;">
       <%- data.status %>
     </td>
 
-    <td class="text-center">
+    <td data-th="Subject" class="col subject text-center">
       <%- data.subject %>
     </td>
 
-    <td class="text-center">
+    <td data-th="Created On" class="col createdon text-center">
       <%- data.date %>
     </td >
 
-    <td class="text-center">
+    <td data-th="Agent" class="col agent text-center">
       <%- data.agent %>
     </td>
 
-    <td class="text-center">
+    <td data-th="Action" class="col action text-center">
       <a href="<?php echo $block->getUrl('uvdeskcon/ticketview/index'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="_blank" class="btn btn-info"><input type="button" class="uvdesk-frontend-thread-view" value="View"></a>
     </td>
  </tr>

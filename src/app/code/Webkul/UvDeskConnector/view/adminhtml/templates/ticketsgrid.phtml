@@ -2,7 +2,7 @@
 /**
  * Webkul Software.
  *
- * @category  Webkul 
+ * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
  * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
@@ -20,15 +20,15 @@ if(!array_key_exists('error', $tickets)) {
     $selectedLabel = $block->labelParamater();
 } else if(array_key_exists('error', $tickets)) {
     $errorMessage = $block->getErrorMessage($tickets);
-} 
+}
 $labelParameter = $block->labelParamater();
-$agent          = $block->getFilterDataFor('agent'); 
-$customer       = $block->getFilterDataFor('customer'); 
-$group          = $block->getFilterDataFor('group'); 
-$mailbox        = $block->getFilterDataFor('mailbox'); 
-$priority       = $block->getFilterDataFor('priority'); 
-$team           = $block->getFilterDataFor('team'); 
-$type           = $block->getFilterDataFor('type'); 
+$agent          = $block->getFilterDataFor('agent');
+$customer       = $block->getFilterDataFor('customer');
+$group          = $block->getFilterDataFor('group');
+$mailbox        = $block->getFilterDataFor('mailbox');
+$priority       = $block->getFilterDataFor('priority');
+$team           = $block->getFilterDataFor('team');
+$type           = $block->getFilterDataFor('type');
 $tag            = $block->getFilterDataFor('tag');
 ?>
 <div class="container-fluid">
@@ -125,7 +125,7 @@ $tag            = $block->getFilterDataFor('tag');
                 </div>
               </div>
             </div>
-        </div> 
+        </div>
     </div>
     <div class="panel panel-default col-md-9">
     <div class="panel-heading top-heading">
@@ -193,19 +193,19 @@ $tag            = $block->getFilterDataFor('tag');
                         </button>-->
                         <div class="dropdown-menu open" role="combobox" style="max-height: 199px; overflow: hidden; min-height: 43px;z-index:900;">
                             <div class="bs-searchbox">
-                                <input class="agentSearchInput form-control" type="text" class="form-control" autocomplete="off" role="textbox" aria-label="Search" data-ticketid= 
+                                <input class="agentSearchInput form-control" type="text" class="form-control" autocomplete="off" role="textbox" aria-label="Search" data-ticketid=
                                     "<?php echo $ticket['id']?>">
                             </div>
                             <ul class="dropdown-menu inner"  role="listbox" aria-expanded="true" style="max-height: 144px; overflow-y: auto; min-height: 0px;">
                             <?php foreach($agent['agent'] as $agentData) {?>
                                 <?php
-                                    $selected = ""; 
-                                    if($ticket['agent']['name'] == $agentData['name'] ){ 
+                                    $selected = "";
+                                    if($ticket['agent']['name'] == $agentData['name'] ){
                                         $selected = "selected active";
-                                    } 
-                                ?>  
+                                    }
+                                ?>
                                 <li  class="<?php echo $selected ; ?> agentLists">
-                                    <a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true" data-ticketid= 
+                                    <a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true" data-ticketid=
                                     "<?php echo $ticket['id']?>" data-agentid="<?php echo $agentData['id'] ;?>">
                                         <span class="text"><?php echo $agentData['name']; ?></span>
                                         <span class="glyphicon glyphicon-ok check-mark"></span>
@@ -216,12 +216,12 @@ $tag            = $block->getFilterDataFor('tag');
                             </ul>
                         </div>
                     </div>
-                    </td>                
-                    <td class="text-center"><a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread').'id/'.$ticket['id'].'/increment_id/'.$ticket['incrementId'];?>" target="_blank" class="btn btn-info"><?php /* @escapeNotVerified */ echo __('View') ?></a></td> 
-                </tr>                   
+                    </td>
+                    <td class="text-center"><a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread').'id/'.$ticket['id'].'/increment_id/'.$ticket['incrementId'];?>" target="_blank" class="btn btn-info"><?php /* @escapeNotVerified */ echo __('View') ?></a></td>
+                </tr>
             <?php } ?>
             <?php } else { ?>
-                    <tr><td class="text-center" colspan="9"><?php /* @escapeNotVerified */ echo __('No tickets Found!') ?></td></tr> 
+                    <tr><td class="text-center" colspan="9"><?php /* @escapeNotVerified */ echo __('No tickets Found!') ?></td></tr>
             <?php } ?>
         </tbody>
     </table>
@@ -252,7 +252,7 @@ $tag            = $block->getFilterDataFor('tag');
 
     </div>
     <?php } else { ?>
-            <div class="message message-error error"><div data-ui-id="messages-message-error"><?php echo $errorMessage; ?></div></div>       
+            <div class="message message-error error"><div data-ui-id="messages-message-error"><?php echo $errorMessage; ?></div></div>
     <?php } ?>
   </div>
 </div>
@@ -273,14 +273,23 @@ $tag            = $block->getFilterDataFor('tag');
 		    'Magento_Ui/js/modal/confirm',
             'jquery/jquery-storageapi'
         ],function($, template,alert,confirmation){
-            $(window).on('beforeunload', function(e){
-                var url = "<?php echo $baseUvdesAdminUrl ;?>";
-                console.log(url);
-                if (history.pushState) {
-                    window.history.replaceState({}, "", url);
-                }
-            });
             $(document).ready(function(){
+
+                /*to remove all the selected filters for tickets*/
+                $(window).on('load', function(){
+                    var pathname = window.location.pathname;
+                    var url      = window.location.href;
+                    var haveLabels = url.split('labels/');
+                    var baseUrl = "<?php echo $baseUvdesAdminUrl ;?>";
+                    if (haveLabels.length == 1) {
+                        window.history.replaceState({}, "", baseUrl);
+                    }
+                    if (haveLabels.length == 2) {
+                        $labels = haveLabels[1].split('/');
+                        window.history.replaceState({}, "", haveLabels[0]+'labels/'+$labels[0]);
+                    }
+                });
+
                 var addListAfterElemetId;
                 window.currentInputSearch = "";
                 var selectedPageNo = 0;
@@ -338,7 +347,7 @@ $tag            = $block->getFilterDataFor('tag');
                                                 complete: function(){
                                                     $("#wait").css("display", "none");
                                                 },
-                                                data 	: 	{	
+                                                data 	: 	{
                                                                 id 		: ticket_ids
                                                             },
                                                 success : 	function(data){
@@ -359,8 +368,11 @@ $tag            = $block->getFilterDataFor('tag');
                 $('.pagination').on('click','li',function(){
                     $('.pagination li').removeClass('active');
                     pageNo = $(this).attr('data');
-                    selectedPageNo = pageNo; 
-                    $(this).addClass('active'); 
+                    if (pageNo == undefined) {
+                        return false;
+                    }
+                    selectedPageNo = pageNo;
+                    $(this).addClass('active');
                     var parameter = addPageNo(pageNo);
                     ajaxRequest(parameter,1);
                 });
@@ -392,7 +404,7 @@ $tag            = $block->getFilterDataFor('tag');
                 $('body').on('click','span.agentButton',function(){
                         $('div.bootstrap-select').attr('class','btn-group bootstrap-select');
                         $(this).siblings('div').toggleClass('open');
-                        window.selectedAgentListObject = $(this).siblings('div'); 
+                        window.selectedAgentListObject = $(this).siblings('div');
                     }
                 );
                 $('body').on('click','li.agentLists',function(){
@@ -401,7 +413,7 @@ $tag            = $block->getFilterDataFor('tag');
                         var agentId  = $(this).children('a').data('agentid');
                         var SelectedAgentName  = $(this).children('a').children('span:first-child').text();
                         window.selectedAgentListObject.attr('class','btn-group bootstrap-select');
-                        agentAssignAjaxRequest(ticketId,agentId,currentAgentSelector,SelectedAgentName);   
+                        agentAssignAjaxRequest(ticketId,agentId,currentAgentSelector,SelectedAgentName);
                     }
                 );
                 $('body').on('keyup','.agentSearchInput',function(){
@@ -420,7 +432,7 @@ $tag            = $block->getFilterDataFor('tag');
                                     d.id = prop.id;
                                     d.name = prop.name;
                                     d.ticketId = $ticketId;
-                                    agentDataa.push(d); 
+                                    agentDataa.push(d);
                                 }
                                 });
                             });
@@ -503,8 +515,8 @@ $tag            = $block->getFilterDataFor('tag');
                     if(ar.indexOf(id)<0)
                     {
                         var html = '<span class="label label-info">'+name+'<i class="fa fa-times remove" filter-id="'+id+'"></i></span>';
-                        $(html).insertBefore(refer.parent().parent().parent()); 
-                        $('#'+addListAfterElemetId).val(name);
+                        $(html).insertBefore(refer.parent().parent().parent());
+                        $('#'+addListAfterElemetId).val('');
                         ar.push(id);
                         var parameter = addFiltersId(filterType,id);
                         ajaxRequest(parameter,1);
@@ -529,25 +541,25 @@ $tag            = $block->getFilterDataFor('tag');
                     switch ($type) {
                         case 'agent':
                         return agent_array;
-                        break;                        
+                        break;
                         case 'customer':
                         return customer_array;
-                        break;                        
+                        break;
                         case 'group':
                         return group_array;
-                        break;                        
+                        break;
                         case 'priority':
                         return priority_array;
-                        break;                        
+                        break;
                         case 'mailbox':
                         return mailbox_array;
-                        break;                        
+                        break;
                         case 'team':
                         return team_array;
-                        break;                        
+                        break;
                         case 'type':
                         return type_array;
-                        break;                        
+                        break;
                         case 'tag':
                         return tag_array;
                         break;
@@ -582,7 +594,7 @@ $tag            = $block->getFilterDataFor('tag');
                         var a = splitArray[0]+'tab/'+$id+'/'+aa;
                         // var x = splitArray[1].split('/');
                         // if(x.length>=2){
-                        //     a+'/'+x[1];    
+                        //     a+'/'+x[1];
                         // }
                         var havePageNo = a.split('pageNo/');
                         if(havePageNo.length<2){
@@ -615,10 +627,10 @@ $tag            = $block->getFilterDataFor('tag');
                         var a = splitArray[0]+$filtertype+'/'+$id+','+splitArray[1];
                         var x = splitArray[1].split('/')
                         if(x.length>=2){
-                            a+'/'+x[1];    
+                            a+'/'+x[1];
                         }
-                        
-                        history.replaceState({}, "", a);                        
+
+                        history.replaceState({}, "", a);
                         pathname = window.location.pathname;
                         var pathnameSplit = pathname.split('key/');
                         return pathnameSplit[1].split('/').slice(1).join('/');
@@ -644,15 +656,15 @@ $tag            = $block->getFilterDataFor('tag');
                         var a = splitArray[0]+'pageNo/'+$pageNo+'/'+aa;
                         // var x = splitArray[1].split('/');
                         // if(x.length>=2){
-                        //     a+'/'+x[1];    
+                        //     a+'/'+x[1];
                         // }
-                        
+
                         history.replaceState({}, "", a);
                         pathname = window.location.pathname;
                         var pathnameSplit = pathname.split('key/');
                         return pathnameSplit[1].split('/').slice(1).join('/');
                     }
-                }    
+                }
                 function removeFiltersId($filterType,$id){
                     var pathname = window.location.pathname; // Returns path only
                     var url      = window.location.href;
@@ -661,13 +673,13 @@ $tag            = $block->getFilterDataFor('tag');
                     var splitArray2 = splitArray[1].split('/');
                     var last = splitArray2[0].split($id);
                     if(splitArray2[0] == '' && splitArray2[1] == '/'){
-                        splitArray[0] = splitArray[0].substring(0, splitArray[0].length-1);         
+                        splitArray[0] = splitArray[0].substring(0, splitArray[0].length-1);
                         var a = splitArray[0];
                         history.replaceState({}, "", a);
                         pathname = window.location.pathname;
                         var pathnameSplit = pathname.split('key/');
                         return pathnameSplit[1].split('/').slice(1).join('/');
-                    }                    
+                    }
                     if(last[0] == '' && last[1] == ''){
                         var a = splitArray[0];
                         if(a.substring(a.length-1, a.length) == '/'){
@@ -682,7 +694,7 @@ $tag            = $block->getFilterDataFor('tag');
                         return pathnameSplit[1].split('/').slice(1).join('/');
                     }
                     if(last[0] == '' && last[1] != ''){
-                        last[1] = last[1].substring(1, last[1].length);                        
+                        last[1] = last[1].substring(1, last[1].length);
                         // splitArray2[1] = splitArray2[1].splice(1);
                         var a = splitArray[0]+$filterType+'/'+last[1]+aa;
                         history.replaceState({}, "", a);
@@ -737,7 +749,7 @@ $tag            = $block->getFilterDataFor('tag');
                             });
                             if(employee == ""){
                                 employee = '<tr><td class="text-center" colspan="9">No Tickets Found!</td></tr>';
-                            }                            
+                            }
                             $.each($data['tab_data'], function() {
                                 var employeTabTemplate = template('#employeetab-template');
                                  employeTab += employeTabTemplate({
@@ -765,15 +777,15 @@ $tag            = $block->getFilterDataFor('tag');
                                                     }
                                     });
                                 });
-                            $('.pagination').html(ticketPagination);                                
+                            $('.pagination').html(ticketPagination);
                             }
 
-                            $('#ticket-body').html(employee);                                                       
+                            $('#ticket-body').html(employee);
                             $('.uvdesk_navbar').html(employeTab);
-                            $("[tab-id='"+activeTabId+"']").addClass('active');                                                         
+                            $("[tab-id='"+activeTabId+"']").addClass('active');
                         }
                     });
-               } 
+               }
                function agentAssignAjaxRequest($ticketId,$agentId,$currentAgentSelector,$SelectedAgentName){
                    $.ajax({
                         url:"<?php echo $block->getUrl('uvdeskcon/tickets/agentassign')?>",
@@ -791,7 +803,7 @@ $tag            = $block->getFilterDataFor('tag');
                         },
                        success:function($data){
                         if($data['info']['http_code'] == 200) {
-                            $currentAgentSelector.text($SelectedAgentName);   
+                            $currentAgentSelector.text($SelectedAgentName);
                             alert({
                                 title: 'Agent Assignment Process..',
                                 content: "Success ! Agent successfully assigned.",
@@ -816,7 +828,7 @@ $tag            = $block->getFilterDataFor('tag');
                             actions: {
                                 always: function(){}
                             }
-                        });                           
+                        });
                        }
                    });
                }
@@ -837,19 +849,19 @@ $tag            = $block->getFilterDataFor('tag');
 
         <td class="text-center">
            <%- data.name %>
-       </td>  
+       </td>
 
        <td class="text-center">
            <%- data.subject %>
-       </td>  
+       </td>
 
        <td class="text-center">
            <%- data.date %>
-       </td > 
+       </td >
 
        <td class="text-center">
            <label class="label label-info"><%- data.replies %></label>
-       </td> 
+       </td>
        <td class="">
             <span class="badge agentButton" style="margin-left:37px;">
                 <i class="fa fa-pencil"></i>
@@ -872,7 +884,7 @@ $tag            = $block->getFilterDataFor('tag');
                         </ul>
                     </div>
                 </div>
-       </td> 
+       </td>
        <td class="text-center">
            <a href="<?php echo $block->getUrl('uvdeskcon/tickets/ticketthread'); ?>id/<%- data.ticket %>/increment_id/<%- data.incrementId %>" target="_blank" class="btn btn-info">View</a>
        </td>

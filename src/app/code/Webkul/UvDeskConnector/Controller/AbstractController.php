@@ -54,7 +54,7 @@ abstract class AbstractController extends Action
             $this->_actionFlag->set('', self::FLAG_NO_DISPATCH, true);
         }
         if (!$dataHelper->getAvilabilityOfUvdesk()) {
-            if ( $request->getFullActionName() == 'uvdeskcon_createticket_index') {
+            if ($request->getFullActionName() == 'uvdeskcon_createticket_index') {
                 $this->messageManager->addError(__("The UvDesk module is disable from the configuration. Please contact Admin"));
                 $this->_redirect('');
             }

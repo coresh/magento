@@ -132,13 +132,11 @@
     <?php foreach(array_reverse($ticketThread['threads']) as $key=>$value){?>
       <div class="thread">
         <div class="col-sm-12 thread-created-info text-center">
-          <span class="info">
-            <span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span>
-            <?php
-              echo $value['user']['detail'][$value['userType']]['name'];
-            ?> replied
+          <span class=""><?php echo $value['formatedCreatedAt'];?> -
           </span>
-          <span class="text-right date pull-right"><?php echo $value['formatedCreatedAt'];?>
+          <span class="info">
+            <span><?php echo $value['user']['detail'][$value['userType']]['name']; ?> replied -</span>
+            <span id="thread<?php echo $value['id'];?>" class="copy-thread-link">#<?php echo $value['id'];?></span>
           </span>
         </div>
         <div class="col-sm-12">
@@ -399,11 +397,11 @@
 <script id="ticket-thread-template" type="text/x-magento-template">
    <div class="thread">
     <div class="col-sm-12 thread-created-info text-center">
-      <span class="info">
-        <span id="thread<%- data.id %>" class="copy-thread-link">#<%- data.id %></span>
-        <%- data.name %> replied
+      <span class="text-right date pull-right"><%- data.formatedCreatedAt %> -
       </span>
-      <span class="text-right date pull-right"><%- data.formatedCreatedAt %>
+      <span class="info">
+        <span><%- data.name %> replied -</span>
+        <span id="thread<%- data.id %>" class="copy-thread-link">#<%- data.id %></span>
       </span>
     </div>
     <div class="col-sm-12">

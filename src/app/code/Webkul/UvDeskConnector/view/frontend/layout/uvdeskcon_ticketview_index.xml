@@ -21,9 +21,7 @@
     <body>
         <referenceContainer name="content">
             <referenceBlock name="authentication-popup" remove="true"/>
-            <block class="Webkul\UvDeskConnector\Block\TicketView" name="customer_editss" template="Webkul_UvDeskConnector::ticketthread.phtml" cacheable="false">
-                <!-- <container name="form.additional.info" as="form_additional_info"/> -->
-            </block>
+            <block class="Webkul\UvDeskConnector\Block\TicketView" name="customer_editss" template="Webkul_UvDeskConnector::ticketthread.phtml" cacheable="false"/>
         </referenceContainer>
     </body>
 </page>

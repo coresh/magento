@@ -494,7 +494,8 @@ class TicketManagerCustomer
      * @param array $customerData
      * @return array
      */
-    public function createCustomerAtUveDesk($customerData = []) {
+    public function createCustomerAtUveDesk($customerData = [])
+    {
         $access_token = $this->getAccessToken();
         if (isset($access_token['error'])) {
             return $access_token;
@@ -714,14 +715,14 @@ class TicketManagerCustomer
          if ($info['http_code'] == 200 || $info['http_code'] == 201) {
              $this->_messageManager->addSuccess(__('Success ! Reply added successfully.'));
              return true;
-            } else {
+         } else {
                 $response = $this->getJsonDecodeResponse($response);
                 $this->log('There is an error in adding reply to ticket at customer end.', ['response'=>$response, 'info'=>$info]);
                 if (isset($response['error'])) {
                     return $response;
-                   }
+                }
                 return ['error'=>true, 'error_description'=>__('There is an error in adding reply to ticket')];
-         }
+               }
             curl_close($ch);
     }
 

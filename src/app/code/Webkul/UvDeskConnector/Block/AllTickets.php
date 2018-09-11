@@ -81,13 +81,12 @@ class AllTickets extends \Magento\Framework\View\Element\Template
             $customerData['lastName'] = $this->_customerSession->getCustomer()->getLastname();
             $customerData['contactNumber'] = "";
             $customerData['isActive'] = 1;
-            
+
             $customerUvDeskData = $this->_ticketManagerCustomer->createCustomerAtUveDesk($customerData);
-            if(isset($customerUvDeskData['id'])){
+            if (isset($customerUvDeskData['id'])) {
                 $this->_customerSession->setCustomerUvdeskId($customerUvDeskData['id']);
-            }
-            else {
-                return $customerUvDeskData; 
+            } else {
+                return $customerUvDeskData;
             }
         }
         $tickets = $this->_ticketManagerCustomer->getAllTickets($page, $label, $tab, $agent, $customerUvdeskId, $group, $team, $priority, $type, $tag, $mailbox);

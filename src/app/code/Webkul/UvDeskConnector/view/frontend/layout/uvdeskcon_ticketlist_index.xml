@@ -29,7 +29,6 @@
         </referenceBlock>
         <referenceContainer name="content">
             <block class="Webkul\UvDeskConnector\Block\AllTickets" name="customer_edit" template="Webkul_UvDeskConnector::ticketlist.phtml" cacheable="false">
-                <!-- <container name="form.additional.info" as="form_additional_info"/> -->
             </block>
         </referenceContainer>
     </body>

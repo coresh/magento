@@ -67,9 +67,9 @@
                   <i class="fa fa-trash removeCollaborator"></i></div>
               </div>
             <?php } ?>
-          <?php } else {?>  
+          <?php } else {?>
               <div class="coll-div noCollaboratordiv" style="margin: 10px 0;"><?php echo __("There is no collaborator available for this ticket."); ?></div>
-          <?php } ?>                
+          <?php } ?>
         </div>
       </div>
       <div class="collab-input">
@@ -79,12 +79,12 @@
   </div>
   <div class="panel panel-default col-sm-9">
         <div id="ticket-detail">
-          <h3 class="pull-left"><?php /* @escapeNotVerified */ echo __('#') ?><?php echo $ticketData['ticket']['incrementId']." ".$ticketData['ticket']['subject'];?></h3>
+          <h3 class="pull-left"><?php /* @escapeNotVerified */ echo __('#') ?><?php echo $ticketData['ticket']['incrementId']." ".$block->escapeHtml($ticketData['ticket']['subject']); ?></h3>
           <div style="clear: both;">
-                      <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Status"><?php echo $ticketData['ticket']['status']['name'];?></span>
-                                <span class="label label-warning" title="" data-toggle="tooltip" data-original-title="Priority"><?php echo $ticketData['ticket']['type']['name'];?></span>
-                                <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Type"><?php echo $ticketData['ticket']['priority']['name'];?></span>
-                      <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Threads"><?php echo $ticketData['ticketTotalThreads'];?></span>
+                      <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Status"><?php echo $ticketData['ticket']['status']['name']; ?></span>
+                                <span class="label label-warning" title="" data-toggle="tooltip" data-original-title="Priority"><?php echo $ticketData['ticket']['type']['name']; ?></span>
+                                <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Type"><?php echo $ticketData['ticket']['priority']['name']; ?></span>
+                      <span class="label label-info" title="" data-toggle="tooltip" data-original-title="Threads"><?php echo $ticketData['ticketTotalThreads']; ?></span>
             <span class="label label-success" title="" data-toggle="tooltip" data-original-title="Agent"><i class="fa fa-user"></i></span>
             <span>
           <?php echo $ticketData['ticket']['agent']['detail']['agent']['name'];?>
@@ -204,7 +204,7 @@
                 <div class="reply border-none">
                   <?php echo $block->getBlockHtml('formkey')?>
                   <div class="control">
-                    <textarea name="product[description]" class="required-entry input-text" id="description" rows="5" cols="75" ></textarea>							
+                    <textarea name="product[description]" class="required-entry input-text" id="description" rows="5" cols="75" ></textarea>
                       <script>
                       require([
                           'jquery',
@@ -278,17 +278,19 @@
             'mage/loader'
         ],function($, template, alert){
             $(document).ready(function(){
-              $('#addCollaborator').keypress(function(event){
+              var $addCollaborator = $('#addCollaborator');
+              $addCollaborator.keypress(function(event){
                 $inputRef = this;
                 if(event.keyCode == 13){
                   if(validateEmail($(this).val())){
                     var parameter =  "<?php echo 'ticketId/'.$ticketId.'/email/';?>"+$(this).val();
-                      $.ajax({ 
+                      $.ajax({
                           url:"<?php echo $block->getUrl('uvdeskcon/ticketsthread/addcollaborater')?>"+parameter,
                           type:"GET",
                           dataType:"json",
                           beforeSend:function(){
                               $("#wait").css("display", "block");
+                              $addCollaborator.val('');
                           },
                           complete: function(){
                               $("#wait").css("display", "none");
@@ -313,12 +315,14 @@
                             } else if(typeof $data['error'] !== "undefined") {
                               var message = "We cannot process your request.Please contact administration";
                               var errorHtml = '<div class="text-danger" style="padding:5px;">'+message+'</div>';
+                              $($inputRef).parent().find('.text-danger').remove('.text-danger');
                               $($inputRef).parent().append(errorHtml);
                               $('.text-danger').fadeOut(3000, function(){ $(this).remove();});
-                            } 
+                            }
                           }
                       });
                   } else {
+                    $(this).parent().find('.text-danger').remove('.text-danger');
                     $(this).parent().append('<div class="text-danger" style="margin-left: 5px;">Please enter a valid email</div>');
                     $('.text-danger').fadeOut(3000, function(){ $(this).remove();});
                   }
@@ -333,7 +337,7 @@
                   return false;
                 }
                 var parameter =  "<?php echo 'ticketId/'.$ticketId.'/collaboratorId/';?>"+$collaboratorId;
-                        $.ajax({ 
+                        $.ajax({
                           url:"<?php echo $block->getUrl('uvdeskcon/ticketsthread/removecollaborator')?>"+parameter,
                           type:"GET",
                           dataType:"json",
@@ -368,23 +372,17 @@
                 $(":submit").click(function(e) {
                     e.preventDefault();
                     if ($("#edit-ticket").valid()!==false) {
-                    /*if ($('#custom_wysiwyg_ifr').length) {
-                            var desc = $('#custom_wysiwyg_ifr').contents().find('#tinymce').text();
-                            $('#custom_wysiwyg-error').remove();
-                            if (desc === "" || desc === null) {
-                                $('#custom_wysiwyg-error').remove();
-                                $('#custom_wysiwyg').parent().find("#error").append('<div class="mage-error" generated="true" id="custom_wysiwyg-error">This is a required field.</div>');
-                            }
-                            if (desc !== "" && desc !== null) {*/
-                                $('#save-btn span span').text("Saving"+'....');
-                                $('#save-btn').css('opacity','0.7');
-                                $('#save-btn').css('cursor','default');
-                                $('#save-btn').attr('disabled','disabled');
-                                $('#edit-ticket').submit();
-                          /*} else {
-                                return false;
-                            }
-                        }*/
+                      if ($('#description').val() == "") {
+                        $('#custom_wysiwyg-error').remove();
+                        $('#description').parent().prepend('<div class="mage-error" generated="true" id="custom_wysiwyg-error">This is a required field.</div>');
+                        return false;
+                      } else {
+                        $('#save-btn span span').text("Saving"+'....');
+                        $('#save-btn').css('opacity','0.7');
+                        $('#save-btn').css('cursor','default');
+                        $('#save-btn').attr('disabled','disabled');
+                        $('#edit-ticket').submit();
+                      }
                     }
                 });
                 var x;

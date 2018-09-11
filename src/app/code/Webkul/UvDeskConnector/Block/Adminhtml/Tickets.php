@@ -27,7 +27,7 @@ class Tickets extends \Magento\Backend\Block\Template
      * @var \Magento\Framework\Json\EncoderInterface
      */
     protected $jsonEncoder;
-    
+
     /**
      * @var \Webkul\UvDeskConnector\Helper\Data
      */
@@ -86,9 +86,26 @@ class Tickets extends \Magento\Backend\Block\Template
                 $isLabelId = true;
             }
         }
-        $response = null;   
+        $response = null;
         $response = $this->_ticketManager->getAllTicketsAccToLabel($page, $isLabelId);
+
+        /*to change the blank agent name in to 'unassigned'*/
+        array_walk($response['tickets'], [$this, 'changeAgentNameToUnassigned']);
         return $response;
+    }
+
+    /**
+     * changeAgentNameToUnassigned function to change the blank agent name in to 'unassigned'
+     *
+     * @param array $value
+     * @param array $key
+     * @return void
+     */
+    public function changeAgentNameToUnassigned(&$value, $key)
+    {
+        if ($value['agent'] == '') {
+            $value['agent']['name'] = 'unassigned';
+        }
     }
 
     /**
@@ -114,8 +131,9 @@ class Tickets extends \Magento\Backend\Block\Template
         if (isset($label)) {
             return $label;
         } else {
-            if (isset($labelId))
+            if (isset($labelId)) {
                 return $labelId;
+            }
         }
         return null;
     }

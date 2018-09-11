@@ -22,17 +22,17 @@ class TicketManager
      * @var \Webkul\UvDeskConnector\Helper\Data
      */
     protected $_helperData;
-    
+
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $_messageManager;
-    
+
     /**
      * @var \Magento\Customer\Model\Session
      */
     protected $_customerSession;
-    
+
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
@@ -59,7 +59,7 @@ class TicketManager
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         UvdeskLogger $uvdeskLogger
     ) {
-    
+
         $this->_helperData = $helperData;
         $this->_messageManager = $messageManager;
         $this->_customerSession = $customerSession;
@@ -645,7 +645,7 @@ class TicketManager
          if ($info['http_code'] == 200 || $info['http_code'] == 201) {
              $this->_messageManager->addSuccess(__('Success ! Reply added successfully.'));
              return true;
-            } else {
+         } else {
                 $this->log('', ['response'=>$response, 'info'=>$info]);
                 $message = $this->_helperData->getErrorMessage($response);
                 $this->_messageManager->addError(__($message));
@@ -870,16 +870,17 @@ class TicketManager
      * @param string $company_domain
      * @return bool
      */
-    public function checkCredentials($access_token = "", $company_domain = "") {
+    public function checkCredentials($access_token = "", $company_domain = "")
+    {
         if (preg_match('/^\*+$/', $access_token)) {
             $access_token = $this->_helperData->getAccessToken();
         }
-        // Return  tickets 
+        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
         $ch = curl_init($url);
-        $headers = array(
+        $headers = [
             'Authorization: Bearer '.$access_token,
-        );
+        ];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -889,9 +890,9 @@ class TicketManager
         $headers = substr($output, 0, $header_size);
         $response = substr($output, $header_size);
         curl_close($ch);
-        if($info['http_code'] == 200) {
+        if ($info['http_code'] == 200) {
             return true;
-        } else  {
+        } else {
             $response = $this->getJsonDecodeResponse($response);
             $this->log('', ['response'=>$response, 'info'=>$info]);
             return false;
@@ -945,5 +946,48 @@ class TicketManager
     public function log($message = "", $data = [])
     {
         $this->_logger->critical($message, $data);
+    }
+
+    /**
+     * getTheDetailOfEnteredTokenAgent function check the credentials have admin level access
+     *
+     * @param string $access_token
+     * @param string $company_domain
+     * @return bool
+     */
+    public function getTheDetailOfEnteredTokenAgent($access_token = "", $company_domain = "")
+    {
+        if (preg_match('/^\*+$/', $access_token)) {
+            $access_token = $this->_helperData->getAccessToken();
+        }
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/me.json';
+        $ch = curl_init($url);
+        $headers = [
+        'Authorization: Bearer '.$access_token,
+        ];
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($output, 0, $header_size);
+        $response = substr($output, $header_size);
+        $response = $this->getJsonDecodeResponse($response);
+        $flag = 0;
+        if ($info['http_code'] == 200) {
+            foreach ($response['roles'] as $data) {
+                if ($data == 'ROLE_SUPER_ADMIN' || $data == 'ROLE_ADMIN') {
+                    $flag = 1;
+                    break;
+                }
+            }
+            return $flag;
+        } else {
+            $this->log('', ['response'=>$response, 'info'=>$info]);
+            return $flag;
+        }
+        curl_close($ch);
     }
 }
