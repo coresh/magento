@@ -25,17 +25,17 @@ class Index extends AbstractController
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
     
     /**
      * @var \Webkul\UvDeskConnector\Model\TicketManagerCustomer
      */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
     
     /**
      * @var \Webkul\UvDeskConnector\Helper\Tickets
      */
-    protected $_ticketHelper;
+    private $ticketHelper;
 
     /**
      * @param Context                                             $context
@@ -47,29 +47,14 @@ class Index extends AbstractController
         Context $context,
         PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer,
-        \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper
+        \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper,
+        \Magento\Customer\Model\Session $customerSession
     ) {
-    
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketHelper = $ticketHelper;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->ticketHelper = $ticketHelper;
+        $this->customerSession = $customerSession;
         parent::__construct($context, $resultPageFactory);
-    }
-    
-    /**
-     * Check customer is logged in or not ?
-     *
-     * @param RequestInterface $request
-     * @return \Magento\Framework\App\ResponseInterface
-     */
-    public function dispatch(RequestInterface $request)
-    {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
-        if (!$customerSession->authenticate()) {
-            $this->_actionFlag->set('', self::FLAG_NO_DISPATCH, true);
-        }
-        return parent::dispatch($request);
     }
 
     /**
@@ -80,12 +65,12 @@ class Index extends AbstractController
     public function execute()
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultPage = $this->_resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
         $post = $this->getRequest()->getParams();
         $attachments = $this->getRequest()->getFiles();
         $error = 0;
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
-        if (!$this->_ticketHelper->ticketValidation($post['increment_id'])) {
+        if (!$this->ticketHelper->ticketValidation($post['increment_id'])) {
             $this->messageManager->addError(__('The ticket trying to view is not accessible'));
             $resultRedirect->setPath(
                 'customer/account/'
@@ -94,8 +79,7 @@ class Index extends AbstractController
         }
         $tickeIncrementId = isset($post['increment_id'])?$post['increment_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
-        $email = $this->_ticketHelper->getLoggedInUserDetail()['email'];
-        // $actAsType = 'customer';
+        $email = $this->ticketHelper->getLoggedInUserDetail()['email'];
         if (isset($post['addReply']) && $post['addReply'] ==  1) {
             $lineEnd = "\r\n";
             $mime_boundary = md5(time());
@@ -109,7 +93,6 @@ class Index extends AbstractController
             $data .= 'Content-Disposition: form-data; name="status"' . $lineEnd . $lineEnd;
             $data .= "1". $lineEnd;
             $data .= '--' . $mime_boundary . $lineEnd;
-            // attachements
             if (isset($attachments['attachment']) && $attachments['attachment'][0]['error'] != 4) {
                 foreach ($attachments['attachment'] as $key => $file) {
                     if ($file['error'] == 1) {
@@ -122,9 +105,9 @@ class Index extends AbstractController
                     $fileType = $file['type'];
                     $fileName =  $file['name'];
                     $fileTmpName =  $file['tmp_name'];
-                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' . addslashes($fileName) . '"' . $lineEnd;
+                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' .
+                    addslashes($fileName) . '"' . $lineEnd;
                     $data .= "Content-Type: $fileType" . $lineEnd . $lineEnd;
-                    // $data .= "Content-Length:" . filesize($fileTmpName).$lineEnd . $lineEnd;
                     $data .= file_get_contents($fileTmpName) . $lineEnd;
                     $data .= '--' . $mime_boundary . $lineEnd;
                 }
@@ -146,7 +129,12 @@ class Index extends AbstractController
                 );
                 return $resultRedirect;
             }
-            $response = $this->_ticketManagerCustomer->addReplyToTicket($ticketId, $tickeIncrementId, $data, $mime_boundary);
+            $response = $this->ticketManagerCustomer->addReplyToTicket(
+                $ticketId,
+                $tickeIncrementId,
+                $data,
+                $mime_boundary
+            );
             if (isset($response['error'])) {
                 if (isset($response['error_description'])) {
                     $this->messageManager->addError(__($response['error_description']));

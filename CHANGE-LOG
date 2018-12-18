@@ -3,6 +3,9 @@ Legend
 + Features
 - Bugs
 
+-------------------------------- Version 2.0.5 ---------------------------------------
+			-Fixed minor issues.
+
 -------------------------------- Version 2.0.4 ---------------------------------------
 			+Implement the UvDesk credential validation in the configuration at the time of saving it.
 			-Remove the column "Priority" and "Reply" from frontend ticket table as it is of no use.
@@ -32,3 +35,4 @@ Legend
 			+Admin can delete any ticket.
 			+Customers can reply to tickets from their magento store account on front-end.
 			+Real time synchronization between Uvdesk Helpdesk System and magento Store tickets.
+

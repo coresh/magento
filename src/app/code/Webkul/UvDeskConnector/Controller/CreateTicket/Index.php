@@ -23,17 +23,17 @@ class Index extends AbstractController
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
     
     /**
      * @var \Webkul\UvDeskConnector\Model\TicketManagerCustomer
      */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
     
     /**
      * @var \Webkul\UvDeskConnector\Helper\Tickets
      */
-    protected $_ticketHelper;
+    private $ticketHelper;
 
     /**
      * __construct function
@@ -50,9 +50,9 @@ class Index extends AbstractController
         \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper
     ) {
     
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketHelper = $ticketHelper;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->ticketHelper = $ticketHelper;
         parent::__construct($context, $resultPageFactory);
     }
 
@@ -61,11 +61,11 @@ class Index extends AbstractController
      */
     public function execute()
     {
-        $resultPage = $this->_resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
         $post = $this->getRequest()->getParams();
         $attachments = $this->getRequest()->getFiles();
         $error = 0;
-        $customerDetail = $this->_ticketHelper->getLoggedInUserDetail();
+        $customerDetail = $this->ticketHelper->getLoggedInUserDetail();
         $lineEnd = "\r\n";
         $mime_boundary = md5(time());
         $data = '--' . $mime_boundary . $lineEnd;
@@ -97,9 +97,9 @@ class Index extends AbstractController
                     $fileType = $file['type'];
                     $fileName =  $file['name'];
                     $fileTmpName =  $file['tmp_name'];
-                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' . addslashes($fileName) . '"' . $lineEnd;
+                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' .
+                    addslashes($fileName) . '"' . $lineEnd;
                     $data .= "Content-Type: $fileType" . $lineEnd . $lineEnd;
-                    // $data .= "Content-Length:" . filesize($fileTmpName).$lineEnd . $lineEnd;
                     $data .= file_get_contents($fileTmpName) . $lineEnd;
                     $data .= '--' . $mime_boundary . $lineEnd;
                 }
@@ -113,7 +113,7 @@ class Index extends AbstractController
             );
             return $resultRedirect;
         }
-        $response = $this->_ticketManagerCustomer->createTicket($data, $mime_boundary);
+        $response = $this->ticketManagerCustomer->createTicket($data, $mime_boundary);
         $resultRedirect->setPath(
             'uvdeskcon/ticketlist/index/'
         );

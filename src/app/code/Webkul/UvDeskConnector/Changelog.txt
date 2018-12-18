@@ -3,6 +3,9 @@ Legend
 + Features
 - Bugs
 
+-------------------------------- Version 2.0.5 ---------------------------------------
+			-Fixed minor issues.
+
 -------------------------------- Version 2.0.4 ---------------------------------------
 			+Implement the UvDesk credential validation in the configuration at the time of saving it.
 			-Remove the column "Priority" and "Reply" from frontend ticket table as it is of no use.

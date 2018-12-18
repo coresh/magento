@@ -81,7 +81,7 @@ class TicketView extends \Magento\Framework\View\Element\Template
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManagerCustomer->getTicketThread($ticketId, null);
+        $threads = $this->_ticketManagerCustomer->getTicketThread(null, $ticketId);
         return $threads;
     }
 

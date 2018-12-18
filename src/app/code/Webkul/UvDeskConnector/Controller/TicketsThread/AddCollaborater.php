@@ -5,7 +5,7 @@
  * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
- * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
 
@@ -19,13 +19,13 @@ use Webkul\UvDeskConnector\Controller\AbstractController;
 class AddCollaborater extends AbstractController
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /** @var \Magento\Framework\Controller\Result\JsonFactory */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /** @var \UvDeskConnector\Model\TicketManagerCustomer */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
 
     /**
      * __construct function
@@ -42,20 +42,27 @@ class AddCollaborater extends AbstractController
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
     
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->jsonResultFactory = $jsonResultFactory;
         parent::__construct($context, $resultPageFactory);
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $successCount = 0;
         $errorCount = 0;
         $post = $this->getRequest()->getParams();
-        if ((isset($post['ticketId']) && !empty($post['ticketId'])) && (isset($post['email']) && !empty($post['email']))) {
-                $response = $this->_ticketManagerCustomer->addCollaborater($post['ticketId'], $post['email']);
+        if ((isset($post['ticketId']) &&
+            !empty($post['ticketId'])) &&
+            (isset($post['email']) &&
+            !empty($post['email']))
+        ) {
+                $response = $this->ticketManagerCustomer->addCollaborater(
+                    $post['ticketId'],
+                    $post['email']
+                );
                 return $result->setData($response);
         }
     }

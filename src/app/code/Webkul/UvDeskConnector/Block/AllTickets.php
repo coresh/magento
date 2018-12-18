@@ -68,12 +68,6 @@ class AllTickets extends \Magento\Framework\View\Element\Template
         $mailbox = $this->checkStatus('mailbox');
         $status = $this->checkStatus('status');
         $sort = $this->checkStatus('sort');
-        // if (!isset($customerUvdeskId)) {
-        //     $customerUvdeskId = 0;
-        // }
-        // if (!isset($pageNo)) {
-        //     $pageNo = null;
-        // }
         if (!isset($customerUvdeskId)) {
             $customerData = [];
             $customerData['email'] = $this->_customerSession->getCustomer()->getEmail();
@@ -89,7 +83,19 @@ class AllTickets extends \Magento\Framework\View\Element\Template
                 return $customerUvDeskData;
             }
         }
-        $tickets = $this->_ticketManagerCustomer->getAllTickets($page, $label, $tab, $agent, $customerUvdeskId, $group, $team, $priority, $type, $tag, $mailbox);
+        $tickets = $this->_ticketManagerCustomer->getAllTickets(
+            $page,
+            $label,
+            $tab,
+            $agent,
+            $customerUvdeskId,
+            $group,
+            $team,
+            $priority,
+            $type,
+            $tag,
+            $mailbox
+        );
         return $this->_ticketHelper->formatData($tickets);
     }
 

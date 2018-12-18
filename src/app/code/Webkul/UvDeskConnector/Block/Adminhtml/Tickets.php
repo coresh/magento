@@ -16,22 +16,22 @@ class Tickets extends \Magento\Backend\Block\Template
     /**
      * @var \Magento\Catalog\Block\Adminhtml\Category\Tab\Product
      */
-    protected $blockGrid;
+    private $blockGrid;
 
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $registry;
+    private $registry;
 
     /**
      * @var \Magento\Framework\Json\EncoderInterface
      */
-    protected $jsonEncoder;
+    private $jsonEncoder;
 
     /**
      * @var \Webkul\UvDeskConnector\Helper\Data
      */
-    protected $_helper;
+    private $helper;
 
     /**
      * AssignProducts constructor.
@@ -51,7 +51,7 @@ class Tickets extends \Magento\Backend\Block\Template
     ) {
         $this->_ticketManager = $ticketManager;
         $this->_wysiwygConfig = $wysiwygConfig;
-        $this->_helper = $helper;
+        $this->helper = $helper;
         parent::__construct($context, $data);
     }
 
@@ -146,7 +146,7 @@ class Tickets extends \Magento\Backend\Block\Template
     public function getTicketThread()
     {
         $ticketId = $this->getRequest()->getParam('id');
-        $threads = $this->_ticketManager->getTicketThread($ticketId, null);
+        $threads = $this->_ticketManager->getTicketThread(null, $ticketId);
         return $threads;
     }
 
@@ -158,7 +158,7 @@ class Tickets extends \Magento\Backend\Block\Template
      */
     public function getErrorMessage($response = [])
     {
-        return $this->_helper->getErrorMessage($response);
+        return $this->helper->getErrorMessage($response);
     }
 
     /**

@@ -21,12 +21,12 @@ class AgentAssign extends \Magento\Backend\App\Action
 {
 
     /** @var \UvDeskConnector\Model\TicketManager */
-    protected $_ticketManager;
+    private $ticketManager;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /**
      * __construct function
@@ -41,16 +41,16 @@ class AgentAssign extends \Magento\Backend\App\Action
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
         parent::__construct($context);
-        $this->_ticketManager = $ticketManager;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->ticketManager = $ticketManager;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $ticketId = $this->getRequest()->getParam('ticketid');
         $agentId = $this->getRequest()->getParam('agentId');
-        $tickets = $this->_ticketManager->assignAgentToTicket($ticketId, $agentId);
+        $tickets = $this->ticketManager->assignAgentToTicket($ticketId, $agentId);
         return $result->setData($tickets);
     }
     

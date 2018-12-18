@@ -5,12 +5,10 @@ table {
 
 th, td {
     padding: 8px;
-    /*text-align: left;*/
     border-bottom: 1px solid #ddd;
 }
 
 td, th {
-  /*text-align:center;*/
   vertical-align:middle;
 }
 
@@ -48,15 +46,12 @@ tr:hover {
 }
 
 .uvdesk-frontend-thread-view {
-  /*margin-top: 4%;    */
   background-color: #1f90bb;
   border: none;
   color: white;
-  /*padding: 11px 08px;*/
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  /*font-size: 16px;*/
 }
 
 .panell{
@@ -124,7 +119,6 @@ table {
     z-index: 2003;
 }
 .popup-loading {
-    /*background: rgba(255,255,255,0.8);*/
     border-color: #ef672f;
     color: #ef672f;
     font-size: 14px;
@@ -148,7 +142,6 @@ table {
     z-index: 2003;
 }
 .popupp-loading {
-    /*background: rgba(255,255,255,0.8);*/
     border-color: #ef672f;
     color: #ef672f;
     font-size: 14px;

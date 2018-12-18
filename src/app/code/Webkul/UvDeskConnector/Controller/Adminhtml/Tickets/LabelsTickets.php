@@ -17,7 +17,7 @@ namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 class LabelsTickets extends \Magento\Backend\App\Action
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /**
      * __construct function
@@ -31,12 +31,12 @@ class LabelsTickets extends \Magento\Backend\App\Action
     ) {
     
         parent::__construct($context);
-        $this->_resultPageFactory = $resultPageFactory;
+        $this->resultPageFactory = $resultPageFactory;
     }
 
     public function execute()
     {
-        $resultPage = $this->_resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
         $resultPage->getConfig()->getTitle()->prepend(__('Tickets'));
         return $resultPage;
     }

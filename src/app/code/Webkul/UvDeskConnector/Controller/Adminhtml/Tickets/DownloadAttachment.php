@@ -19,8 +19,14 @@ use Magento\Framework\View\Result\PageFactory;
  */
 class DownloadAttachment extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    /** @var \Webkul\UvDeskConnector\Model\TicketManager */
+    private $ticketManager;
+    
+    /** @var \Magento\Framework\App\Response\Http\FileFactory */
+    private $fileFactory;
+    
+    /** @var \Magento\Framework\Controller\Result\RawFactory */
+    private $resultRawFactory;
 
     /**
      * __construct function
@@ -38,7 +44,7 @@ class DownloadAttachment extends \Magento\Backend\App\Action
     ) {
     
         parent::__construct($context);
-        $this->_ticketManager        = $ticketManager;
+        $this->ticketManager        = $ticketManager;
         $this->resultRawFactory      = $resultRawFactory;
     }
 
@@ -46,7 +52,7 @@ class DownloadAttachment extends \Magento\Backend\App\Action
     {
         $attachmenId = $this->getRequest()->getParam('attachment_id');
         $name = $this->getRequest()->getParam('name');
-        $file = $this->_ticketManager->downloadAttachment($attachmenId);
+        $file = $this->ticketManager->downloadAttachment($attachmenId);
         header('Content-Disposition: attachment; filename="'.$name.'"');
         header('Content-Type: '.$file['info']['content_type']);
         header('Content-Length: ' . strlen($file['response']));

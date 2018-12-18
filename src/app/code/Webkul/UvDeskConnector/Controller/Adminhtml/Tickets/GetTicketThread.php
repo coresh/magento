@@ -20,17 +20,17 @@ class GetTicketThread extends \Magento\Backend\App\Action
     /**
      * @var \UvDeskConnector\Model\TicketManager
      */
-    protected $_ticketManager;
+    private $ticketManager;
 
     /**
      * @var \Webkul\UvDeskConnector\Helper\Tickets
      */
-    protected $_ticketsHelper;
+    private $ticketsHelper;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /**
      * __construct function
@@ -48,18 +48,18 @@ class GetTicketThread extends \Magento\Backend\App\Action
     ) {
     
         parent::__construct($context);
-        $this->_ticketManager = $ticketManager;
-        $this->_ticketsHelper = $ticketsHelper;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->ticketManager = $ticketManager;
+        $this->ticketsHelper = $ticketsHelper;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $ticketId = $this->checkStatus('ticketId');
-        $tickets = $this->_ticketManager->getTicketThread($ticketId, $page);
-        $formatedTickets = $this->_ticketsHelper->formatData($tickets);
+        $tickets = $this->ticketManager->getTicketThread($page, $ticketId);
+        $formatedTickets = $this->ticketsHelper->formatData($tickets);
         return $result->setData($formatedTickets);
     }
 

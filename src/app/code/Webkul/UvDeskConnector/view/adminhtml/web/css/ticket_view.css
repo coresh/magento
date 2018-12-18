@@ -126,9 +126,6 @@ form .reply {
 .attachments {
   padding: 5px 30px;
 }
-/*#uvdesk_backend_ticket_thread_pane a:hover,a:focus{
-  text-decoration: none !important;
-}*/
 a:focus, a:hover {
      color: #23527c;
      text-decoration: none !important;

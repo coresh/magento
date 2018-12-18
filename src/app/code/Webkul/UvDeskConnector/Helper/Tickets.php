@@ -21,17 +21,17 @@ class Tickets extends AbstractHelper
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $_customerSession;
+    private $customerSession;
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
      */
-    protected $_resourceConfig;
+    private $resourceConfig;
     
     /**
      * @var \Webkul\UvDeskConnector\Model\TicketManager
      */
-    protected $_ticketManager;
+    private $ticketManager;
 
     /**
      * __construct function
@@ -47,9 +47,9 @@ class Tickets extends AbstractHelper
         \Magento\Customer\Model\Session $customerSession,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) {
-        $this->_resourceConfig = $resourceConfig;
-        $this->_customerSession = $customerSession;
-        $this->_ticketManager = $ticketManager;
+        $this->resourceConfig = $resourceConfig;
+        $this->customerSession = $customerSession;
+        $this->ticketManager = $ticketManager;
         parent::__construct($context);
     }
 
@@ -74,7 +74,7 @@ class Tickets extends AbstractHelper
         $ticketStatusData = [];
         $tabData = [];
         $data = [];
-        $allAgent = $this->_ticketManager->getFilterDataFor('agent');
+        $allAgent = $this->ticketManager->getFilterDataFor('agent');
         $tickets = json_decode(json_encode($tickets), true);
         if (isset($tickets['tickets']) && !empty($tickets['tickets'])) {
             foreach ($tickets['tickets'] as $ticket) {
@@ -90,11 +90,9 @@ class Tickets extends AbstractHelper
                 if (isset($ticket['status'])) {
                     $temp['status'] = ['name'=> $ticket['status']['name'], 'color'=>$ticket['status']['color']];
                 }
-                    // $allAgent[] = $ticket['agent']['name'];
                     $ticketData[] = $temp;
                     $temp = [];
             }
-            // $ticketData['allAgent'] = $allAgent;
         }
         if (isset($tickets['status']) && !empty($tickets['status'])) {
             foreach ($tickets['status'] as $status) {
@@ -106,7 +104,6 @@ class Tickets extends AbstractHelper
             }
         }
         if (isset($tickets['pagination']) && !empty($tickets['pagination'])) {
-                // if ($tickets['pagination']['pageCount']>1) {
                     $temp['first'] = $tickets['pagination']['first'];
                     $temp['last'] = $tickets['pagination']['last'];
                     $temp['previous'] = 0;
@@ -117,13 +114,12 @@ class Tickets extends AbstractHelper
             if (isset($tickets['pagination']['next'])) {
                 $temp['next'] = $tickets['pagination']['next'];
             }
-                    $temp['firstPageInRange'] = $tickets['pagination']['firstPageInRange'];
-                    $temp['lastPageInRange'] = $tickets['pagination']['lastPageInRange'];
-                    $temp['pagesInRange'] = $tickets['pagination']['pagesInRange'];
-                    $temp['pageCount'] = $tickets['pagination']['pageCount'];
-                    $paginationData[] = $temp;
-                    $temp = [];
-                // }
+            $temp['firstPageInRange'] = $tickets['pagination']['firstPageInRange'];
+            $temp['lastPageInRange'] = $tickets['pagination']['lastPageInRange'];
+            $temp['pagesInRange'] = $tickets['pagination']['pagesInRange'];
+            $temp['pageCount'] = $tickets['pagination']['pageCount'];
+            $paginationData[] = $temp;
+            $temp = [];
         }
         if (isset($tickets['threads']) && !empty($tickets['threads'])) {
             foreach ($tickets['threads'] as $thread) {
@@ -139,7 +135,8 @@ class Tickets extends AbstractHelper
             }
             $ticketThreadPaginationData['currentPage'] = $tickets['pagination']['current'];
             $ticketThreadPaginationData['lastPage'] = $tickets['pagination']['last'];
-            $ticketThreadPaginationData['next'] = isset($tickets['pagination']['next']) ? $tickets['pagination']['next'] : 0;
+            $ticketThreadPaginationData['next'] = isset($tickets['pagination']['next']) ?
+                                                  $tickets['pagination']['next'] : 0;
             $ticketThreadPaginationData['numItemsPerPage'] = $tickets['pagination']['numItemsPerPage'];
             $ticketThreadPaginationData['totalCount'] = $tickets['pagination']['totalCount'];
         }
@@ -178,26 +175,32 @@ class Tickets extends AbstractHelper
     public function getLoggedInUserDetail()
     {
         $customerDetal = [];
-        $customerDetal['entity_id'] = $this->_customerSession->getCustomer()->getEntityId();
-        $customerDetal['email'] = $this->_customerSession->getCustomer()->getEmail();
-        $customerDetal['name'] = $this->_customerSession->getCustomer()->getName();
+        $customerDetal['entity_id'] = $this->customerSession->getCustomer()->getEntityId();
+        $customerDetal['email'] = $this->customerSession->getCustomer()->getEmail();
+        $customerDetal['name'] = $this->customerSession->getCustomer()->getName();
         return $customerDetal;
     }
 
+    /**
+     * ticketValidation function
+     *
+     * @param string $ticketIncrementId
+     * @return boolean
+     */
     public function ticketValidation($ticketIncrementId = "")
     {
         if ($ticketIncrementId == "") {
             return false;
         }
-        $ticketInformation = $this->_ticketManager->getSingleTicketData($ticketIncrementId);
+        $ticketInformation = $this->ticketManager->getSingleTicketData($ticketIncrementId);
         if ($ticketInformation == false) {
             return false;
         }
         if (is_array($ticketInformation)) {
             $ticketCustomerId = $ticketInformation['ticket']['customer']['id'];
             $ticketCustomerEmail = $ticketInformation['ticket']['customer']['email'];
-            $loggedInCustomerId = $this->_customerSession->getCustomerUvdeskId();
-            $loggedInCustomerEmail = $this->_customerSession->getCustomer()->getEmail();
+            $loggedInCustomerId = $this->customerSession->getCustomerUvdeskId();
+            $loggedInCustomerEmail = $this->customerSession->getCustomer()->getEmail();
             if (!($ticketCustomerId == $loggedInCustomerId && $ticketCustomerEmail == $loggedInCustomerEmail)) {
                 return false;
             }

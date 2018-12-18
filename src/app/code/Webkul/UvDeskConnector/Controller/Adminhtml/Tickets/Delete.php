@@ -19,28 +19,23 @@ use Magento\Framework\View\Result\PageFactory;
  */
 class Delete extends \Magento\Backend\App\Action
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
 
-    /** @var \Webkul\UvDeskConnector\Helper\Data */
-    protected $_helperData;
+    /** @var \Webkul\UvDeskConnector\Model\TicketManager */
+    private $ticketManager;
 
     /**
      * __construct function
      *
      * @param \Magento\Backend\App\Action\Context         $context
-     * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
      * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
     ) {
     
         parent::__construct($context);
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManager = $ticketManager;
+        $this->ticketManager = $ticketManager;
     }
 
     public function execute()
@@ -49,14 +44,12 @@ class Delete extends \Magento\Backend\App\Action
         $errorCount = 0;
         $post = $this->getRequest()->getParams();
         if (isset($post['id']) && !empty($post['id'])) {
-            // foreach ($post['id'] as $ticketId) {
-            $response = $this->_ticketManager->deleteTicket($post['id']);
+            $response = $this->ticketManager->deleteTicket($post['id']);
             if ($response['response']) {
                 $successCount++;
             } else {
                 $errorCount++;
             }
-            // }/
             if ($successCount) {
                 $this->messageManager->addSuccess(__("Success ! Ticket(s) removed successfully."));
             }

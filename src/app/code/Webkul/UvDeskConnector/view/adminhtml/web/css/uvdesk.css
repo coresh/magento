@@ -25,9 +25,6 @@
 .col-sm-9 .panel-title {
   margin-top: 8px;
 }
-/*.panel-title {
-  float:left;
-}*/
 .width-16 {
   width: 16.66%;
 }
@@ -142,7 +139,6 @@ label {
     z-index: 2003;
 }
 .popupp-loading {
-    /*background: rgba(255,255,255,0.8);*/
     border-color: #ef672f;
     color: #ef672f;
     font-size: 14px;

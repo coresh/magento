@@ -22,22 +22,22 @@ class Data extends AbstractHelper
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
      */
-    protected $_resourceConfig;
+    private $resourceConfig;
     
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $_customerSession;
+    private $customerSession;
     
     /**
      * @var \Webkul\UvDeskConnector\Logger\UvdeskLogger
      */
-    protected $_logger;
+    private $logger;
 
     /**
      * @var \Magento\Framework\Encryption\EncryptorInterface
      */
-    protected $_encryptor;
+    private $encryptor;
 
     /**
      * __construct function
@@ -56,10 +56,10 @@ class Data extends AbstractHelper
         \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
     
-        $this->_resourceConfig = $resourceConfig;
-        $this->_customerSession = $customerSession;
-        $this->_logger = $uvdeskLogger;
-        $this->_encryptor = $encryptor;
+        $this->resourceConfig = $resourceConfig;
+        $this->customerSession = $customerSession;
+        $this->logger = $uvdeskLogger;
+        $this->encryptor = $encryptor;
         parent::__construct($context);
     }
 
@@ -90,7 +90,7 @@ class Data extends AbstractHelper
                                      'uvdesk_conn/uvdesk_config/uvdesk_accesstoken',
                                      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                                  );
-        return $this->_encryptor->decrypt($accessToken);
+        return $this->encryptor->decrypt($accessToken);
     }
 
     /**
@@ -115,7 +115,7 @@ class Data extends AbstractHelper
      */
     public function isLoggedIn()
     {
-        return $this->_customerSession->isLoggedIn();
+        return $this->customerSession->isLoggedIn();
     }
 
     /**
@@ -157,7 +157,7 @@ class Data extends AbstractHelper
      */
     public function loge($message = "", $data = [])
     {
-        $this->_logger->critical($message, $data);
+        $this->logger->critical($message, $data);
     }
 
     /**

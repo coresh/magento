@@ -22,17 +22,17 @@ class DownloadAttachment extends AbstractController
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
-    
+    private $resultPageFactory;
+
     /**
      * @var \Magento\Framework\Controller\Result\RawFactory
      */
-    protected $_resultRawFactory;
+    private $resultRawFactory;
     
     /**
      * @var \Webkul\UvDeskConnector\Model\TicketManagerCustomer
      */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
 
     /**
      * __construct function
@@ -48,10 +48,8 @@ class DownloadAttachment extends AbstractController
         \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer
     ) {
-    
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_resultRawFactory = $resultRawFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->resultRawFactory = $resultRawFactory;
         parent::__construct($context, $resultPageFactory);
     }
 
@@ -64,12 +62,12 @@ class DownloadAttachment extends AbstractController
     {
         $attachmenId = $this->getRequest()->getParam('attachment_id');
         $name = $this->getRequest()->getParam('name');
-        $file = $this->_ticketManagerCustomer->downloadAttachment($attachmenId);
+        $file = $this->ticketManagerCustomer->downloadAttachment($attachmenId);
         header('Content-Disposition: attachment; filename="'.$name.'"');
         header('Content-Type: '.$file['info']['content_type']);
         header('Content-Length: ' . strlen($file['response']));
         header('Connection: close');
-        $resultRaw = $this->_resultRawFactory->create();
+        $resultRaw = $this->resultRawFactory->create();
         $resultRaw->setContents($file['response']);
         return $resultRaw;
     }

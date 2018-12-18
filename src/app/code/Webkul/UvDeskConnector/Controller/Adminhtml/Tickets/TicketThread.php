@@ -21,7 +21,10 @@ use Magento\Framework\Controller\ResultFactory;
 class TicketThread extends \Magento\Backend\App\Action
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
+   
+   /** @var \Webkul\UvDeskConnector\Model\TicketManager */
+    private $ticketManager;
 
    /**
     * __construct function
@@ -37,13 +40,13 @@ class TicketThread extends \Magento\Backend\App\Action
     ) {
     
         parent::__construct($context);
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManager = $ticketManager;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManager = $ticketManager;
     }
 
     public function execute()
     {
-        $resultPage = $this->_resultPageFactory->create();
+        $resultPage = $this->resultPageFactory->create();
         $resultPage->getConfig()->getTitle()->prepend(__('Tickets Thread'));
         $post = $this->getRequest()->getParams();
         $attachments = $this->getRequest()->getFiles();
@@ -51,7 +54,6 @@ class TicketThread extends \Magento\Backend\App\Action
         $ticketId = isset($post['ticket_id'])?$post['ticket_id']:null;
         $tickeIncrementId = isset($post['incremet_id'])?$post['incremet_id']:null;
         $reply = isset($post['product']['description'])?$post['product']['description']:null;
-        // $actAsType = 'customer';
         if (isset($post['addReply']) && $post['addReply'] ==  1) {
             $lineEnd = "\r\n";
             $mime_boundary = md5(time());
@@ -78,9 +80,9 @@ class TicketThread extends \Magento\Backend\App\Action
                     $fileType = $file['type'];
                     $fileName =  $file['name'];
                     $fileTmpName =  $file['tmp_name'];
-                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' . addslashes($fileName) . '"' . $lineEnd;
+                    $data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' .
+                    addslashes($fileName) . '"' . $lineEnd;
                     $data .= "Content-Type: $fileType" . $lineEnd . $lineEnd;
-                    // $data .= "Content-Length:" . filesize($fileTmpName).$lineEnd . $lineEnd;
                     $data .= file_get_contents($fileTmpName) . $lineEnd;
                     $data .= '--' . $mime_boundary . $lineEnd;
                 }
@@ -94,7 +96,7 @@ class TicketThread extends \Magento\Backend\App\Action
                 );
                 return $resultRedirect;
             }
-            $response = $this->_ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $data, $mime_boundary);
+            $response = $this->ticketManager->addReplyToTicket($ticketId, $tickeIncrementId, $data, $mime_boundary);
             $resultRedirect->setPath(
                 'uvdeskcon/tickets/ticketthread/',
                 ['id' => $ticketId,'increment_id'=>$tickeIncrementId]

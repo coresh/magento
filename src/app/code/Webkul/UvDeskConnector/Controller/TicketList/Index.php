@@ -5,7 +5,7 @@
  * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
- * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
 namespace Webkul\UvDeskConnector\Controller\TicketList;
@@ -22,29 +22,28 @@ class Index extends AbstractController
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
     
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $_customerSession;
+    private $customerSession;
     
     /**
      * @var \Webkul\UvDeskConnector\Model\TicketManagerCustomer
      */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
     
     /**
      * @var \Webkul\UvDeskConnector\Helper\Tickets
      */
-    protected $_ticketsHelper;
+    private $ticketsHelper;
     
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
     
-
     /**
      * __construct function
      *
@@ -63,11 +62,11 @@ class Index extends AbstractController
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper,
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_customerSession = $customerSession;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketsHelper = $ticketsHelper;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->customerSession = $customerSession;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->ticketsHelper = $ticketsHelper;
+        $this->jsonResultFactory = $jsonResultFactory;
         parent::__construct($context, $resultPageFactory);
     }
 
@@ -76,8 +75,8 @@ class Index extends AbstractController
      */
     public function execute()
     {
-        $resultPage = $this->_resultPageFactory->create();
-        $result = $this->_jsonResultFactory->create();
+        $resultPage = $this->resultPageFactory->create();
+        $result = $this->jsonResultFactory->create();
         $post = $this->getRequest()->getParams();
         $page = $this->checkStatus('pageNo');
         $label = $this->checkStatus('labels');
@@ -93,9 +92,23 @@ class Index extends AbstractController
         $status = $this->checkStatus('status');
         $sort = $this->checkStatus('sort');
         if (isset($post['isAjax'])) {
-            $customerUvdeskId = $this->_customerSession->getCustomerUvdeskId();
-            $tickets = $this->_ticketManagerCustomer->getAllTickets($page, $label, $tab, $agent, $customerUvdeskId, $group, $team, $priority, $type, $tag, $mailbox, $status, $sort);
-            $formatedTickets = $this->_ticketsHelper->formatData($tickets);
+            $customerUvdeskId = $this->customerSession->getCustomerUvdeskId();
+            $tickets = $this->ticketManagerCustomer->getAllTickets(
+                $page,
+                $label,
+                $tab,
+                $agent,
+                $customerUvdeskId,
+                $group,
+                $team,
+                $priority,
+                $type,
+                $tag,
+                $mailbox,
+                $status,
+                $sort
+            );
+            $formatedTickets = $this->ticketsHelper->formatData($tickets);
             return $result->setData($formatedTickets);
         } else {
             return $resultPage;
@@ -108,7 +121,7 @@ class Index extends AbstractController
      * @param string $code
      * @return string|null
      */
-    public function checkStatus($code)
+    private function checkStatus($code)
     {
         $flag = $this->getRequest()->getParam($code);
         if (isset($flag)) {

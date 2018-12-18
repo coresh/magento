@@ -15,35 +15,16 @@ If you are having trouble understanding workflow of this module then this is for
 
 ### Installation
 
-Install through composer:
-- Run Following Command via terminal  
-	``` composer config repositories.magento2_uv_desk_connector vcs https://github.com/uvdesk/magento.git ```  
-	``` composer require webkul/uvdeskconnector:dev-master ```  
-	``` php bin/magento setup:upgrade ```  
-	``` php bin/magento setup:di:compile ```  
-	``` php bin/magento setup:static-content:deploy ```
--  Flush the cache and reindex all.  
+Magento2 UvDesk connector module installation is very easy, please follow the steps for installation-
 
+-  Unzip the respective extension zip and create Webkul(vendor) and UvDeskConnector(module) name folder inside your magento/app/code/ directory and then move all module's files into magento root directory Magento2/app/code/Webkul/UvDeskConnector/ folder.
 
-Manual Installation:
--  Unzip the respective extension zip and then move "app" folder (inside "src" folder) into magento root directory.
 -  Run Following Command via terminal  
 	``` php bin/magento setup:upgrade ```  
 	``` php bin/magento setup:di:compile ```  
 	``` php bin/magento setup:static-content:deploy ```  
 -  Flush the cache and reindex all.
 
-### Contributing
-This is an open source project. If you'd like to contribute
- - Fork it.
- - Add your branch using
-    ``` git checkout -b your-branch ```
- - Add your changes and commit
-    ``` git commit -m "your changes ```
- - Push to your branch
-    ``` git push -u origin your-branch ```
- - Create new pull request.
+### Support
 
- ### Support
-
- Find us our support policy - https://store.webkul.com/support.html/
+Find us our support policy - https://store.webkul.com/support.html/

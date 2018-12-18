@@ -17,7 +17,7 @@ namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 class AddReplyToTicket extends \Magento\Backend\App\Action
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /**
      * __construct function

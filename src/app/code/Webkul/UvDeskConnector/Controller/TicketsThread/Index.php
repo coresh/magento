@@ -5,7 +5,7 @@
  * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
- * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
 
@@ -19,16 +19,16 @@ use Webkul\UvDeskConnector\Controller\AbstractController;
 class Index extends AbstractController
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /** @var \Magento\Framework\Controller\Result\JsonFactory */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /** @var \UvDeskConnector\Model\TicketManagerCustomer */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
 
     /** @var \Webkul\UvDeskConnector\Helper\Tickets */
-    protected $_ticketsHelper;
+    private $ticketsHelper;
 
     /**
      * __construct function
@@ -47,20 +47,20 @@ class Index extends AbstractController
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
     ) {
     
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketsHelper = $ticketsHelper;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->ticketsHelper = $ticketsHelper;
+        $this->jsonResultFactory = $jsonResultFactory;
         parent::__construct($context, $resultPageFactory);
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $ticketId = $this->checkStatus('ticketId');
-        $tickets = $this->_ticketManagerCustomer->getTicketThread($ticketId, $page);
-        $formatedTickets = $this->_ticketsHelper->formatData($tickets);
+        $tickets = $this->ticketManagerCustomer->getTicketThread($page, $ticketId);
+        $formatedTickets = $this->ticketsHelper->formatData($tickets);
         return $result->setData([$formatedTickets]);
     }
 
@@ -70,7 +70,7 @@ class Index extends AbstractController
      * @param string $code
      * @return string|null
      */
-    public function checkStatus($code)
+    private function checkStatus($code)
     {
         $flag = $this->getRequest()->getParam($code);
         if (isset($flag)) {

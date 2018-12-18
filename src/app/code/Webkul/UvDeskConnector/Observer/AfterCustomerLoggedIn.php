@@ -5,7 +5,7 @@
  * @category  Webkul
  * @package   Webkul_UvDeskConnector
  * @author    Webkul Software Private Limited
- * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
  * @license   https://store.webkul.com/license.html
  */
 namespace Webkul\UvDeskConnector\Observer;
@@ -17,13 +17,13 @@ use Magento\Framework\App\RequestInterface;
 class AfterCustomerLoggedIn implements ObserverInterface
 {
     /** @var Magento\Framework\App\RequestInterface */
-    protected $_request;
+    private $request;
 
     /** @var \Magento\Customer\Model\Session */
-    protected $_customerSession;
+    private $customerSession;
 
     /** @var \Webkul\UvDeskConnector\Model\TicketManager */
-    protected $_ticketManager;
+    private $ticketManager;
 
     /**
      * __construct function
@@ -40,9 +40,9 @@ class AfterCustomerLoggedIn implements ObserverInterface
         RequestInterface $requestInterface
     ) {
         $this->_logger = $loggerInterface;
-        $this->_customerSession = $customerSession;
-        $this->_ticketManager = $ticketManager;
-        $this->_request = $requestInterface;
+        $this->customerSession = $customerSession;
+        $this->ticketManager = $ticketManager;
+        $this->request = $requestInterface;
     }
     
     /**
@@ -50,21 +50,18 @@ class AfterCustomerLoggedIn implements ObserverInterface
      *
      * @param Observer $observer
      */
-
     public function execute(Observer $observer)
     {
         $customerUvDeskId = null;
         $customerData = $observer->getCustomer()->getData();
         $customerEmail = $customerData['email'];
-        // $customerId = $observer->getCustomerDataObject()->getId();
-        $controller = $this->_request->getControllerName();
-        $customerDataUvDesk = $this->_ticketManager->getCustomerFromEmail($customerEmail);
+        $controller = $this->request->getControllerName();
+        $customerDataUvDesk = $this->ticketManager->getCustomerFromEmail($customerEmail);
         if (!empty($customerDataUvDesk['customers'])) {
             $customerUvDeskId = $customerDataUvDesk['customers'][0]['id'];
         }
-        // if (in_array($controller, array('index', 'account')) && $customerId) {
         if (in_array($controller, ['account']) && $customerUvDeskId) {
-            $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
+            $this->customerSession->setCustomerUvdeskId($customerUvDeskId);
         }
         return true;
     }

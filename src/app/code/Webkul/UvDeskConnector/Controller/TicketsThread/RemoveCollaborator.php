@@ -16,16 +16,16 @@ use Webkul\UvDeskConnector\Controller\AbstractController;
 class RemoveCollaborator extends AbstractController
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /** @var \Magento\Framework\Controller\Result\JsonFactory */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /** @var \UvDeskConnector\Model\TicketManagerCustomer */
-    protected $_ticketManagerCustomer;
+    private $ticketManagerCustomer;
 
     /** @var \Webkul\UvDeskConnector\Helper\Tickets */
-    protected $_ticketsHelper;
+    private $ticketsHelper;
 
     /**
      * __construct function
@@ -43,22 +43,25 @@ class RemoveCollaborator extends AbstractController
         \Webkul\UvDeskConnector\Helper\Tickets $ticketsHelper
     ) {
     
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_jsonResultFactory = $jsonResultFactory;
-        $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_ticketsHelper = $ticketsHelper;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->jsonResultFactory = $jsonResultFactory;
+        $this->ticketManagerCustomer = $ticketManagerCustomer;
+        $this->ticketsHelper = $ticketsHelper;
         parent::__construct($context, $resultPageFactory);
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $successCount = 0;
         $errorCount = 0;
         $post = $this->getRequest()->getParams();
-        if ((isset($post['ticketId']) && !empty($post['ticketId'])) && (isset($post['collaboratorId']) && !empty($post['collaboratorId']))) {
-            // foreach ($post['id'] as $ticketId) {
-            $response = $this->_ticketManagerCustomer->removeCollaborater($post['ticketId'], $post['collaboratorId']);
+        if ((isset($post['ticketId']) &&
+            !empty($post['ticketId'])) &&
+            (isset($post['collaboratorId']) &&
+            !empty($post['collaboratorId']))
+        ) {
+            $response = $this->ticketManagerCustomer->removeCollaborater($post['ticketId'], $post['collaboratorId']);
             return $result->setData($response);
         }
     }

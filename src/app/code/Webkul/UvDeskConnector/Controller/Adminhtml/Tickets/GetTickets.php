@@ -17,18 +17,18 @@ namespace Webkul\UvDeskConnector\Controller\Adminhtml\Tickets;
 class GetTickets extends \Magento\Backend\App\Action
 {
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $_resultPageFactory;
+    private $resultPageFactory;
 
     /** @var \UvDeskConnector\Model\TicketManager */
-    protected $_ticketManager;
+    private $ticketManager;
 
     /** @var \Webkul\UvDeskConnector\Helper\Tickets */
-    protected $_ticketsHelper;
+    private $ticketsHelper;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-    protected $_jsonResultFactory;
+    private $jsonResultFactory;
 
     /**
      * __construct function
@@ -48,15 +48,15 @@ class GetTickets extends \Magento\Backend\App\Action
     ) {
     
         parent::__construct($context);
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_ticketManager = $ticketManager;
-        $this->_ticketsHelper = $ticketsHelper;
-        $this->_jsonResultFactory = $jsonResultFactory;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->ticketManager = $ticketManager;
+        $this->ticketsHelper = $ticketsHelper;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     public function execute()
     {
-        $result = $this->_jsonResultFactory->create();
+        $result = $this->jsonResultFactory->create();
         $page = $this->checkStatus('pageNo');
         $label = $this->checkStatus('labels');
         $labelId = $labelId = $this->checkStatus('labelsId');
@@ -69,8 +69,21 @@ class GetTickets extends \Magento\Backend\App\Action
         $type = $this->checkStatus('type');
         $tag = $this->checkStatus('tag');
         $mailbox =$this->checkStatus('mailbox');
-        $tickets = $this->_ticketManager->getAllTickets($page, $label, $labelId, $tab, $agent, $customer, $group, $team, $priority, $type, $tag, $mailbox);
-        $formatedTickets = $this->_ticketsHelper->formatData($tickets);
+        $tickets = $this->ticketManager->getAllTickets(
+            $page,
+            $label,
+            $labelId,
+            $tab,
+            $agent,
+            $customer,
+            $group,
+            $team,
+            $priority,
+            $type,
+            $tag,
+            $mailbox
+        );
+        $formatedTickets = $this->ticketsHelper->formatData($tickets);
         return $result->setData($formatedTickets);
     }
 
@@ -80,7 +93,7 @@ class GetTickets extends \Magento\Backend\App\Action
      * @param string $code
      * @return string|null
      */
-    public function checkStatus($code)
+    private function checkStatus($code)
     {
         $flag = $this->getRequest()->getParam($code);
         if (isset($flag)) {

@@ -23,19 +23,18 @@ abstract class AbstractController extends Action
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
-    
+    private $resultPageFactory;
+
     /**
      * __construct function
      *
-     * @param Context                               $context
-     * @param PageFactory                           $resultPageFactory
+     * @param Context $context
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory
     ) {
-        $this->_resultPageFactory = $resultPageFactory;
+        
         parent::__construct($context);
     }
 
@@ -55,15 +54,13 @@ abstract class AbstractController extends Action
         }
         if (!$dataHelper->getAvilabilityOfUvdesk()) {
             if ($request->getFullActionName() == 'uvdeskcon_createticket_index') {
-                $this->messageManager->addError(__("The UvDesk module is disable from the configuration. Please contact Admin"));
+                $this->messageManager->addError(
+                    __("The UvDesk module is disable from the configuration. Please contact Admin")
+                );
                 $this->_redirect('');
             }
-            $this
-            ->resultFactory
-            ->create('forward')
-            ->forward('index/index');
+            $this->resultFactory->create('forward')->forward('index/index');
         }
-
         return parent::dispatch($request);
     }
 }

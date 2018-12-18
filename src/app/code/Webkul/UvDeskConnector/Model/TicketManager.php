@@ -21,27 +21,32 @@ class TicketManager
     /**
      * @var \Webkul\UvDeskConnector\Helper\Data
      */
-    protected $_helperData;
+    private $helperData;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_messageManager;
+    private $messageManager;
 
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $_customerSession;
+    private $customerSession;
 
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
-    protected $_jsonHelper;
+    private $jsonHelper;
 
     /**
      * @var \Webkul\UvDeskConnector\Logger\UvdeskLogger
      */
-    protected $_logger;
+    private $logger;
+
+    /**
+     * @var \Magento\Framework\HTTP\Client\Curl
+     */
+    private $curl;
 
     /**
      * __construct function
@@ -57,14 +62,16 @@ class TicketManager
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        UvdeskLogger $uvdeskLogger
+        UvdeskLogger $uvdeskLogger,
+        \Magento\Framework\HTTP\Client\Curl $curl
     ) {
 
-        $this->_helperData = $helperData;
-        $this->_messageManager = $messageManager;
-        $this->_customerSession = $customerSession;
-        $this->_jsonHelper = $jsonHelper;
-        $this->_logger = $uvdeskLogger;
+        $this->helperData = $helperData;
+        $this->messageManager = $messageManager;
+        $this->customerSession = $customerSession;
+        $this->jsonHelper = $jsonHelper;
+        $this->logger = $uvdeskLogger;
+        $this->curl = $curl;
     }
 
     /**
@@ -82,34 +89,30 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // Return  tickets
         if (!$isLabelId) {
             $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$label;
         } else {
             $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?label='.$label;
         }
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
             return $response;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager getAllTicketsAccToLabel :- ',
+                ['response'=>$response, 'info'=> $this->curl->getHeaders()]
+            );
             if (isset($response['error'])) {
                 return $response;
             }
         }
-        curl_close($ch);
     }
 
     /**
@@ -117,8 +120,22 @@ class TicketManager
      *
      * @return json.
      */
-    public function getAllTickets($page = null, $labels = null, $labelId = null, $tab = null, $agent = null, $customer = null, $group = null, $team = null, $priority = null, $type = null, $tag = null, $mailbox = null, $status = null, $sort = null)
-    {
+    public function getAllTickets(
+        $page = null,
+        $labels = null,
+        $labelId = null,
+        $tab = null,
+        $agent = null,
+        $customer = null,
+        $group = null,
+        $team = null,
+        $priority = null,
+        $type = null,
+        $tag = null,
+        $mailbox = null,
+        $status = null,
+        $sort = null
+    ) {
         $access_token = $this->getAccessToken();
         if (isset($access_token['error'])) {
             return $access_token;
@@ -127,6 +144,65 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
+        $str = $this->getParameterStringForGetAllTickets(
+            $page,
+            $labels,
+            $labelId,
+            $tab,
+            $agent,
+            $customer,
+            $group,
+            $team,
+            $priority,
+            $type,
+            $tag,
+            $mailbox,
+            $status,
+            $sort
+        );
+        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$str;
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
+        ];
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
+            return $response;
+        } else {
+            $this->log(
+                'Modal TicketManager getAllTickets :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
+            if (isset($response['error'])) {
+                return $response;
+            }
+        }
+    }
+
+    /**
+     * getParameterStringForGetAllTickets to get teh parameter in in string
+     *
+     * @return json.
+     */
+    public function getParameterStringForGetAllTickets(
+        $page = null,
+        $labels = null,
+        $labelId = null,
+        $tab = null,
+        $agent = null,
+        $customer = null,
+        $group = null,
+        $team = null,
+        $priority = null,
+        $type = null,
+        $tag = null,
+        $mailbox = null,
+        $status = null,
+        $sort = null
+    ) {
         $str = '';
         if (isset($agent)) {
             $str.='&agent='.$agent;
@@ -171,30 +247,7 @@ class TicketManager
                 $str.="&label=".$labelId;
             }
         }
-        // Return  tickets
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json?'.$str;
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
-        ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200) {
-            return $response;
-        } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            if (isset($response['error'])) {
-                return $response;
-            }
-        }
-        curl_close($ch);
+        return $str;
     }
 
     /**
@@ -212,137 +265,27 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/filters.json?'.$filterType.'=1';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
             return $response;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            return false;
-        }
-        curl_close($ch);
-    }
-
-    /**
-     * Curl request to create ticket in UvDesk.
-     *
-     * @return String.
-     */
-    /*
-    public function createTicket($ticketData)
-    {
-        $access_token = $this->_helperData->getAccessToken();
-        $company_domain = $this->_helperData->getCompanyDomainName();
-        // ticket url
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
-        $data = json_encode($ticketData);
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token,
-            'Content-type: application/json'
-        ];
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
-            $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
-            $customerUvdeskId  = $this->_customerSession->getCustomerUvdeskId();
-            if (!isset($customerUvdeskId)) {
-                $customerEmail = $this->_customerSession->getCustomer()->getEmail();
-                $customerUvDeskData = $this->getCustomerFromEmail($customerEmail);
-                if (!empty($customerUvDeskData['customers'])) {
-                    $customerUvDeskId = $customerUvDeskData['customers'][0]['id'];
-                    $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
-                }
+            $this->log(
+                'Modal TicketManager getFilterDataFor :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
+            if (isset($response['error'])) {
+                return $response;
             }
-            return true;
-        } elseif ($info['http_code'] == 400) {
-            $this->_messageManager->addError(__(' Error, request data not valid. (http-code: 400).'));
-        } elseif ($info['http_code'] == 404) {
-            $this->_messageManager->addError(__('Error, resource not found (http-code: 404)'));
-        } else {
-            $this->_messageManager->addError(__('Error, HTTP Status Code :%1', $info['http_code']));
         }
-        curl_close($ch);
-    }
-    */
-
-    /**
-     * Curl request to create ticket in UvDesk.
-     *
-     * @return String.
-     */
-    public function createTicket($data, $mime_boundary)
-    {
-        $access_token = $this->getAccessToken();
-        if (isset($access_token['error'])) {
-            return $access_token;
-        }
-        $company_domain = $this->getCompanyDomainName();
-        if (isset($company_domain['error'])) {
-            return $company_domain;
-        }
-        // ticket url
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
-        $data = $data;
-        $headers = [
-        "Authorization: Bearer ".$access_token,
-        "Content-type: multipart/form-data; boundary=" .$mime_boundary,
-        ];
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
-            $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
-            $customerUvdeskId  = $this->_customerSession->getCustomerUvdeskId();
-            if (!isset($customerUvdeskId)) {
-                $customerEmail = $this->_customerSession->getCustomer()->getEmail();
-                $customerUvDeskData = $this->getCustomerFromEmail($customerEmail);
-                if (!empty($customerUvDeskData['customers'])) {
-                    $customerUvDeskId = $customerUvDeskData['customers'][0]['id'];
-                    $this->_customerSession->setCustomerUvdeskId($customerUvDeskId);
-                }
-            }
-            return true;
-        } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            $this->_messageManager->addError(__('We are not able to proceed your request. Please contact administration'));
-        }
-        curl_close($ch);
     }
 
     /**
@@ -360,74 +303,24 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customers.json?email='.$customerEmail;
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200 || $this->curl->getStatus() == 201) {
             return $response;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager getCustomerFromEmail :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-        curl_close($ch);
-    }
-
-    /**
-     * Curl request to create customer in UvDesk.
-     *
-     * @return  Json.
-     */
-    public function createCustomer()
-    {
-        $access_token = $this->getAccessToken();
-        if (isset($access_token['error'])) {
-            return $access_token;
-        }
-        $company_domain = $this->getCompanyDomainName();
-        if (isset($company_domain['error'])) {
-            return $company_domain;
-        }
-        // ticket url
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/customer.json';
-        $data = json_encode($ticketData);
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token,
-            'Content-type: application/json'
-        ];
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
-            $this->_messageManager->addSuccess(__(' Success ! Ticket has been created successfully.'));
-            return true;
-        } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            $message = $this->_helperData->getErrorMessage($response);
-            $this->_messageManager->addError(__($message));
-            return false;
-        }
-        curl_close($ch);
     }
 
     /**
@@ -445,36 +338,32 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket-types.json?';
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200 || $this->curl->getStatus() == 201) {
             return $response;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager getTicketTypes :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
             return "";
         }
-        curl_close($ch);
     }
 
     /**
-     * Curl request to get the ticket types in UvDesk.
+     * Curl request to get the ticket getTicketThread in UvDesk.
      *
      * @return  JSON.
      */
-    public function getTicketThread($ticketId = 0, $pageNo)
+    public function getTicketThread($pageNo, $ticketId = 0)
     {
         $access_token = $this->getAccessToken();
         if (isset($access_token['error'])) {
@@ -484,7 +373,6 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // Return  tickets
         $str = "";
         if (isset($pageNo)) {
             $str.='page='.$pageNo;
@@ -493,29 +381,29 @@ class TicketManager
             $pageNo = "";
         }
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json?'.$str;
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
             return $response;
         } else {
             if (isset($response['error'])) {
-                $this->log('', ['response'=>$response, 'info'=>$info]);
+                $this->log(
+                    'Modal TicketManager getTicketThread :- ',
+                    ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+                );
                 return $response;
             }
-            return ['error'=>true, 'error_description'=> __('There is some error in getting the thread. Please check log.')];
+            return [
+                'error'=>true,
+                'error_description'=> __('There is some error in getting the thread. Please check log.')
+            ];
         }
-        curl_close($ch);
     }
 
     /**
@@ -533,75 +421,24 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        $str = '';
-        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketIncrementId.'.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
             return $response;
         } else {
-                $this->log('', ['response'=>$response, 'info'=>$info]);
-                return false;
-        }
-        curl_close($ch);
-    }
-
-    /**
-     * Curl request to get the ticket types in UvDesk.
-     *
-     * @return  JSON.
-     */
-    public function addReplyToTickett($ticketId, $ticketIncrementId, $data)
-    {
-        $access_token = $this->getAccessToken();
-        if (isset($access_token['error'])) {
-            return $access_token;
-        }
-        $company_domain = $this->getCompanyDomainName();
-        if (isset($company_domain['error'])) {
-            return $company_domain;
-        }
-        // ticket url
-        $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
-        $data = json_encode($data);
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token,
-            'Content-type: application/json'
-        ];
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($server_output, 0, $header_size);
-        $response = substr($server_output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        if ($info['http_code'] == 200 || $info['http_code'] == 201) {
-            $this->_messageManager->addSuccess(__('Success ! Reply added successfully.'));
-            return true;
-        } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            $message = $this->_helperData->getErrorMessage($response);
-            $this->_messageManager->addError(__($message));
+            $this->log(
+                'Modal TicketManager getSingleTicketData :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-        curl_close($ch);
     }
 
     /**
@@ -619,39 +456,32 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // ticket url
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/threads.json';
-        $data = $data;
-         $headers = [
-        "Authorization: Bearer ".$access_token,
-        "Content-type: multipart/form-data; boundary=" .$mime_boundary,
-         ];
-         $ch = curl_init($url);
-         curl_setopt($ch, CURLOPT_POST, true);
-         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-         curl_setopt($ch, CURLOPT_HEADER, true);
-         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-         curl_setopt($ch, CURLOPT_SSLVERSION, 1);
-         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-         $server_output = curl_exec($ch);
-         $info = curl_getinfo($ch);
-         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-         $headers = substr($server_output, 0, $header_size);
-         $response = substr($server_output, $header_size);
-         $response = $this->getJsonDecodeResponse($response);
-         $err = curl_error($ch);
-         if ($info['http_code'] == 200 || $info['http_code'] == 201) {
-             $this->_messageManager->addSuccess(__('Success ! Reply added successfully.'));
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $this->curl->addHeader('Content-type', 'multipart/form-data; boundary=' .$mime_boundary);
+        $arr = [
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_SSLVERSION => 1,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ];
+        $this->curl->setOptions($arr);
+        $this->curl->post($url, $data);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if (in_array($this->curl->getStatus(), [100,200,201])) {
+             $this->messageManager->addSuccess(__('Success ! Reply added successfully.'));
              return true;
-         } else {
-                $this->log('', ['response'=>$response, 'info'=>$info]);
-                $message = $this->_helperData->getErrorMessage($response);
-                $this->_messageManager->addError(__($message));
-                return false;
-            }
-            curl_close($ch);
+        } else {
+            $this->log(
+                'Modal TicketManager addReplyToTicket :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
+            $message = $this->helperData->getErrorMessage($response);
+            $this->messageManager->addError(__($message));
+            return false;
+        }
     }
 
     /**
@@ -669,29 +499,26 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/attachment/'.$attachmenId.'.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        if ($info['http_code'] == 200) {
-            return ['response'=>$response,'info'=>$info];
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->curl->getBody();
+        if ($this->curl->getStatus() == 200) {
+            return ['response'=> $response,'info'=> $this->curl->getStatus()];
         } else {
-            $response = $this->getJsonDecodeResponse($response);
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $response = $this->getJsonDecodeResponse($this->curl->getBody());
+            $this->log(
+                'Modal TicketManager downloadAttachment :- ',
+                ['response'=>$response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-        curl_close($ch);
     }
 
     /**
@@ -709,29 +536,27 @@ class TicketManager
         if (isset($company_domain['error'])) {
             return $company_domain;
         }
-        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/ /api/ticket/4802/trash.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_POSTFIELDS => $data
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        if ($info['http_code'] == 200) {
-            return ['response'=>$response,'info'=>$info]    ;
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->curl->getBody();
+        if ($this->curl->getStatus() == 200) {
+            return ['response'=>$response,'info'=> $this->curl->getStatus()];
         } else {
-            $response = $this->getJsonDecodeResponse($response);
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $response = $this->getJsonDecodeResponse($this->curl->getBody());
+            $this->log(
+                'Modal TicketManager trashTicket :- ',
+                ['response'=>$response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-        curl_close($ch);
     }
 
     /**
@@ -751,28 +576,25 @@ class TicketManager
         }
         $data = '{"id": "'.$agentId.'"}';
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/ticket/'.$ticketId.'/agent.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_POSTFIELDS => $data
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        if ($info['http_code'] == 200) {
-            return ['response'=>$response,'info'=>$info]    ;
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->curl->getBody();
+        if ($this->curl->getStatus() == 200) {
+            return ['response'=>$response,'info'=> $this->curl->getStatus()];
         } else {
-            $response = $this->getJsonDecodeResponse($response);
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager assignAgentToTicket :- ',
+                ['response'=>$response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-        curl_close($ch);
     }
 
     /**
@@ -792,28 +614,25 @@ class TicketManager
         }
         $ids['ids'] = $ticketIds;
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
-        "content-type: application/json"
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $this->curl->addHeader('content-type', 'application/json');
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => 'DELETE',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_POSTFIELDS => $this->getJsonEncodeResponse($ids)
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($ids));
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        curl_close($ch);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        if ($this->curl->getStatus() == 200) {
             return ['response'=>true];
         } else {
-            $response = $this->getJsonDecodeResponse($response);
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            return ['response'=>false];
+            $response = $this->getJsonDecodeResponse($this->curl->getBody());
+            $this->log(
+                'Modal TicketManager deleteTicket :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
+            return ['response'=> false];
         }
     }
 
@@ -833,33 +652,29 @@ class TicketManager
             return $company_domain;
         }
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/members.json?fullList=name';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
-        "content-type: application/json"
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $this->curl->addHeader('content-type', 'application/json');
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
-        curl_close($ch);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
+        if ($this->curl->getStatus() == 200) {
             return $response;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager getAllMembers :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
             if (isset($response['error'])) {
                 return $response;
             }
-            $this->log('', ['response'=>$response, 'info'=>$info]);
-            $message = $this->_helperData->getErrorMessage($response);
-            $this->_messageManager->addError(__($message));
-            return ['error'=>'true'];
+            $message = $this->helperData->getErrorMessage($response);
+            $this->messageManager->addError(__($message));
+            return ['error'=> 'true'];
         }
     }
 
@@ -873,79 +688,26 @@ class TicketManager
     public function checkCredentials($access_token = "", $company_domain = "")
     {
         if (preg_match('/^\*+$/', $access_token)) {
-            $access_token = $this->_helperData->getAccessToken();
+            $access_token = $this->helperData->getAccessToken();
         }
-        // Return  tickets
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/tickets.json';
-        $ch = curl_init($url);
-        $headers = [
-            'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        curl_close($ch);
-        if ($info['http_code'] == 200) {
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        if ($this->curl->getStatus() == 200) {
             return true;
         } else {
-            $response = $this->getJsonDecodeResponse($response);
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $response = $this->getJsonDecodeResponse($this->curl->getBody());
+            $this->log(
+                'Modal TicketManager checkCredentials :- ',
+                ['response'=> $response, 'info'=> $this->curl->getHeaders()]
+            );
             return false;
         }
-    }
-
-    /**
-     * get the json decoded data of reponse
-     *
-     * @param string $reponse
-     * @return array
-     */
-    public function getJsonDecodeResponse($reponse = "")
-    {
-        return $this->_jsonHelper->jsonDecode($reponse);
-    }
-
-    /**
-     * getAccessToken function get the access token from configuration.
-     *
-     * @return string|array
-     */
-    public function getAccessToken()
-    {
-        if ($this->_helperData->getAccessToken()) {
-            return $this->_helperData->getAccessToken();
-        }
-        return ['error'=> true, 'error_description'=> 'The access token field is blank. Please provide the access token'];
-    }
-
-    /**
-     * getCompanyDomainName function get the access token from configuration.
-     *
-     * @return string|array
-     */
-    public function getCompanyDomainName()
-    {
-        if ($this->_helperData->getCompanyDomainName()) {
-            return $this->_helperData->getCompanyDomainName();
-        }
-        return ['error'=> true, 'error_description'=> 'The company domain name field is blank. Please provide the company domain'];
-    }
-
-    /**
-     * log function log the error message.
-     *
-     * @param string $message
-     * @param array $data
-     * @return void
-     */
-    public function log($message = "", $data = [])
-    {
-        $this->_logger->critical($message, $data);
     }
 
     /**
@@ -958,25 +720,20 @@ class TicketManager
     public function getTheDetailOfEnteredTokenAgent($access_token = "", $company_domain = "")
     {
         if (preg_match('/^\*+$/', $access_token)) {
-            $access_token = $this->_helperData->getAccessToken();
+            $access_token = $this->helperData->getAccessToken();
         }
         $url = 'https://'.$company_domain.'.uvdesk.com/en/api/me.json';
-        $ch = curl_init($url);
-        $headers = [
-        'Authorization: Bearer '.$access_token,
+        $this->curl->addHeader('Authorization', 'Bearer '.$access_token);
+        $arr = [
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($output, 0, $header_size);
-        $response = substr($output, $header_size);
-        $response = $this->getJsonDecodeResponse($response);
+        $this->curl->setOptions($arr);
+        $this->curl->get($url);
+        $response = $this->getJsonDecodeResponse($this->curl->getBody());
         $flag = 0;
-        if ($info['http_code'] == 200) {
+        if ($this->curl->getStatus() == 200) {
             foreach ($response['roles'] as $data) {
                 if ($data == 'ROLE_SUPER_ADMIN' || $data == 'ROLE_ADMIN') {
                     $flag = 1;
@@ -985,9 +742,77 @@ class TicketManager
             }
             return $flag;
         } else {
-            $this->log('', ['response'=>$response, 'info'=>$info]);
+            $this->log(
+                'Modal TicketManager getTheDetailOfEnteredTokenAgent :- ',
+                ['response'=>$response, 'info'=>$info]
+            );
             return $flag;
         }
-        curl_close($ch);
+    }
+
+    /**
+     * get the json decoded data of reponse
+     *
+     * @param string $reponse
+     * @return array
+     */
+    public function getJsonDecodeResponse($reponse = "")
+    {
+        return $this->jsonHelper->jsonDecode($reponse);
+    }
+    
+    /**
+     * get the json encode data of reponse
+     *
+     * @param string $reponse
+     * @return array
+     */
+    public function getJsonEncodeResponse($reponse = "")
+    {
+        return $this->jsonHelper->jsonEncode($reponse);
+    }
+
+    /**
+     * getAccessToken function get the access token from configuration.
+     *
+     * @return string|array
+     */
+    public function getAccessToken()
+    {
+        if ($this->helperData->getAccessToken()) {
+            return $this->helperData->getAccessToken();
+        }
+        return [
+            'error'=> true,
+            'error_description'=> 'The access token field is blank. Please provide the access token'
+        ];
+    }
+
+    /**
+     * getCompanyDomainName function get the access token from configuration.
+     *
+     * @return string|array
+     */
+    public function getCompanyDomainName()
+    {
+        if ($this->helperData->getCompanyDomainName()) {
+            return $this->helperData->getCompanyDomainName();
+        }
+        return [
+            'error'=> true,
+            'error_description'=> 'The company domain name field is blank. Please provide the company domain'
+        ];
+    }
+
+    /**
+     * log function log the error message.
+     *
+     * @param string $message
+     * @param array $data
+     * @return void
+     */
+    public function log($message = "", $data = [])
+    {
+        $this->logger->critical($message, $data);
     }
 }
