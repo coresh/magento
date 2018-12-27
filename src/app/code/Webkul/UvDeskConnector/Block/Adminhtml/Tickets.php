@@ -38,19 +38,16 @@ class Tickets extends \Magento\Backend\Block\Template
      *
      * @param \Magento\Backend\Block\Template\Context     $context
      * @param \Webkul\UvDeskConnector\Model\TicketManager $ticketManager
-     * @param \Magento\Cms\Model\Wysiwyg\Config           $wysiwygConfig
      * @param \Webkul\UvDeskConnector\Helper\Data         $helper
      * @param array                                       $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Webkul\UvDeskConnector\Model\TicketManager $ticketManager,
-        \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig,
         \Webkul\UvDeskConnector\Helper\Data $helper,
         array $data = []
     ) {
         $this->_ticketManager = $ticketManager;
-        $this->_wysiwygConfig = $wysiwygConfig;
         $this->helper = $helper;
         parent::__construct($context, $data);
     }
@@ -62,8 +59,14 @@ class Tickets extends \Magento\Backend\Block\Template
      */
     public function getWysiwygConfig()
     {
-        $config = $this->_wysiwygConfig->getConfig();
-        $config = json_encode($config->getData(), true);
+        $config = json_encode([
+            "width"=>"99%", 
+            "height"=>"200px", 
+            "plugins"=>[["name"=>"image"]],
+            "tinymce4"=>[
+                "toolbar"=>"formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link table charmap",
+                "plugins"=>"advlist autolink lists link charmap media noneditable table contextmenu paste code help table"]
+            ]);
         return $config;
     }
 

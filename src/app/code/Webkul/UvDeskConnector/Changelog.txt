@@ -3,6 +3,9 @@ Legend
 + Features
 - Bugs
 
+-------------------------------- Version 2.1.0 ---------------------------------------
+			+compatible with magento ver 2.3.*
+
 -------------------------------- Version 2.0.5 ---------------------------------------
 			-Fixed minor issues.
 
@@ -35,4 +38,3 @@ Legend
 			+Admin can delete any ticket.
 			+Customers can reply to tickets from their magento store account on front-end.
 			+Real time synchronization between Uvdesk Helpdesk System and magento Store tickets.
-

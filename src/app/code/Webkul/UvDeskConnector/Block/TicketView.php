@@ -14,23 +14,22 @@ namespace Webkul\UvDeskConnector\Block;
 class TicketView extends \Magento\Framework\View\Element\Template
 {
     /**
-     * __construct description
-     * @param \Magento\Framework\View\Element\Template\Context $context       [description]
-     * @param \Webkul\UvDeskConnector\Helper\Tickets           $ticketHelper  [description]
-     * @param \Webkul\UvDeskConnector\Model\TicketManagerCustomer      $ticketManagerCustomer [description]
-     * @param array                                            $data          [description]
+     * __construct function
+     *
+     * @param \Magento\Framework\View\Element\Template\Context      $context
+     * @param \Webkul\UvDeskConnector\Helper\Tickets                $ticketHelper
+     * @param \Webkul\UvDeskConnector\Model\TicketManagerCustomer   $ticketManagerCustomer
+     * @param array                                                 $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Webkul\UvDeskConnector\Helper\Tickets $ticketHelper,
         \Webkul\UvDeskConnector\Model\TicketManagerCustomer $ticketManagerCustomer,
-        \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_ticketHelper = $ticketHelper;
         $this->_ticketManagerCustomer = $ticketManagerCustomer;
-        $this->_wysiwygConfig = $wysiwygConfig;
     }
 
     /**
@@ -40,8 +39,14 @@ class TicketView extends \Magento\Framework\View\Element\Template
      */
     public function getWysiwygConfig()
     {
-        $config = $this->_wysiwygConfig->getConfig();
-        $config = json_encode($config->getData(), true);
+        $config = json_encode([
+            "width"=>"99%", 
+            "height"=>"200px", 
+            "plugins"=>[["name"=>"image"]],
+            "tinymce4"=>[
+                "toolbar"=>"formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link table charmap",
+                "plugins"=>"advlist autolink lists link charmap media noneditable table contextmenu paste code help table"]
+            ]);
         return $config;
     }
 

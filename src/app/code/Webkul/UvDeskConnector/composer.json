@@ -2,10 +2,10 @@
     "name": "webkul/uvdeskconnector",
     "description": "Magento2 uvdesk connector",
     "require": {
-        "magento/project-community-edition": "2.2.*"
+      "magento/project-community-edition": "2.*.*"
     },
     "type": "magento2-module",
-    "version": "2.0.5",
+    "version": "2.1.0",
     "license": [
         "proprietary"
     ],

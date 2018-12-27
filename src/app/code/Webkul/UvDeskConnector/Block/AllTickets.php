@@ -75,7 +75,6 @@ class AllTickets extends \Magento\Framework\View\Element\Template
             $customerData['lastName'] = $this->_customerSession->getCustomer()->getLastname();
             $customerData['contactNumber'] = "";
             $customerData['isActive'] = 1;
-
             $customerUvDeskData = $this->_ticketManagerCustomer->createCustomerAtUveDesk($customerData);
             if (isset($customerUvDeskData['id'])) {
                 $this->_customerSession->setCustomerUvdeskId($customerUvDeskData['id']);
